@@ -317,16 +317,27 @@ G-9 does not license the statement "the ladder arm has multi-process atomicity,"
 dissertation must not make it.** The campaign refuses a confirmatory multi-process run while
 this holds.
 
-**Declaration — the G-3 record, both figures, the conservative headroom (`smoke/g3/REPORT.md`;
+**Declaration — the G-3 record, all three runs, the conservative figure (`smoke/g3/REPORT.md`;
 `tools/gate_rerun/REPORT.md`).** The adjudicated G-3 median `boundary_verification` cost is
 **2.8264 ms** against the 5 ms threshold — measured once on the row 9 platform, 2026-08-02, and
 that figure is the record. Measured headroom is therefore **1.77×, not the three- to tenfold
-ADR 0025's prose argued**; neither the threshold nor the ADR was changed, and the conservative
-figure is the one quoted. A confirmation run at a later commit (`7b59e19`, 2026-08-03) on the
-same platform gave **2.6928 ms**; the two do not separate (Mann-Whitney U = 12, two-sided
-p = 0.34, n = 4 vs 4 batch medians, computed from the recorded batch tables), and the difference
-(−0.1336 ms) is 0.67% of row 1's equivalence margin. The adjudicated 2.8264 ms stands as the
-record; the confirmation is regression evidence, not a re-adjudication.
+ADR 0025's prose argued**; neither the threshold nor the ADR was changed. G-3 has since been
+re-measured twice on the same platform, and the three medians are **monotone downward**:
+2.8264 ms (adjudicated, 2026-08-02) → 2.6928 ms (confirmation at `7b59e19`, 2026-08-03) →
+2.6856 ms (seal-time re-run at `396c2b6`, 2026-08-06). The confirmation **does not separate**
+from the adjudicated run (Mann-Whitney U = 12, exact two-sided p = 0.34, n = 4 vs 4 batch
+medians, computed from the recorded batch tables); **the seal-time re-run separates
+completely**: U = 16, the largest value attainable at n = 4 vs 4, exact two-sided p = 0.0286,
+the smallest attainable — the batch-median ranges (2.6750–2.6920 seal-time against
+2.7511–2.9190 adjudicated) do not overlap. The difference is **0.1408 ms — 0.70% of row 1's
+20 ms equivalence margin and 0.49 of the adjudicated IQR (0.2898 ms)** — and both medians sit
+far below the 5 ms threshold, so the gate verdict is unaffected. **The adjudicated 2.8264 ms
+stands as the record, and it is the conservative figure: every claim reported against row 2's
+threshold or row 7's denominators uses the worse number.** The drift's direction **favours the
+lightweight framing** — later, faster measurements make the mechanism look cheaper — which is
+exactly why it is declared here rather than noted in passing. What is not known, stated
+plainly: three runs on one machine cannot distinguish machine-state variation from genuine
+drift, and no cause is claimed.
 
 ## 7. The sealing and temporal-anchor procedure
 

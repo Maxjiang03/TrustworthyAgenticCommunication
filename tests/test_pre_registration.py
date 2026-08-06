@@ -6,9 +6,9 @@ the repository is one that will drift. So: frozen rows by value (through their
 single reader), the three frozen digests, the §E.4 expected matrix
 cell-for-cell against the design document, the arm list, the five span names,
 the fifteen-gate record with each cited commit resolved against the history of
-the report it landed, the G-3 figures against the two reports that own them —
-including recomputing the Mann-Whitney comparison exactly from the recorded
-batch medians — the row 7 sourcing (URLs, retrieval date, and the unanchored
+the report it landed, the G-3 figures for all three runs against the two reports
+that own them — including recomputing BOTH Mann-Whitney comparisons exactly
+from the recorded batch tables — the row 7 sourcing (URLs, retrieval date, and the unanchored
 marking), the ADR 0028 scan re-executed, the retained-reference counts
 re-measured, the not-sealed guards, and the five gap closures (2026-08-06)
 each verified against the artifact that closed it.
@@ -192,6 +192,53 @@ class TestTheGateRecord:
         assert "RE-RUN ON THE SEALING COMMIT" in _pr_flat()
 
 
+def _rerun_batches() -> "tuple[list[float], list[float]]":
+    """(adjudicated, confirmation) batch medians from tools/gate_rerun/REPORT.md."""
+    rerun = (REPO_ROOT / "tools" / "gate_rerun" / "REPORT.md").read_text(encoding="utf-8")
+    adjudicated, confirmation = [], []
+    for line in rerun.splitlines():
+        match = re.match(r"\| batch \d \| \*?\*?([0-9.]+)\*?\*? \| \*?\*?([0-9.]+)\*?\*? \|", line)
+        if match:
+            adjudicated.append(float(match.group(1)))
+            confirmation.append(float(match.group(2)))
+    return adjudicated, confirmation
+
+
+def _sealtime_batches() -> "tuple[list[float], list[float]]":
+    """(adjudicated, seal-time) batch medians from smoke/g3/REPORT.md's
+    seal-time comparison table (its two-column per-batch row; the original
+    one-column row is skipped)."""
+    g3 = (REPO_ROOT / "smoke" / "g3" / "REPORT.md").read_text(encoding="utf-8")
+    for line in g3.splitlines():
+        if line.strip().startswith("| per-batch medians |"):
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")][1:]
+            if len(cells) == 2:
+                return (
+                    [float(value) for value in cells[0].split(",")],
+                    [float(value) for value in cells[1].split(",")],
+                )
+    raise AssertionError("no two-column per-batch-medians row in smoke/g3/REPORT.md")
+
+
+def _exact_mann_whitney(a: "list[float]", b: "list[float]") -> "tuple[int, float]":
+    """U = #{a_i > b_j}, and the exact two-sided p over all C(8,4) labelings."""
+    u = sum(1 for x in a for y in b if x > y)
+    pooled = a + b
+    u_observed = min(u, 16 - u)
+    count = total = 0
+    for first_group in combinations(range(8), 4):
+        u_perm = sum(
+            1
+            for i in first_group
+            for j in range(8)
+            if j not in first_group and pooled[i] > pooled[j]
+        )
+        total += 1
+        if min(u_perm, 16 - u_perm) <= u_observed:
+            count += 1
+    return u, count / total
+
+
 class TestTheG3Figures:
     def test_the_adjudicated_median_and_headroom_trace_to_the_gate_report(self):
         report = (REPO_ROOT / "smoke" / "g3" / "REPORT.md").read_text(encoding="utf-8")
@@ -204,53 +251,61 @@ class TestTheG3Figures:
 
         assert round(fp.g3_threshold_ms() / 2.8264, 2) == 1.77
 
-    def test_the_confirmation_figures_trace_to_the_rerun_report(self):
+    def test_the_three_medians_and_twelve_batch_medians_trace_to_their_reports(self):
+        """Every G-3 number the document carries is owned by a report:
+        adjudicated and seal-time by smoke/g3/REPORT.md, the confirmation by
+        tools/gate_rerun/REPORT.md — and the two reports agree on the
+        adjudicated four."""
+        g3 = (REPO_ROOT / "smoke" / "g3" / "REPORT.md").read_text(encoding="utf-8")
         rerun = (REPO_ROOT / "tools" / "gate_rerun" / "REPORT.md").read_text(encoding="utf-8")
         text = _pr()
-        for figure in ("2.6928", "0.1336"):
-            assert figure in rerun, figure
-            assert figure in text, figure
+        medians = {"2.8264": g3, "2.6856": g3, "2.6928": rerun}
+        for median, owner in medians.items():
+            assert median in owner, median
+            assert median in text, median
+        assert 2.8264 > 2.6928 > 2.6856  # monotone downward, as the document states
+        assert "monotone downward" in _pr_flat()
+        adjudicated, confirmation = _rerun_batches()
+        adjudicated_again, sealtime = _sealtime_batches()
+        assert adjudicated == adjudicated_again, "the two reports disagree on the adjudicated four"
+        assert len(adjudicated) == len(confirmation) == len(sealtime) == 4
+        for value in adjudicated + sealtime:
+            assert f"{value:.4f}" in g3, value
+        for value in confirmation:
+            assert f"{value:.4f}" in rerun, value
 
-    def test_the_mann_whitney_comparison_recomputes_from_the_recorded_batches(self):
-        """U = 12 and two-sided p = 0.34 are DERIVED: recomputed exactly from
-        the eight batch medians the rerun report records, not copied from
-        anywhere."""
-        rerun = (REPO_ROOT / "tools" / "gate_rerun" / "REPORT.md").read_text(encoding="utf-8")
-        recorded, today = [], []
-        for line in rerun.splitlines():
-            match = re.match(
-                r"\| batch \d \| \*?\*?([0-9.]+)\*?\*? \| \*?\*?([0-9.]+)\*?\*? \|", line
-            )
-            if match:
-                recorded.append(float(match.group(1)))
-                today.append(float(match.group(2)))
-        assert len(recorded) == len(today) == 4
-        u_recorded = sum(1 for a in recorded for b in today if a > b)
-        assert u_recorded == 12
-        # exact two-sided p over all C(8,4) labelings of the pooled values
-        pooled = recorded + today
-        u_observed = min(u_recorded, 16 - u_recorded)
-        count = 0
-        total = 0
-        for first_group in combinations(range(8), 4):
-            u = sum(
-                1
-                for i in first_group
-                for j in range(8)
-                if j not in first_group and pooled[i] > pooled[j]
-            )
-            total += 1
-            if min(u, 16 - u) <= u_observed:
-                count += 1
-        p_two_sided = count / total
-        assert round(p_two_sided, 2) == 0.34
-        assert "U = 12" in _pr() and "p = 0.34" in _pr()
+    def test_both_mann_whitney_comparisons_recompute_from_the_recorded_tables(self):
+        """Both U and both p values are DERIVED — recomputed exactly from the
+        batch tables the owning reports record, never accepted as written. The
+        confirmation does not separate; the seal-time re-run separates
+        COMPLETELY (U = 16 and p = 0.0286 are the extremes attainable at
+        n = 4 vs 4, and the ranges do not overlap)."""
+        adjudicated, confirmation = _rerun_batches()
+        _, sealtime = _sealtime_batches()
+        u_confirmation, p_confirmation = _exact_mann_whitney(adjudicated, confirmation)
+        assert u_confirmation == 12
+        assert round(p_confirmation, 2) == 0.34
+        u_sealtime, p_sealtime = _exact_mann_whitney(adjudicated, sealtime)
+        assert u_sealtime == 16
+        assert round(p_sealtime, 4) == 0.0286
+        assert min(adjudicated) > max(sealtime)  # complete separation: no overlap
+        text = _pr()
+        assert "U = 12" in text and "p = 0.34" in text
+        assert "U = 16" in text and "p = 0.0286" in text
+        assert "separates completely" in _pr_flat()
 
-    def test_the_margin_fraction_is_derived_from_the_recorded_difference(self):
+    def test_the_difference_and_its_fractions_are_derived_from_the_two_medians(self):
         from src.harness import frozen_parameters as fp
 
-        assert round(0.1336 / fp.equivalence_margin_ms() * 100, 2) == 0.67
-        assert "0.67%" in _pr()
+        difference = 2.8264 - 2.6856  # both medians traced to smoke/g3/REPORT.md above
+        assert f"{difference:.4f}" == "0.1408"
+        assert round(difference / fp.equivalence_margin_ms() * 100, 2) == 0.70
+        assert round(difference / 0.2898, 2) == 0.49  # over the adjudicated IQR
+        report = (REPO_ROOT / "smoke" / "g3" / "REPORT.md").read_text(encoding="utf-8")
+        assert "0.2898" in report  # the IQR is the report's, not this file's
+        text = _pr()
+        for figure in ("0.1408", "0.70%", "0.49", "0.2898"):
+            assert figure in text, figure
 
 
 class TestRowSevenSourcing:
