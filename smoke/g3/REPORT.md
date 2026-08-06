@@ -157,3 +157,29 @@ showed the two do not separate: Mann-Whitney U = 12, p = 0.34). Today's spread i
 then re-ran this spike warm as a subprocess later the same session and it PASSED**; `L4` records
 pass/fail only, so no warm median exists to quote — exactly the limitation the gate-rerun report
 recorded.
+
+### Seal-time re-run 2 — 2026-08-06, at the sealing candidate `aeee0ea`, after the signing stop
+
+The first seal attempt stopped, correctly, at unconfigured commit signing; the pre-registration's
+G-3 declaration then gained the three-run separation record, and the completed seal re-measures on
+the commit actually sealed. Same discipline: first among the five, alone, idle machine, row 9 read
+before and after (**all 27 fields identical, zero differ**), `G-3.H1`/`G-3.H2` both PASS.
+
+| quantity | value |
+|---|---|
+| **median** | **2.7363 ms** — **PASS (≤ 5 ms)** |
+| p95 / IQR | 3.6292 ms / 0.2243 ms |
+| batch medians | 2.7306, 2.7458, 2.7431, 2.7395 ms |
+| drift | +0.3% |
+
+**The four medians: 2.8264 (adjudicated, the record) → 2.6928 → 2.6856 → 2.7363.** The separation
+finding, recomputed with this run included, is **unchanged**: against the adjudicated batches,
+U = 16 and exact two-sided p = 0.0286 again — complete separation, the ranges 2.7306–2.7458
+(this run) and 2.7511–2.9190 (adjudicated) do not overlap, though the gap is thin (0.0053 ms).
+What this run adds honestly: the monotone-downward pattern the pre-registration declares **across
+the three runs it names** does not extend to a fourth — 2.7363 sits above both ~2.69 runs — which
+reinforces, rather than undermines, that declaration's own caution: repeated runs on one machine
+cannot distinguish machine-state variation from genuine drift, and no cause is claimed. The
+adjudicated **2.8264 ms stands as the record and remains the conservative figure**; the gate
+verdict is unaffected; the pre-registration's declaration, scoped to the three runs it names,
+remains true as written and is not edited.
