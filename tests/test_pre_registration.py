@@ -10,13 +10,17 @@ the report it landed, the G-3 figures for all three runs against the two reports
 that own them — including recomputing BOTH Mann-Whitney comparisons exactly
 from the recorded batch tables — the row 7 sourcing (URLs, retrieval date, and the unanchored
 marking), the ADR 0028 scan re-executed, the retained-reference counts
-re-measured, the not-sealed guards, and the five gap closures (2026-08-06)
-each verified against the artifact that closed it.
+re-measured, the not-sealed guards, the five gap closures (2026-08-06)
+each verified against the artifact that closed it, and the two declarations
+added 2026-08-06 — F3's partial instantiation and F4's weaker confirmatory
+independence — each traced to the corpora and the frozen ontology by
+recomputation rather than by reading the document's own claim back.
 
 Values are derived from the sources at test time, never typed here, so the
 test cannot itself become a second copy that drifts.
 """
 
+import json
 import re
 import subprocess
 from itertools import combinations
@@ -25,6 +29,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PR_PATH = REPO_ROOT / "docs" / "PRE_REGISTRATION.md"
 DESIGN_PATH = REPO_ROOT / "docs" / "EXPERIMENT_ARCHITECTURE_FINAL.md"
+PILOT_CORPUS = REPO_ROOT / "fixtures" / "pilot" / "golden_thread"
+CONFIRMATORY_CORPUS = REPO_ROOT / "fixtures" / "confirmatory"
+OMEGA_GAMMA_PATH = REPO_ROOT / "src" / "harness" / "authorizer" / "omega_gamma_v1.json"
 
 
 def _pr() -> str:
@@ -56,6 +63,81 @@ def _parse_pipe_table(text: str, header_start: str) -> list[list[str]]:
             continue
         rows.append(cells)
     return rows
+
+
+def _declaration(start_marker: str, end_marker: str) -> str:
+    """One declaration's own span, flattened — never the whole document.
+
+    Scoped deliberately: a marker searched for across the whole file can be
+    satisfied by text elsewhere, which is exactly how a deleted clause once
+    left a closure test green.
+    """
+    text = _pr()
+    assert text.count(start_marker) == 1, f"declaration marker not unique: {start_marker!r}"
+    start = text.index(start_marker)
+    return " ".join(text[start : text.index(end_marker, start)].split())
+
+
+F3_DECLARATION = ("**Declaration — F3 IS INSTANTIATED IN PART", "**Declaration — row 5 is deferred")
+F4_DECLARATION = ("**Declaration — F4's CONFIRMATORY INDEPENDENCE", "## 3. Hypotheses")
+
+
+def _scenarios(corpus: Path, kind: str = "sealed") -> dict[str, dict]:
+    """Every scenario document of one corpus, keyed by file stem."""
+    return {
+        path.stem: json.loads(path.read_text(encoding="utf-8"))
+        for path in sorted((corpus / kind).glob("*.json"))
+    }
+
+
+def _normalise_subcase(name: str) -> str:
+    """`F3:audience_mismatch` and §E.4's `audience-mismatch` are one subcase."""
+    return name.strip().strip("`").replace("_", "-").lower()
+
+
+def _e4_f3_subcases() -> list[str]:
+    """The F3 subcases §E.4 defines, parsed from its own brace list."""
+    design = DESIGN_PATH.read_text(encoding="utf-8")
+    marker = "**F3** invocation integrity {"
+    assert design.count(marker) == 1
+    start = design.index(marker)
+    body = design[design.index("{", start) + 1 : design.index("}", start)]
+    return [chunk.split(" (")[0].strip().strip("`") for chunk in body.split(",")]
+
+
+def _f3_instantiated(corpus: Path) -> set[str]:
+    return {
+        _normalise_subcase(doc["attack_subcase"].split(":", 1)[1])
+        for doc in _scenarios(corpus).values()
+        if doc["attack_subcase"].startswith("F3:")
+    }
+
+
+def _matrix_cell(value: str) -> str:
+    return value.replace("*", "").replace("†", "").strip()
+
+
+def _sibling_pairs() -> list[tuple[str, dict, dict]]:
+    """(confirmatory id, confirmatory doc, its matched pilot doc)."""
+    pilot = _scenarios(PILOT_CORPUS)
+    pairs = []
+    for scenario_id, doc in sorted(_scenarios(CONFIRMATORY_CORPUS).items()):
+        pairs.append((scenario_id, doc, pilot[doc["matched_pilot_sibling"]]))
+    return pairs
+
+
+def _element(doc: dict) -> list[tuple[str, str]]:
+    return [tuple(pair) for pair in doc["R"]]
+
+
+def _egress_elements() -> list[tuple[str, str]]:
+    """Row 4's egress set over the frozen `Ω`, DERIVED as the code derives it."""
+    from src.harness.policy import frozen_policy
+    from src.sut.protocol.required_authority import recipient_carrying_actions
+
+    omega = json.loads(OMEGA_GAMMA_PATH.read_text(encoding="utf-8"))["omega"]
+    actions = frozen_policy.egress_actions(set(omega["tools"]), recipient_carrying_actions())
+    return [tuple(pair) for pair in omega["elements"] if pair[0] in actions]
 
 
 class TestFrozenValues:
@@ -492,3 +574,212 @@ class TestTheGapClosures:
             "(iii) a credential whose validity window does not cover the judging instant",
         ):
             assert cause in definition, cause
+
+
+class TestTheF3PartialInstantiationDeclaration:
+    """Declaration 1 (2026-08-06) — F3 is instantiated in part.
+
+    Every count in it is RECOMPUTED here: §E.4's subcase list parsed from the
+    design document's own brace list, the instantiated set read out of both
+    corpora, and the B3/B3⁺ uniqueness recomputed cell by cell over the
+    expected matrix. The document is then required to match what was
+    recomputed. It is never the source of any number it states.
+    """
+
+    def test_e4_defines_five_f3_subcases_and_both_corpora_instantiate_exactly_two(self):
+        subcases = _e4_f3_subcases()
+        assert len(subcases) == 5, subcases
+
+        pilot = _f3_instantiated(PILOT_CORPUS)
+        confirmatory = _f3_instantiated(CONFIRMATORY_CORPUS)
+        assert pilot == confirmatory, (pilot, confirmatory)
+        assert pilot <= {_normalise_subcase(name) for name in subcases}
+        assert len(pilot) == 2, sorted(pilot)
+
+        instantiated = [name for name in subcases if _normalise_subcase(name) in pilot]
+        missing = [name for name in subcases if _normalise_subcase(name) not in pilot]
+        assert len(instantiated) == 2 and len(missing) == 3
+
+        declaration = _declaration(*F3_DECLARATION)
+        assert "defines F3 with **five** subcases" in declaration
+        assert (
+            "instantiate exactly **two** of them: "
+            + " and ".join(f"`{name}`" for name in instantiated)
+        ) in declaration
+        assert (
+            "**does not instantiate "
+            + ", ".join(f"`{name}`" for name in missing[:-1])
+            + f", or `{missing[-1]}`**"
+        ) in declaration
+        assert "two subcases out of five" in declaration
+
+    def test_the_three_missing_rows_are_declared_not_populated_never_passing(self):
+        declaration = _declaration(*F3_DECLARATION)
+        assert "MUST report those three rows as NOT POPULATED BY THE CAMPAIGN" in declaration
+        for refusal in ("not as passing", "not as confirmed", "not as agreeing with the"):
+            assert refusal in declaration, refusal
+
+    def test_the_replay_row_is_the_only_matrix_row_where_b3_plus_differs_from_b3(self):
+        design = DESIGN_PATH.read_text(encoding="utf-8")
+        rows = _parse_pipe_table(design, "| Subcase (family)")
+        header, body = rows[0], rows[1:]
+        b3, b3_plus = header.index("B3"), header.index("B3⁺")
+        differing = [row[0] for row in body if _matrix_cell(row[b3]) != _matrix_cell(row[b3_plus])]
+        assert len(differing) == 1, differing
+        subcase = next(
+            name
+            for name in _e4_f3_subcases()
+            if _normalise_subcase(name) in _normalise_subcase(differing[0])
+        )
+        # the load-bearing row is one of the three the campaign does not run
+        assert _normalise_subcase(subcase) not in _f3_instantiated(CONFIRMATORY_CORPUS)
+
+        declaration = _declaration(*F3_DECLARATION)
+        assert f"**`F3 {subcase}` is the only row in the entire" in declaration
+        assert "expected matrix where `B3⁺` differs from `B3`**" in declaration
+        assert "the campaign does not populate it" in declaration
+
+    def test_the_attribution_rests_on_g14_and_is_not_called_campaign_evidence(self):
+        report = (REPO_ROOT / "smoke" / "g14" / "REPORT.md").read_text(encoding="utf-8")
+        criteria = sorted(set(re.findall(r"G-14\.C[123]\b", report)))
+        assert criteria == ["G-14.C1", "G-14.C2", "G-14.C3"], criteria
+        for criterion in criteria:
+            line = next(ln for ln in report.splitlines() if ln.startswith(criterion + " "))
+            assert "PASS" in line, line
+
+        declaration = _declaration(*F3_DECLARATION)
+        assert "gate G-14's pre-registered adjudication" in declaration
+        for criterion in ("its C1 criterion", "its C2 criterion", "its C3 criterion"):
+            assert criterion in declaration, criterion
+        assert "`smoke/g14/REPORT.md`" in declaration
+        assert (
+            "**That is controlled evidence. It is NOT confirmatory-campaign evidence, "
+            "and this document does not claim the two are equivalent.**" in declaration
+        )
+        assert (
+            "**`B3⁺`'s justification in the ladder therefore rests on gate evidence rather "
+            "than on campaign evidence, and a reader is entitled to weigh gate evidence "
+            "differently.**" in declaration
+        )
+
+    def test_the_omission_is_recorded_as_a_decision_and_pre_registered(self):
+        declaration = _declaration(*F3_DECLARATION)
+        assert "a **recorded decision, not an oversight**" in declaration
+        assert "changing the pilot corpus" in declaration
+        assert "all fifteen gates were adjudicated against" in declaration
+        assert "**before** the confirmatory campaign runs" in declaration
+
+
+class TestTheF4IndependenceDeclaration:
+    """Declaration 2 (2026-08-06) — F4's confirmatory independence is weaker.
+
+    The shared tools and the shared `(tool, resource)` elements are recomputed
+    from the two corpora themselves, and the one-element egress set is derived
+    exactly as the code derives it — from the frozen `Ω` and the server
+    policy's recipient argument, never from a list typed here.
+    """
+
+    def test_the_shared_tools_and_shared_elements_recompute_from_the_two_corpora(self):
+        pairs = _sibling_pairs()
+        assert len(pairs) == 13
+        shared_tool = [cid for cid, conf, pilot in pairs if conf["tool"] == pilot["tool"]]
+        shared_element = [cid for cid, conf, pilot in pairs if _element(conf) == _element(pilot)]
+        assert set(shared_element) < set(shared_tool)
+
+        declaration = _declaration(*F4_DECLARATION)
+        named = sorted(set(re.findall(r"cf-[a-z0-9-]+", declaration)))
+        assert named == sorted(shared_tool), (named, sorted(shared_tool))
+        assert f"**{len(shared_tool)} do not move it" in declaration.replace("Three", "3")
+
+        # the two that share the whole element are named as sharing the whole element
+        clause = declaration[declaration.index("reuse their siblings' **entire") :]
+        for scenario_id in shared_element:
+            assert f"`{scenario_id}`" in declaration[: declaration.index(clause)]
+        (element,) = {tuple(_element(conf)[0]) for cid, conf, _ in pairs if cid in shared_element}
+        assert f"`({element[0]}, {element[1]})`" in clause
+
+    def test_the_egress_set_is_one_element_derived_from_the_frozen_omega(self):
+        omega = json.loads(OMEGA_GAMMA_PATH.read_text(encoding="utf-8"))["omega"]
+        assert len(omega["elements"]) == 7
+        egress = _egress_elements()
+        assert len(egress) == 1, egress
+
+        pairs = _sibling_pairs()
+        shared_element = [cid for cid, conf, pilot in pairs if _element(conf) == _element(pilot)]
+        for scenario_id, conf, _pilot in pairs:
+            if scenario_id in shared_element:
+                assert _element(conf) == egress, (scenario_id, _element(conf))
+
+        declaration = _declaration(*F4_DECLARATION)
+        assert "frozen at seven `(action, resource)` elements" in declaration
+        assert (
+            f"`({egress[0][0]}, {egress[0][1]})` **the entire derivable egress set — "
+            "one element**" in declaration
+        )
+        assert "no second egress element to move to" in declaration
+        assert "the cause is `Ω`'s frozen size, not an authoring choice" in declaration
+
+    def test_the_terminal_instance_shares_only_the_tool_and_the_document_says_so(self):
+        pairs = _sibling_pairs()
+        tool_only = [
+            (cid, conf, pilot)
+            for cid, conf, pilot in pairs
+            if conf["tool"] == pilot["tool"] and _element(conf) != _element(pilot)
+        ]
+        assert len(tool_only) == 1
+        scenario_id, conf, pilot = tool_only[0]
+
+        omega = json.loads(OMEGA_GAMMA_PATH.read_text(encoding="utf-8"))["omega"]
+        resources = sorted(res for act, res in omega["elements"] if act == conf["tool"])
+        assert len(resources) == 2, resources
+        assert {_element(conf)[0][1], _element(pilot)[0][1]} == set(resources)
+
+        declaration = _declaration(*F4_DECLARATION)
+        assert f"`{scenario_id}` reuses its sibling's **tool** (`{conf['tool']}`)" in declaration
+        assert f"(`{_element(pilot)[0][1]}` → `{_element(conf)[0][1]}`)" in declaration
+        assert f"`Ω` gives `{conf['tool']}` two resources" in declaration
+        assert "is **not** structurally forced in the same way" in declaration
+
+    def test_the_f4_pair_varies_everything_the_declaration_says_it_rests_on(self):
+        pilot_visible = _scenarios(PILOT_CORPUS, "sut_visible")
+        conf_visible = _scenarios(CONFIRMATORY_CORPUS, "sut_visible")
+        pairs = _sibling_pairs()
+        shared_element = [cid for cid, conf, pilot in pairs if _element(conf) == _element(pilot)]
+        assert shared_element
+
+        for scenario_id, conf, pilot in pairs:
+            if scenario_id not in shared_element:
+                continue
+            cv, pv = conf_visible[scenario_id], pilot_visible[conf["matched_pilot_sibling"]]
+            for field in ("to", "subject", "body"):
+                assert (
+                    cv["delegation_intent"]["arguments"][field]
+                    != pv["delegation_intent"]["arguments"][field]
+                ), (scenario_id, field)
+            assert cv["labelled_values"] != pv["labelled_values"]
+            assert cv["authority_elements"] != pv["authority_elements"]
+            assert cv["attenuation_elements"] != pv["attenuation_elements"]
+            assert cv["task_id"] != pv["task_id"]
+            assert cv["context_label"] != pv["context_label"]
+            assert conf["intended_request_digest"] != pilot["intended_request_digest"]
+
+        declaration = _declaration(*F4_DECLARATION)
+        assert (
+            "Their independence rests on the recipient, the subject and payload bytes, the "
+            "value carrying the `sensitive` label, the delegation chain, the task identifier "
+            "and the context label — never on the element under test." in declaration
+        )
+
+    def test_the_declaration_sits_with_adr_0037_and_does_not_soften_it(self):
+        text = _pr()
+        adr_0037 = text.index("**Declaration — instance-selection bias is UNMITIGATED")
+        assert adr_0037 < text.index(F4_DECLARATION[0])
+        declaration = _declaration(*F4_DECLARATION)
+        assert "The held-out third was cut (ADR 0037 above)" in declaration
+        assert (
+            "**F4 agreement between the two corpora must therefore not be reported as "
+            "replication of the same strength as F1, F2, F3 or F5**" in declaration
+        )
+        assert "It does not mitigate instance-selection bias, which stays unmitigated" in (
+            declaration
+        )

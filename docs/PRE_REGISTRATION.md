@@ -92,6 +92,38 @@ as **partial, never as replacements**. RQ3 is answered on the constructed instan
 this qualification travels with RQ3's answer wherever it appears, and the word *generalizes*
 and its variants must not appear in any RQ3 claim.
 
+**Declaration — F4's CONFIRMATORY INDEPENDENCE IS WEAKER THAN THE OTHER FAMILIES'
+(pre-registered 2026-08-06, before the confirmatory campaign; it belongs here, beside the
+declaration above, and not in a footnote).** Each confirmatory scenario is matched one-to-one
+with a pilot sibling and moves the authority element under test. **Three do not move it
+completely.** `cf-f1-terminal` reuses its sibling's **tool** (`calendar.read`) while moving the
+resource (`calendar/work` → `calendar/personal`); `cf-f4-sensitive-egress` and
+`cf-f4-declassified` reuse their siblings' **entire `(tool, resource)` element**,
+`(mail.send, mail/outbox)`, unchanged.
+
+For the two F4 instances **the cause is `Ω`'s frozen size, not an authoring choice.** `Ω` is
+frozen at seven `(action, resource)` elements, and the egress set is **derived** from it as *the
+effect carries a recipient* rather than enumerated (`frozen_parameters` rows 4/6/10,
+ADR 0022/0023), which makes `(mail.send, mail/outbox)` **the entire derivable egress set — one
+element**. An F4 instance has no second egress element to move to; there is no authoring choice
+available, and the only way to create one would be to amend `Ω`, which is frozen, hashed as part
+of `H(Γ)`, and sealed. `cf-f1-terminal` is **not** structurally forced in the same way: `Ω`
+gives `calendar.read` two resources and the confirmatory instance takes the other one, so the
+shared tool there is an authoring choice inside a five-tool ontology and is recorded here
+rather than defended.
+
+**The consequence, stated without softening.** The held-out third was cut (ADR 0037 above), so
+there is **no** set of instances the mechanisms were never built against. Under that condition the
+F4 confirmatory instances are **less independent of the pilot than the other families' are**:
+whatever the pilot's F4 instances were, consciously or not, built to catch, the confirmatory F4
+instances put the **same authority element** to the same mechanism. Their independence rests on
+the recipient, the subject and payload bytes, the value carrying the `sensitive` label, the
+delegation chain, the task identifier and the context label — never on the element under test.
+**F4 agreement between the two corpora must therefore not be reported as replication of the same
+strength as F1, F2, F3 or F5**, and this qualification travels with every F4 result. It does not
+mitigate instance-selection bias, which stays unmitigated; it states, in advance, where the
+confirmatory corpus is thinnest.
+
 ## 3. Hypotheses
 
 The design document's falsifiable hypothesis content is **H4a and H4b** (Part D.1, decision D35)
@@ -175,6 +207,41 @@ constraint (ADR 0027) are frozen as written in §E.4; the bit-identical replay M
 within `Δ`, because a replay outside `Δ` would be blocked by B3 for an unrelated reason and the
 B3/B3⁺ distinction — the single cell that is B3⁺'s reason to exist — would collapse in the
 direction that flatters this work's hypothesis.
+
+**Declaration — F3 IS INSTANTIATED IN PART: three of its five subcases are not run
+(pre-registered 2026-08-06, before the confirmatory campaign).** §E.4 defines F3 with **five**
+subcases — `dpop-stolen-AT-key-substitution`, `dpop-first-use-body-mutation`,
+`audience-mismatch`, `expired-token`, `dpop-captured-proof-replay`. Both corpora, pilot and
+confirmatory alike, instantiate exactly **two** of them: `dpop-stolen-AT-key-substitution` and
+`audience-mismatch`. The campaign therefore **does not instantiate `dpop-first-use-body-mutation`,
+`expired-token`, or `dpop-captured-proof-replay`**. Their rows in the expected matrix above are
+predictions the campaign leaves untouched, and the results chapter **MUST report those three rows
+as NOT POPULATED BY THE CAMPAIGN** — not as passing, not as confirmed, not as agreeing with the
+prediction, and never inside a per-family count that would read as though F3 had been covered.
+F3's measured coverage is two subcases out of five, and that fraction travels with every F3
+number this study reports.
+
+One of the three is load-bearing. **`F3 dpop-captured-proof-replay` is the only row in the entire
+expected matrix where `B3⁺` differs from `B3`** (A against **B**) — it is the single cell that is
+`B3⁺`'s reason to exist, and the campaign does not populate it. What stands behind that cell, and
+behind the DPoP-versus-INV attribution generally, is **gate G-14's pre-registered adjudication**:
+its C1 criterion (both arms admit a first use and block the bit-identical in-`Δ` replay, neither
+doing better than the other, with its C1.W1 negative control showing the block is the shared
+cache's doing), its C2 criterion (a first use whose tool/arguments differ from what was signed —
+DPoP admits, INV blocks, with C2.W1 reading the limitation out of the proof's own claim set), and
+its C3 criterion (a bare bearer arm given the same cache is admitted, so *not built* and
+*impossible* are told apart) — run on the locked measurement platform, recorded in
+`smoke/g14/REPORT.md`, and supported by targeted tests. **That is controlled evidence. It is NOT
+confirmatory-campaign evidence, and this document does not claim the two are equivalent.** A gate
+exercises a mechanism on an instance built to isolate it; the campaign scores a sealed instance
+under the same conditions as every other arm and family. **`B3⁺`'s justification in the ladder
+therefore rests on gate evidence rather than on campaign evidence, and a reader is entitled to
+weigh gate evidence differently.**
+
+The omission is a **recorded decision, not an oversight**: adding the three subcases would require
+changing the pilot corpus, which is the corpus all fifteen gates were adjudicated against, and the
+author weighed that and declined. This declaration is made **before** the confirmatory campaign
+runs, so that it is a pre-registration rather than something confessed in a results chapter.
 
 **Declaration — row 5 is deferred by decision (ADR 0028).** `frozen_parameters` row 5
 (`task_authorization_policy`) is deliberately not frozen and never will be by default: it has no
