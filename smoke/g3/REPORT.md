@@ -183,3 +183,53 @@ cannot distinguish machine-state variation from genuine drift, and no cause is c
 adjudicated **2.8264 ms stands as the record and remains the conservative figure**; the gate
 verdict is unaffected; the pre-registration's declaration, scoped to the three runs it names,
 remains true as written and is not edited.
+
+### Seal-time re-run 3 — 2026-08-06, at the v0.6 sealing candidate `9db1404`
+
+The v0.5 seal was superseded before the confirmatory campaign ran: the sealed generator could not
+produce a confirmatory corpus (ADR 0043), so the corpus was generated, two declarations were
+pre-registered, and the reseal re-measures on the commit actually sealed. Same discipline as the
+two runs above: **first among the five, alone, on the idle row 9 machine**, before G-6/G-7/G-12
+and before G-10 heated it, under the cp936 console codepage the platform reader assumes. Row 9
+machine-read before the first gate and after the last: **37 leaf values compared element-wise,
+zero differ** — the two reads are byte-identical documents, power-scheme GUID
+`da75b896-eea0-461c-a43a-73a73caf9f43` included, hazard state 600/0/1 as found. `G-3.H1` (pinned
+to the detected P-cores `[0…11]`, read from `GetSystemCpuSetInformation`) and `G-3.H2` (on AC)
+both PASS.
+
+| quantity | value |
+|---|---|
+| **median** | **2.6772 ms** — **PASS (≤ 5 ms)** |
+| p95 / IQR | 3.2769 ms / 0.1303 ms |
+| batch medians | 2.6726, 2.6971, 2.6910, 2.6664 ms |
+| drift | −0.2% |
+| headroom to the bar | 2.3228 ms |
+
+**The five medians: 2.8264 (adjudicated, the record) → 2.6928 → 2.6856 → 2.7363 → 2.6772.**
+
+**The separation finding, recomputed with this run included, is UNCHANGED.** Recomputed exactly
+over the recorded batch tables (all C(8,4) = 70 labelings), against the adjudicated batches
+2.9190 / 2.8259 / 2.8213 / 2.7511:
+
+| run | U | exact two-sided p | batch range | separates? |
+|---|---:|---:|---|---|
+| confirmation 2026-08-03 (2.6928) | 12 | 0.3429 | 2.6574–3.0324 (overlaps) | **no** |
+| seal-time re-run 1 (2.6856) | 16 | 0.0286 | 2.6750–2.6920 (disjoint) | yes, completely |
+| seal-time re-run 2 (2.7363) | 16 | 0.0286 | 2.7306–2.7458 (disjoint) | yes, completely |
+| **seal-time re-run 3 (2.6772)** | **16** | **0.0286** | **2.6664–2.6971 (disjoint)** | **yes, completely** |
+
+This is exactly what `docs/PRE_REGISTRATION.md` declares: the confirmation run does not separate
+from the adjudicated one, and every seal-time run does, completely. U = 16 and p = 0.0286 are the
+**extremes** available at n = 4 against 4 — no arrangement of four batch medians can separate more
+strongly, and none can reach p < 0.0286 — so the fifth run cannot strengthen or weaken that
+declaration, only fail to contradict it, which it does not. The declaration is sealed as written
+and was **not** edited to accommodate this run.
+
+What the fifth run adds: the difference from the adjudicated median is **+0.1492 ms (5.28%)** —
+**0.75% of the 20 ms equivalence margin** and **0.51 of the adjudicated IQR (0.2898 ms)** — and,
+like every re-run, it sits **below** the record, so the adjudicated **2.8264 ms remains the
+conservative figure** and the direction of the drift continues to favour the lightweight framing
+rather than this work's own hypothesis. The monotone-downward pattern still does not extend: the
+five values run 2.8264 → 2.6928 → 2.6856 → 2.7363 → 2.6772, up once and down again. **Five runs
+on one machine cannot distinguish machine-state variation from genuine drift, and no cause is
+claimed.** Run once; not re-run for a better number.

@@ -124,9 +124,72 @@ names as the success condition; a fix landed without its own failing-world demon
 the outcome the task forbids. **No frozen parameter was touched, no window widened, no retry added,
 no test marked flaky, and nothing in `src/` changed.**
 
+## Sighting C — the A1 seventy-error run, WATCHED AT THE RESEAL AND NOT REPRODUCED
+
+**Recorded 2026-08-06, during task A2's PHASE 1, in this ADR's sighting form rather than as a
+resolved defect.** Wall-clock durations below are **run metadata** — how long a condition took to
+exercise — on the same footing as the reproduction table above. They are not latency figures; G-3
+owns cost and its numbers live in `smoke/g3/REPORT.md` only.
+
+**Sighting C, as first seen (task A1, 2026-08-06).** One full-suite run produced **70 errors, all
+in `tests/test_sut_mode_equivalence.py`**, and took about **24 minutes**. It was reported at the
+time with the explanation *transient resource contention*, because nine gate spikes were running
+concurrently and the same file passed standalone in 8.4 s immediately afterwards, with the very
+next full suite green in 34.6 s.
+
+**What the reseal watch measured.** The Commander required the sighting watched during PHASE 1 and
+recorded here rather than dismissed. Every run below is a full `tests` run on the row 9 machine:
+
+| run | result | wall clock |
+|---|---|---|
+| A1, concurrent with nine gate spikes | **70 errors** (`test_sut_mode_equivalence.py`) | ~24 min |
+| A1, immediately after, same file alone | 74 passed | 8.4 s |
+| A1 × 2, declarations task × 2, PHASE 0 | 1396 / 1396 / 1406 / 1406 / 1408 passed | 33.9–43.6 s |
+| **PHASE 1 watch, nothing running concurrently** | **1408 passed, ZERO errors** | **2682 s (44 m 42 s)** |
+| immediately after, same file alone | 74 passed | 7.97 s |
+| immediately after, full suite with `--durations` | 1408 passed | **33.21 s** |
+
+**The seventy-error failure did NOT recur.** Across six subsequent full-suite runs the suite is
+green, and the PHASE 1 watch itself was green.
+
+**A second anomaly did occur, and it falsifies the explanation A1 offered.** The PHASE 1 watch was
+green but took **roughly seventy times** the surrounding runs, on an idle machine with **nothing
+running concurrently** — so *transient resource contention from concurrent gate spikes* cannot be
+the cause of that run, and by extension is no longer evidence for the first. It did not reproduce:
+the next full run, minutes later, was 33.21 s.
+
+**Ruled out on evidence, not by argument.** No leaked or spinning process survives the gates — the
+process table was read immediately after the slow run and carried no `python`/`uv` process at all.
+The named file is not the locus in isolation: 7.97 s standalone, taken between the slow run and
+the fast one. `--durations=12` on the fast run puts the slowest single item at 7.16 s of setup in
+that same file, with nothing else above 2.7 s, so no test accounts for the missing 44 minutes.
+
+**Cause: UNDETERMINED, for both the seventy-error failure and the wall-clock anomaly, and this ADR
+does not claim they share one.** They are recorded as sightings under this ADR's existing standard:
+Sighting B is likewise not shown to be Sighting A's cause and is not claimed to be.
+
+**What it does not touch.** The five platform-bound gates all ran **before** this watch, in the
+required order, with row 9 read before the first and after the last and **zero of 37 leaf values
+differing**. G-3's fifth median (2.6772 ms) falls inside the range of the four runs on record and
+separates from the adjudicated run exactly as the pre-registration declares. So the anomaly is not
+visible in any sealed figure — but it is inside the v0.6 seal's measurement session, which is
+precisely why it is written down here instead of being left in a chat log.
+
+**Consequence for the confirmatory campaign (Part H step 7).** The campaign's security verdicts are
+exact counts and deterministic (§5 of the pre-registration), and repetition is used only to detect
+nondeterminism, so a slow run is not by itself a threat to them. But an unexplained 70× wall-clock
+excursion on the campaign machine **must be reported if it occurs during the campaign**, and a
+campaign run exhibiting it must not be quietly accepted as equivalent to one that did not.
+
 ## Status
 
 accepted — 2026-08-02 (the pre-seal flake hunt; reproduction and root cause, fix referred)
+
+**Sighting C appended 2026-08-06** (task A2 PHASE 1, the v0.6 reseal): task A1's seventy-error run
+was watched and **not reproduced**; a distinct wall-clock anomaly — green, on an idle machine, at
+about seventy times the surrounding runs — was observed **once** and did not reproduce on the next
+run. Both causes are **undetermined**, they are not claimed to be one cause, and A1's
+resource-contention explanation is withdrawn as falsified. Nothing above this line changed.
 
 **Partially superseded by [0039](0039-one-clock-per-cell-the-campaign-adopts-the-cells-clock.md) —
 on the run-001 root-cause attribution only.** The wall-clock straddle recorded here is **not** the
