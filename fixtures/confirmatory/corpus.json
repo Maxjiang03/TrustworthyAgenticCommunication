@@ -1,0 +1,13 @@
+{
+  "_banner": "Confirmatory corpus runner inputs (ADR 0007): seed and derivation labels from which keys are minted at run time. Testbed material only -- publishing a seed publishes every key derived from it; these keys MUST NOT be reused in any deployment. SUT principals receive derived material by injection only.",
+  "_provenance": "F1-F5 are NOT defined by any paper. They are this study's operationalisation of Acharya and Gupta, MCPShield, arXiv:2604.05969, submitted 7 April 2026's TV23 Cross-Protocol Confusion (category TC7, surface `S_compose`), which Table I marks as not covered by MCPTox, MCP-SafetyBench or MCPSecBench alike; each family instantiates a published property, recorded per scenario. Zheng and Zhang, AgentRFC, arXiv:2603.23801, submitted 25 March 2026 -- PREPRINT: its evaluation is explicitly incomplete and some findings are under coordinated disclosure classifies P3 for A2A as AASM-HARDENING with modality NOT_SPECIFIED -- A2A's specification is silent on delegation scope, which is a design gap and not a standards violation; its eleven principles are eight security properties (P1-P8) plus three completeness properties (WF, SL, CS); and its composition analysis runs MCP -> A2A whereas this study runs A2A -> MCP -- complementary, not a repetition",
+  "audience": "https://mcp.aasc.local/tools",
+  "corpus": "golden_thread(confirmatory)",
+  "derivation_info_prefix": "AASC-EXP1-PILOT-KEY:",
+  "expiry_epoch": 1785546000,
+  "issuer": "https://as.aasc.local",
+  "method": "tools/call",
+  "now_epoch": 1785542400,
+  "seed_hex": "9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d",
+  "task_id": "task-gt-confirmatory"
+}

@@ -193,10 +193,21 @@ class TestTheNAReasonIsMachineCheckable:
 
 
 class TestRedLines:
-    def test_confirmatory_stays_empty(self):
+    def test_the_pilot_corpus_never_reaches_the_confirmatory_directory(self):
+        """Red line 1 said `fixtures/confirmatory/` stays empty **until
+        sealing**; the v0.5 seal happened and Part H step 4 populated it from
+        the sealed generator's confirmatory profile (ADR 000Z). What this file
+        still owns is the PILOT side of the separation: no pilot document may
+        appear there, under any name. The confirmatory corpus's own integrity
+        is asserted in `tests/test_confirmatory_corpus.py`."""
         confirmatory = REPO_ROOT / "fixtures" / "confirmatory"
-        extras = [p.name for p in confirmatory.iterdir() if p.name != "README.md"]
-        assert extras == [], "fixtures/confirmatory/ must stay empty until sealing (red line 1)"
+        pilot_ids = {path.stem for path in (CORPUS_DIR / "sealed").glob("*.json")}
+        strays = [
+            path.relative_to(confirmatory).as_posix()
+            for path in confirmatory.rglob("*.json")
+            if path.stem in pilot_ids
+        ]
+        assert strays == [], f"pilot scenarios appear in fixtures/confirmatory/: {strays}"
 
     def test_no_token_bytes_in_any_document(self, regenerated):
         # ADR 0007: specs and seeds, never minted tokens. A Biscuit container

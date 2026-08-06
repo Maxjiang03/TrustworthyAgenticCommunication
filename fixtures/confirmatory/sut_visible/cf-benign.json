@@ -1,0 +1,46 @@
+{
+  "_banner": "SUT-VISIBLE scenario request. Carries the task grant the Supervisor legitimately holds (U_task is the one authorization input any runtime principal sees, SS A.3) and the scripted delegation. No tau_gt, no R, no sealed field appears here.",
+  "attenuation_elements": [
+    [
+      "notes.read",
+      "notes/meeting"
+    ],
+    [
+      "notes.read",
+      "notes/project"
+    ]
+  ],
+  "audience": "https://mcp.aasc.local/tools",
+  "authority_elements": [
+    [
+      "calendar.read",
+      "calendar/personal"
+    ],
+    [
+      "notes.read",
+      "notes/meeting"
+    ],
+    [
+      "notes.read",
+      "notes/project"
+    ],
+    [
+      "notes.write",
+      "notes/project"
+    ]
+  ],
+  "context_label": "internal(confirmatory)",
+  "delegation_intent": {
+    "arguments": {
+      "resource": "notes/meeting"
+    },
+    "tool": "notes.read"
+  },
+  "method": "tools/call",
+  "scenario_id": "cf-benign",
+  "specialist": "agent-specialist",
+  "supervisor": "agent-supervisor",
+  "task_id": "task-gt-confirmatory",
+  "validity_seconds": 3600,
+  "widening_elements": []
+}

@@ -1,0 +1,59 @@
+{
+  "_banner": "SUT-VISIBLE scenario request. Carries the task grant the Supervisor legitimately holds (U_task is the one authorization input any runtime principal sees, SS A.3) and the scripted delegation. No tau_gt, no R, no sealed field appears here.",
+  "artifacts": {
+    "approval": true,
+    "declassification": false
+  },
+  "attenuation_elements": [
+    [
+      "mail.send",
+      "mail/outbox"
+    ],
+    [
+      "notes.write",
+      "notes/project"
+    ]
+  ],
+  "audience": "https://mcp.aasc.local/tools",
+  "authority_elements": [
+    [
+      "calendar.read",
+      "calendar/personal"
+    ],
+    [
+      "mail.send",
+      "mail/outbox"
+    ],
+    [
+      "notes.read",
+      "notes/meeting"
+    ],
+    [
+      "notes.write",
+      "notes/project"
+    ]
+  ],
+  "context_label": "internal(confirmatory)",
+  "delegation_intent": {
+    "arguments": {
+      "body": "The all-hands is moved to Tuesday morning.",
+      "subject": "All-hands",
+      "to": "records@aasc.local"
+    },
+    "tool": "mail.send"
+  },
+  "labelled_values": [
+    {
+      "label": "public",
+      "value": "The all-hands is moved to Tuesday morning.",
+      "value_id": "val-allhands"
+    }
+  ],
+  "method": "tools/call",
+  "scenario_id": "cf-f5-approved",
+  "specialist": "agent-specialist",
+  "supervisor": "agent-supervisor",
+  "task_id": "task-gt-confirmatory",
+  "validity_seconds": 3600,
+  "widening_elements": []
+}

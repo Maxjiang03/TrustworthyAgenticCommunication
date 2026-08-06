@@ -217,8 +217,26 @@ def _evidence_from(presentation: Mapping[str, Any]) -> EvidenceBundle:
 class GoldenThreadRunner:
     """Runs pilot scenarios under an injected arm. Verifies the freeze first."""
 
-    def __init__(self, *, corpus_dir: Path = CORPUS_DIR, ledger_dir: Path | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        corpus_dir: Path = CORPUS_DIR,
+        ledger_dir: Path | None = None,
+        run_mode: str = "pilot",
+    ) -> None:
+        """`run_mode` labels the records this runner emits.
+
+        **Defaulted to `"pilot"`**, so every existing caller and every gate
+        keeps the behaviour it was adjudicated with; a confirmatory campaign
+        passes `"confirmatory"` explicitly. It used to be hardcoded at the two
+        setup sites, which meant a confirmatory campaign would have emitted
+        records labelled `pilot` -- and a mislabelled record is worse than no
+        record, because nothing downstream can tell it apart from a real one.
+        """
+        if run_mode not in ("pilot", "confirmatory"):
+            raise RunnerError(f"unknown run_mode {run_mode!r} (pilot | confirmatory)")
         verify_frozen_configuration()  # before any scenario runs (fail closed)
+        self.run_mode = run_mode
         self._corpus_dir = corpus_dir
         # Optional only because a non-ledger-backed run has nowhere to write;
         # a ledger-backed run without a directory fails closed below.
@@ -289,7 +307,7 @@ class GoldenThreadRunner:
             "resource_owner": (self._corpus["issuer"], resource_owner),
             "oauth_actor": (self._corpus["issuer"], actor_id),
             "monitor_attached": monitor_attached,
-            "run_mode": "pilot",  # never "confirmatory": the seal is Part H's
+            "run_mode": self.run_mode,  # threaded, not hardcoded (ADR 000Z)
         }
 
     def task_grant(self, scenario_id: str | None = None) -> list[list[str]]:
@@ -444,7 +462,7 @@ class GoldenThreadRunner:
             "resource_owner": (self._corpus["issuer"], resource_owner),
             "oauth_actor": (self._corpus["issuer"], actor_id),
             "monitor_attached": monitor_attached,
-            "run_mode": "pilot",  # never "confirmatory": the seal is Part H's
+            "run_mode": self.run_mode,  # threaded, not hardcoded (ADR 000Z)
         }
 
     def b2_dpop_setup(

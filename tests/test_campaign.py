@@ -572,24 +572,46 @@ class TestTheOracleMatrix:
             assert cell.realized_harm is None
             assert "no effect ledger" in cell.note
 
-    def test_the_confirmatory_corpus_carries_no_scenario(self):
-        """Red line 1, asserted rather than remembered.
+    def test_the_confirmatory_corpus_is_only_ever_generated_never_hand_authored(self):
+        """Red line 1, re-pointed at what it now protects (ADR 000Z).
 
-        What the red line forbids is a **scenario file** before sealing, not
-        the directory's own `README.md` — which exists precisely to say the
-        directory is empty by design. Asserting "no files at all" would fail on
-        the marker that documents the rule, so this asserts the rule instead:
-        no scenario data, no `sealed/`, no `sut_visible/`.
+        The red line reads *"do NOT create or populate `fixtures/confirmatory/`
+        **before sealing**"* — and the v0.5 seal happened, so Part H step 4
+        populates it by design and an emptiness assertion would now be
+        asserting the opposite of the design. What the rule was protecting is
+        that **no scenario reaches that directory except from the sealed
+        generator**, so that is what is asserted instead: every document there
+        is byte-identical to what the confirmatory profile regenerates, and
+        nothing else is present. That is strictly stronger than emptiness for
+        the post-seal world — an emptiness check could not have caught a
+        hand-edited scenario, and this does.
         """
+        import importlib.util
+        import sys
+
         confirmatory = REPO_ROOT / "fixtures" / "confirmatory"
-        scenarios = [
-            path
-            for path in confirmatory.glob("**/*")
-            if path.is_file() and path.name not in (".gitkeep", "README.md")
-        ]
-        assert scenarios == [], f"fixtures/confirmatory/ carries scenario data: {scenarios}"
-        assert not (confirmatory / "sealed").exists()
-        assert not (confirmatory / "sut_visible").exists()
+        generator_path = REPO_ROOT / "fixtures" / "pilot" / "golden_thread" / "generator.py"
+        spec = importlib.util.spec_from_file_location("gt_generator_rl", generator_path)
+        generator = importlib.util.module_from_spec(spec)
+        sys.modules.setdefault("gt_generator_rl", generator)
+        spec.loader.exec_module(generator)
+
+        regenerated = generator.generate(write=False, profile=generator.CONFIRMATORY)
+        on_disk = {
+            path.relative_to(confirmatory).as_posix(): json.loads(path.read_text(encoding="utf-8"))
+            for path in confirmatory.rglob("*.json")
+        }
+        assert on_disk == regenerated, "a confirmatory document is not the generator's output"
+        # Every file present must be either the directory's own marker or one
+        # of the documents the generator just produced -- nothing hand-authored
+        # and nothing left over.
+        allowed = set(regenerated) | {"README.md"}
+        extras = sorted(
+            path.relative_to(confirmatory).as_posix()
+            for path in confirmatory.rglob("*")
+            if path.is_file() and path.relative_to(confirmatory).as_posix() not in allowed
+        )
+        assert extras == [], f"fixtures/confirmatory/ carries un-generated files: {extras}"
 
 
 # The reason codes that mean "admitted", used ONLY to build the comparison

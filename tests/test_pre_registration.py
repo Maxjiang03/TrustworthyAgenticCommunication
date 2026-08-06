@@ -360,7 +360,12 @@ class TestRetainedReferences:
 
         pre_rename = "CLAUDE" + ".md"
         banner_fields = 0
-        for path in sorted((REPO_ROOT / "fixtures").rglob("*.json")):
+        # Scoped to the PILOT corpus, which is what the document's sentence is
+        # about: those are the sealed bytes the rename deliberately left alone.
+        # The confirmatory corpus (Part H step 4, post-seal) carries the same
+        # banner text from the same generator, and counting it here would make
+        # a true statement about the sealed pilot read as false.
+        for path in sorted((REPO_ROOT / "fixtures" / "pilot").rglob("*.json")):
             document = json.loads(path.read_text(encoding="utf-8"))
             if isinstance(document, dict) and pre_rename in str(document.get("_banner", "")):
                 banner_fields += 1
@@ -394,9 +399,17 @@ class TestSealGuards:
     def test_the_document_says_it_is_not_sealed(self):
         assert "AUTHORED, NOT SEALED" in _pr()
 
-    def test_the_confirmatory_directory_is_still_readme_only(self):
-        entries = sorted(p.name for p in (REPO_ROOT / "fixtures" / "confirmatory").iterdir())
-        assert entries == ["README.md"]
+    def test_the_confirmatory_directory_was_readme_only_at_the_sealed_commit(self):
+        """The document's claim is about the state it pre-registers, so it is
+        verified against the SEALED COMMIT rather than the working tree.
+
+        Part H step 4 populates `fixtures/confirmatory/` after the seal (ADR
+        000Z), so a working-tree check would now contradict the design; the
+        claim itself — that nothing but the README existed when the seal was
+        taken — stays true forever and is asserted where it is true."""
+        sealed_commit = "7872311"
+        listing = _git("ls-tree", "-r", "--name-only", sealed_commit, "--", "fixtures/confirmatory")
+        assert listing.split() == ["fixtures/confirmatory/README.md"]
 
     def test_the_authoring_head_resolves_and_is_an_ancestor(self):
         assert "5264f1b" in _pr()
