@@ -400,12 +400,25 @@ class TestTheGapClosures:
         assert "left in\n  place as not-re-verified" in _pr() or "not-re-verified" in _pr()
 
     def test_the_design_document_now_defines_unscorable(self):
+        """Scoped to the definition, not the whole document: "validity window"
+        also occurs in the freshness text, so a whole-document search would
+        stay green with cause (iii) deleted from the definition. The span is
+        the text from "Unscorable cells (MUST)" to the end of its paragraph
+        (the next blank line), and every marker is asserted inside it."""
         design = DESIGN_PATH.read_text(encoding="utf-8")
-        flat = " ".join(design.split())
-        assert "Unscorable cells (MUST)" in design
+        marker = "**Unscorable cells (MUST)"
+        assert design.count(marker) == 1
+        start = design.index(marker)
+        end = design.index("\n\n", start)
+        definition = " ".join(design[start:end].split())
         assert (
             "not a block, not a `false_block`, and not a result at all, "
-            "exactly as an `NA` cell is not" in flat
+            "exactly as an `NA` cell is not" in definition
         )
-        for cause in ("RunnerError", "wall-clock straddle", "validity window"):
-            assert cause in flat, cause
+        for cause in (
+            "(i) the runner raised before a complete record existed (`RunnerError`)",
+            "(ii) the wall-clock straddle",
+            "one clock per cell",
+            "(iii) a credential whose validity window does not cover the judging instant",
+        ):
+            assert cause in definition, cause
