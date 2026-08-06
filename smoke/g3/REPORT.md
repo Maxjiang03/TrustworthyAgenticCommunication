@@ -124,3 +124,36 @@ This gate establishes **cost on this platform for `boundary_verification`**. It 
 establish row 1's estimand, the equivalence margin, or anything about `B0`; it adjudicates no other
 gate; and it re-triggers if row 9 changes — a power-plan, hardware, driver or Windows-build change
 invalidates this adjudication (ADR 0025).
+
+---
+
+## Seal-time re-run — 2026-08-06, at the commit being sealed (`396c2b6`), NOT a re-adjudication
+
+Part H step 3's ordering requires the five platform-bound gates re-run **on the commit that is
+sealed**, so that no line of the sealed gate record is derived from a measurement taken on a
+different commit. This section is that record for G-3; the figures land here and nowhere else,
+because this file is the only place a timing number may appear. **The adjudicated record above —
+2.8264 ms, 2026-08-02 — stands unchanged**; this re-run confirms it on the sealing candidate.
+
+Run **first among the five, alone, on the idle row 9 machine**, before G-6/G-7/G-12/G-10 heated
+it. Row 9 was machine-read before the first gate and after the last: **all 27 read fields
+identical, zero differ** (power-scheme GUID `da75b896-…` byte-identical; hazard state 600/0/1 as
+found and unchanged). `G-3.H1` (pinned to detected P-cores `[0…11]`) and `G-3.H2` (on AC) both
+passed.
+
+| quantity | adjudicated 2026-08-02 | seal-time re-run 2026-08-06 |
+|---|---|---|
+| **median** | **2.8264 ms** | **2.6856 ms** |
+| p95 | 3.4841 ms | 3.2656 ms |
+| IQR | 0.2898 ms | 0.0998 ms |
+| per-batch medians | 2.9190, 2.8259, 2.8213, 2.7511 | 2.6750, 2.6920, 2.6890, 2.6858 |
+| last-vs-first drift | −5.8% | +0.4% |
+| verdict | PASS (≤ 5 ms) | **PASS (≤ 5 ms)** |
+
+The re-run median sits **−0.1408 ms (−5.0%)** below the adjudicated one — the same magnitude and
+direction as the 2026-08-03 confirmation run (2.6928 ms, `tools/gate_rerun/REPORT.md`, which also
+showed the two do not separate: Mann-Whitney U = 12, p = 0.34). Today's spread is tighter
+(IQR 0.0998 vs 0.2898) and drift is flat. Run once; not re-run for a better number. **G-10's `L4`
+then re-ran this spike warm as a subprocess later the same session and it PASSED**; `L4` records
+pass/fail only, so no warm median exists to quote — exactly the limitation the gate-rerun report
+recorded.
