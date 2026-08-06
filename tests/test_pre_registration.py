@@ -10,7 +10,8 @@ the report it landed, the G-3 figures against the two reports that own them —
 including recomputing the Mann-Whitney comparison exactly from the recorded
 batch medians — the row 7 sourcing (URLs, retrieval date, and the unanchored
 marking), the ADR 0028 scan re-executed, the retained-reference counts
-re-measured, and the not-sealed guards.
+re-measured, the not-sealed guards, and the five gap closures (2026-08-06)
+each verified against the artifact that closed it.
 
 Values are derived from the sources at test time, never typed here, so the
 test cannot itself become a second copy that drifts.
@@ -170,9 +171,17 @@ class TestTheGateRecord:
                 assert sha in text, (gate, sha)
                 assert sha in history.split(), (gate, sha, path)
 
-    def test_g14_has_no_report_and_the_document_says_so(self):
-        assert not (REPO_ROOT / "smoke" / "g14" / "REPORT.md").exists()
-        assert "no REPORT.md exists" in _pr()
+    def test_g14_report_exists_and_declares_itself_retrospective_in_line_one(self):
+        """The gap's closure must not disguise itself: the record is retrospective
+        and says so in its FIRST line, and the adjudication stays on the board
+        row and the spike."""
+        report = REPO_ROOT / "smoke" / "g14" / "REPORT.md"
+        first_line = report.read_text(encoding="utf-8").splitlines()[0]
+        assert "RETROSPECTIVE" in first_line
+        assert "NOT the contemporaneous adjudication" in first_line
+        assert "board row" in first_line
+        assert "no REPORT.md exists" not in _pr()
+        assert "retrospective" in _pr_flat()
 
     def test_the_five_platform_bound_gates_and_the_rerun_commit(self):
         text = _pr()
@@ -342,10 +351,21 @@ class TestSealGuards:
             check=True,
         )
 
-    def test_the_unnumbered_adr_is_cited_by_placeholder_only(self):
+    def test_the_rq4_adr_citation_resolves_to_0041(self):
+        """The former placeholder-only guard: the RQ4 ADR has its number, so
+        every citation must resolve to the one 0041 file — and no OTHER
+        unassigned number may be invented (the amendments ADR stays the `000Y`
+        placeholder until the author numbers it). The old placeholder is
+        spelled joined so this guard is not itself a surviving occurrence."""
         text = _pr()
-        assert "000X" in text
-        assert not re.search(r"ADR 004[1-9]", text)
+        assert ("000" + "X") not in text
+        assert "ADR 0041" in text
+        numbered = sorted((REPO_ROOT / "adr").glob("0041-*.md"))
+        assert len(numbered) == 1
+        title = numbered[0].read_text(encoding="utf-8").splitlines()[0]
+        assert title.startswith("# 0041 —")
+        assert not re.search(r"ADR 004[2-9]", text)
+        assert "000Y" in text
 
     def test_the_generalizes_ban_is_stated_and_obeyed(self):
         text = _pr()
@@ -353,3 +373,39 @@ class TestSealGuards:
         # the word appears only inside the ban statement itself
         occurrences = [m.start() for m in re.finditer(r"generaliz", text)]
         assert len(occurrences) <= 2  # the ban sentence and the ADR 0037 restatement
+
+
+class TestTheGapClosures:
+    """The five gaps the document reported are closed — each closure verified
+    against the artifact that closed it, not against the document's say-so.
+    (G-14's closure is verified in TestTheGateRecord; 0041's in TestSealGuards.)"""
+
+    def test_part_h_list_now_names_h4a_h4b_and_the_old_numbering_survives_only_quoted(self):
+        design = DESIGN_PATH.read_text(encoding="utf-8")
+        flat = " ".join(design.split())
+        assert "RQ1–4, H4a/H4b, the per-family predicates" in flat
+        # every surviving occurrence sits inside the dated amendment note
+        amendment = [ln for ln in design.splitlines() if "Amended 2026-08-06, ADR 000Y" in ln]
+        assert len(amendment) == 1
+        assert design.count("H1–H9") == amendment[0].count("H1–H9") > 0
+        assert "closed by amendment" in _pr_flat()
+
+    def test_row_7_lost_the_unanchored_clause_and_gained_its_sourcing_record(self):
+        frozen = (REPO_ROOT / "docs" / "frozen_parameters.md").read_text(encoding="utf-8")
+        assert "2.7" not in frozen  # the unanchored clause is gone from the row
+        assert "0.18" in frozen  # the not-re-verified clause deliberately is not
+        assert "https://artificialanalysis.ai/methodology/performance-benchmarking" in frozen
+        assert "https://artificialanalysis.ai/models" in frozen
+        assert "retrieved 2026-08-06" in frozen
+        assert "left in\n  place as not-re-verified" in _pr() or "not-re-verified" in _pr()
+
+    def test_the_design_document_now_defines_unscorable(self):
+        design = DESIGN_PATH.read_text(encoding="utf-8")
+        flat = " ".join(design.split())
+        assert "Unscorable cells (MUST)" in design
+        assert (
+            "not a block, not a `false_block`, and not a result at all, "
+            "exactly as an `NA` cell is not" in flat
+        )
+        for cause in ("RunnerError", "wall-clock straddle", "validity window"):
+            assert cause in flat, cause

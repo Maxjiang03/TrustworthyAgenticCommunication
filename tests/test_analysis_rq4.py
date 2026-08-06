@@ -1,4 +1,4 @@
-"""The RQ4 analysis layer, on **synthetic inputs only** (ADR 000X).
+"""The RQ4 analysis layer, on **synthetic inputs only** (ADR 0041).
 
 `analysis/latency.py` implemented the row 1 machinery and promised, in the
 comment inside `_segment_values`, that `setup`, `delegation` and `end_to_end`
@@ -19,7 +19,7 @@ project rule that a check never observed failing is not known to work:
 * a pair whose §E.5 rows do not differ — refused (no bit for the exchange);
 * a single-bit pair STRADDLING the exchange partition — downgraded to a
   composite with the unmodelled round trip named on the record, both
-  directions, while the nine clean increments stay increments (ADR 000X,
+  directions, while the nine clean increments stay increments (ADR 0041,
   dated addition: limit 1's reach, enforced);
 * a pair involving `B1` — refused with the ADR 0035 reason;
 * a mixed-phase pool — unbuildable: an out-of-vocabulary phase is refused and
@@ -524,7 +524,7 @@ class TestRowSevenFraming:
 
 
 # ---------------------------------------------------------------------------
-# the exchange-partition guard — limit 1's reach, enforced (ADR 000X addition)
+# the exchange-partition guard — limit 1's reach, enforced (ADR 0041 addition)
 # ---------------------------------------------------------------------------
 class TestTheExchangePartitionGuard:
     """At c3b6ebb, `B2-broad-noexchange` ↔ `B2-exchange-task` read as a clean

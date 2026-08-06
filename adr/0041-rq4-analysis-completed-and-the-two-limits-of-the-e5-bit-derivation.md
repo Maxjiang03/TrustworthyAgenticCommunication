@@ -1,4 +1,4 @@
-# 000X — RQ4's analysis layer completed, and the two limits of the §E.5 bit derivation
+# 0041 — RQ4's analysis layer completed, and the two limits of the §E.5 bit derivation
 
 ## Context
 
@@ -154,10 +154,10 @@ partition**.
 
 ## Status
 
-accepted — 2026-08-05 (the RQ4 analysis layer; placeholder letter, the number is the Commander's;
-the two derivation limits are findings recorded for the Commander, not corrections. Dated
-addition, same day, on the Commander's decision: limit 1's reach is enforced by the
-exchange-partition guard rather than left to the reader)
+accepted — 2026-08-05 (the RQ4 analysis layer; the two derivation limits are findings recorded
+for the Commander, not corrections. Dated addition, same day, on the Commander's decision:
+limit 1's reach is enforced by the exchange-partition guard rather than left to the reader.
+Numbered 0041 on 2026-08-06, by the Commander's assignment)
 
 ## Consequences
 

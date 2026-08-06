@@ -13,11 +13,15 @@ frozen row in `docs/frozen_parameters.md`, an ADR, a gate report, or the design 
 cites it. Nothing is decided in this document. Where the repository does not decide something,
 the gap is stated as a gap. `tests/test_pre_registration.py` verifies every quantitative claim
 below against its source, so this document cannot silently drift from the repository it
-pre-registers. One ADR is cited by placeholder: the RQ4 analysis ADR carries the letter `000X`
-and awaits its number from the author; it is never cited here by a number it does not have.
+pre-registers. One ADR is cited by placeholder: the pre-seal amendments ADR carries the letter
+`000Y` and awaits its number from the author; it is never cited here by a number it does not
+have. (The RQ4 analysis ADR, cited the same way when this document was first authored, has
+since been numbered and is cited below as ADR 0041.)
 
 Authored 2026-08-06 at repository HEAD `5264f1b`
-(github.com/Maxjiang03/TrustworthyAgenticCommunication).
+(github.com/Maxjiang03/TrustworthyAgenticCommunication). Amended the same day at `ca360ae`,
+on the author's decisions: the five gaps this document reported are closed (ADR 000Y and the
+0041 assignment), and each closure is recorded in place below — nothing else changed.
 
 ---
 
@@ -114,13 +118,14 @@ they predict (DPoP and invocation binding block different things — indistingui
 captured-proof-replay given the same cache, separated on first-use body mutation, the residual
 credited to INV).
 
-**Enumeration gap, recorded rather than repaired.** Part H's own content list for this document
-names "H1–H9/H4a-b", but the design document enumerates no hypotheses numbered H1–H9: its
-falsifiable content is H4a/H4b and the §E.4 matrix. The same document already records an
-analogous gap the same way — §F.4's "IA (HTC correctness)" has no numbered row, "an enumeration
-gap in D39's list, recorded here rather than closed by inventing an IA number (a renumbering is
-the author's call)". Following that precedent, no H1–H9 are invented here; assigning them, or
-amending Part H's list, is the author's call.
+**Enumeration gap, closed by amendment rather than by hypotheses (2026-08-06, ADR 000Y).**
+Part H's content list for this document originally named "H1–H9/H4a-b", while the design
+document enumerates no hypotheses numbered H1–H9: its falsifiable content is H4a/H4b and the
+§E.4 matrix. This document first recorded that as a gap for the author, following the §F.4
+enumeration-gap precedent; the author's decision was to **amend the list to name H4a/H4b** —
+what Part D.1 actually defines — rather than to invent nine numbered hypotheses days before a
+seal. No hypothesis was added, renumbered or reworded, and H4a/H4b above are verbatim as
+before.
 
 ## 4. Per-family predicates
 
@@ -205,7 +210,10 @@ cell to an `unscorable` list — never to a verdict — for three recorded cause
 wall-clock straddle, one clock per cell); or a credential's validity window does not cover the
 judging instant. An unscorable cell is not a B, not a false_block, not a result at all, exactly
 as an NA cell is not (`src/harness/campaign.py`; `tests/test_campaign_clock.py`). The results
-chapter reports every unscorable cell with its cause.
+chapter reports every unscorable cell with its cause. This document first reported that the
+design document never used the word and proposed a definition; the design document now carries
+it, in Part I beside the effect-handling rule (added 2026-08-06, ADR 000Y — the machinery
+itself is unchanged).
 
 ## 5. The descriptive-statistics rule
 
@@ -273,19 +281,24 @@ requires before step 3:
   mainstream output speeds implies end-to-end times above 2 s, so `T_full_ms = 2000` sits at or
   below the low end of per-turn full-response times. Both denominators therefore make the
   reported overhead fraction **larger** than a generous choice would — the framing is held to
-  the stricter standard, as ADR 0025 intended.
-- **Unanchored, and reported as the row requires:** the rationale clause "a representative
-  tier-2 support agent is reported near 2.7 s median" could not be sourced to a dated,
-  retrievable publication (searches on 2026-08-06 found no such figure; the nearest match is an
-  arXiv sales-copilot report of a 2.6 s median — a different quantity from a different domain,
-  and stretching it into this citation would invent a source). Per row 7's own rule **the frozen
-  values stay unchanged**, and the 2.7 s corroborating clause is reported as **unanchored**.
-  `T_full_ms`'s anchoring does not rest on it. The row's "specialised silicon near 0.18 s"
-  clause was likewise not re-verified in the 2026-08-06 retrieval (the same source publishes
-  those per-provider figures, but no current number was read back); the denominator's anchor is
-  the mainstream tier read back above.
+  the stricter standard, as ADR 0025 intended. Both URLs and the retrieval date are now also
+  recorded in row 7's own sourcing field (ADR 000Y); the seal-time snapshot remains owed at
+  step 3.
+- **Unanchored, and closed by deletion with the values untouched (2026-08-06, ADR 000Y):** the
+  rationale clause "a representative tier-2 support agent is reported near 2.7 s median" could
+  not be sourced to a dated, retrievable publication (searches on 2026-08-06 found no such
+  figure; the nearest match is an arXiv sales-copilot report of a 2.6 s median — a different
+  quantity from a different domain, and stretching it into this citation would invent a
+  source). This document first reported the clause as **unanchored**; the author's decision was
+  to **delete it from the row's rationale**, because an unanchored corroborating clause inside
+  a frozen row reads as sourced. Per row 7's own rule **the frozen values stay unchanged** —
+  `T_full_ms`'s anchoring never rested on the deleted clause. The row's "specialised silicon
+  near 0.18 s" clause was likewise not re-verified in the 2026-08-06 retrieval (the same source
+  publishes those per-provider figures, but no current number was read back) and is **left in
+  place as not-re-verified** — a different state from unsourceable, per ADR 000Y; the
+  denominator's anchor is the mainstream tier read back above.
 
-**Declaration — the per-mechanism claim boundary (the RQ4 ADR, placeholder `000X`; enforced in
+**Declaration — the per-mechanism claim boundary (ADR 0041; enforced in
 `analysis/latency.py`).** Isolated per-mechanism latency costs may be stated for exactly: DPoP
 holder binding (B2-exchange-task → B2-exchange-task-DPoP, the htc/holder bit), the jti replay
 cache (B3 → B3⁺, the jti bit), and each of the six §E.6 matched ablations (each a single bit off
@@ -362,7 +375,7 @@ citation-only edits — e.g. the documentation reframe — not re-adjudications)
 | G-11 | smoke/g11/REPORT.md | 1761ae6 |
 | G-12 | smoke/g12/REPORT.md | b98ac5e |
 | G-13 | smoke/g13/REPORT.md | 9431934 |
-| G-14 | the smoke/README.md board row and smoke/g14/spike.py (no REPORT.md exists; the board row's link to one dangles — recorded as a gap for the author) | dfbef6d (spike) |
+| G-14 | the smoke/README.md board row and smoke/g14/spike.py; smoke/g14/REPORT.md is a **retrospective** record — compiled 2026-08-06 at `ca360ae` from a re-run, stating so in its first line, never the adjudication (the gap this document first recorded, closed without disguising the asymmetry) | dfbef6d (spike) |
 | G-15 | smoke/g15/REPORT.md | 71dd5ce |
 
 **The five platform-bound gates — G-3, G-6, G-7, G-12, G-10 — are adjudicated on the row 9

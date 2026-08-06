@@ -37,7 +37,7 @@ run and `frozen_parameters` row 9 (the sealed measurement platform) is not
 locked, so feeding it a real timing would produce a number ADR 0025 says cannot
 count. Its tests use **synthetic** samples whose answer is constructed.
 
-**The RQ4 layer (ADR 000X)** completes what the comment inside
+**The RQ4 layer (ADR 0041)** completes what the comment inside
 `_segment_values` promises: `setup`, `delegation` and `end_to_end` are
 *"reported separately"* — by `span_descriptives`, with the same three refusal
 rules re-applied per span. `arm_pair_delta` differences two arms under the
@@ -362,7 +362,7 @@ def lightweight_claim(
 
 
 # ---------------------------------------------------------------------------
-# the RQ4 layer (ADR 000X) — per-span descriptives
+# the RQ4 layer (ADR 0041) — per-span descriptives
 # ---------------------------------------------------------------------------
 # The five spans the runner records per repetition (`TimingSeams`), §E.5's
 # decomposition -- *"decompose into setup / delegation / boundary-verification /
@@ -521,7 +521,7 @@ def span_descriptives(
 
 
 # ---------------------------------------------------------------------------
-# the RQ4 layer (ADR 000X) — arm-pair deltas under the §E.5 bit derivation
+# the RQ4 layer (ADR 0041) — arm-pair deltas under the §E.5 bit derivation
 # ---------------------------------------------------------------------------
 # §E.5's ten bitmask columns, spelled as its table header spells them.
 E5_BITMASK_COLUMNS = (
@@ -544,7 +544,7 @@ E5_BITMASK_COLUMNS = (
 # this stop being a transcription. A test pins every row against the document,
 # so an amendment to §E.5 re-triggers it.
 #
-# Two absences are FINDINGS about the design, recorded in ADR 000X and
+# Two absences are FINDINGS about the design, recorded in ADR 0041 and
 # deliberately NOT repaired here: no column carries the RFC 8693 exchange
 # (`B2-broad-noexchange` and `B2-exchange-broad` have IDENTICAL rows, yet one
 # performs an exchange round trip), and no column carries `B1`'s static shared
@@ -614,7 +614,7 @@ E5_ROW_FOR_ARM: dict[str, str] = {
 # arms call the AS per delegation; every other arm does not —
 # `B2-broad-noexchange` holds a Phase 1 broad token and the capability arms
 # attenuate purely locally). DELIBERATELY NOT DERIVED FROM §E.5: §E.5 carrying
-# no bit for the exchange IS limit 1 (ADR 000X), so this partition lives
+# no bit for the exchange IS limit 1 (ADR 0041), so this partition lives
 # BESIDE the bitmask, never as an invented column in it — the test asserting
 # no exchange column exists must keep passing. A single-bit pair straddling
 # this partition is downgraded to a composite with the round trip named on
@@ -679,7 +679,7 @@ def e5_bit_difference(treatment_arm: str, control_arm: str) -> BitDifference:
       no bit difference against it describes what actually changes.
 
     Limit 1 reaches past the refusals, and its reach is ENFORCED here rather
-    than left to the reader (ADR 000X, dated addition): a single-bit pair in
+    than left to the reader (ADR 0041, dated addition): a single-bit pair in
     which exactly one arm performs the online AS exchange
     (`PERFORMS_AS_EXCHANGE`, transcribed from §E.1/§E.2 — not from §E.5,
     which has no bit to derive it from) is **downgraded to a composite** with
@@ -704,7 +704,7 @@ def e5_bit_difference(treatment_arm: str, control_arm: str) -> BitDifference:
                 f"{name!r} (§E.5 row {row_label!r}) is not classified in the exchange "
                 "partition PERFORMS_AS_EXCHANGE. The partition is total over §E.5's rows, "
                 "and an unclassified arm cannot be labelled: whether its deltas straddle "
-                "the unmodelled exchange round trip would be a guess (fail closed, ADR 000X)"
+                "the unmodelled exchange round trip would be a guess (fail closed, ADR 0041)"
             )
         rows[name] = E5_BITMASK[row_label]
         exchanges[name] = PERFORMS_AS_EXCHANGE[row_label]
@@ -740,7 +740,7 @@ def e5_bit_difference(treatment_arm: str, control_arm: str) -> BitDifference:
                 unmodelled=(
                     f"online AS exchange round trip: {exchanging!r} performs an RFC 8693 "
                     "exchange per delegation and the other arm does not, and §E.5 carries "
-                    "no bit for it (ADR 000X, limit 1) — this delta is not an isolated "
+                    "no bit for it (ADR 0041, limit 1) — this delta is not an isolated "
                     "mechanism cost",
                 ),
             )
@@ -854,7 +854,7 @@ def arm_pair_delta(
 
 
 # ---------------------------------------------------------------------------
-# the RQ4 layer (ADR 000X) — frozen_parameters row 7's secondary framing
+# the RQ4 layer (ADR 0041) — frozen_parameters row 7's secondary framing
 # ---------------------------------------------------------------------------
 @dataclass(frozen=True)
 class TurnFraction:
