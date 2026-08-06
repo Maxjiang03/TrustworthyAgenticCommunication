@@ -1,4 +1,4 @@
-# 000Y — Three pre-seal amendments: the Part H list, row 7's rationale, and the `unscorable` definition
+# 0042 — Three pre-seal amendments: the Part H list, row 7's rationale, and the `unscorable` definition
 
 ## Context
 
@@ -55,7 +55,8 @@ its number, 0041, by rename.)
 
 ## Status
 
-proposed — 2026-08-06 (placeholder letter; the number is the Commander's to assign, as ever)
+proposed — 2026-08-06. Numbered 0042 the same day, by the Commander's assignment (Part H
+step 3, STEP A), before the seal so the sealed record cites no placeholder.
 
 ## Consequences
 

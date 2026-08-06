@@ -13,14 +13,14 @@ frozen row in `docs/frozen_parameters.md`, an ADR, a gate report, or the design 
 cites it. Nothing is decided in this document. Where the repository does not decide something,
 the gap is stated as a gap. `tests/test_pre_registration.py` verifies every quantitative claim
 below against its source, so this document cannot silently drift from the repository it
-pre-registers. One ADR is cited by placeholder: the pre-seal amendments ADR carries the letter
-`000Y` and awaits its number from the author; it is never cited here by a number it does not
-have. (The RQ4 analysis ADR, cited the same way when this document was first authored, has
-since been numbered and is cited below as ADR 0041.)
+pre-registers. No ADR is cited by placeholder any longer: the RQ4 analysis ADR is ADR 0041 and
+the pre-seal amendments ADR is ADR 0042 — each was cited by a placeholder letter when first
+authored and received its number from the author before the seal, so nothing sealed cites a
+number that does not exist.
 
 Authored 2026-08-06 at repository HEAD `5264f1b`
 (github.com/Maxjiang03/TrustworthyAgenticCommunication). Amended the same day at `ca360ae`,
-on the author's decisions: the five gaps this document reported are closed (ADR 000Y and the
+on the author's decisions: the five gaps this document reported are closed (ADR 0042 and the
 0041 assignment), and each closure is recorded in place below — nothing else changed.
 
 ---
@@ -118,7 +118,7 @@ they predict (DPoP and invocation binding block different things — indistingui
 captured-proof-replay given the same cache, separated on first-use body mutation, the residual
 credited to INV).
 
-**Enumeration gap, closed by amendment rather than by hypotheses (2026-08-06, ADR 000Y).**
+**Enumeration gap, closed by amendment rather than by hypotheses (2026-08-06, ADR 0042).**
 Part H's content list for this document originally named "H1–H9/H4a-b", while the design
 document enumerates no hypotheses numbered H1–H9: its falsifiable content is H4a/H4b and the
 §E.4 matrix. This document first recorded that as a gap for the author, following the §F.4
@@ -212,7 +212,7 @@ judging instant. An unscorable cell is not a B, not a false_block, not a result 
 as an NA cell is not (`src/harness/campaign.py`; `tests/test_campaign_clock.py`). The results
 chapter reports every unscorable cell with its cause. This document first reported that the
 design document never used the word and proposed a definition; the design document now carries
-it, in Part I beside the effect-handling rule (added 2026-08-06, ADR 000Y — the machinery
+it, in Part I beside the effect-handling rule (added 2026-08-06, ADR 0042 — the machinery
 itself is unchanged).
 
 ## 5. The descriptive-statistics rule
@@ -282,9 +282,9 @@ requires before step 3:
   below the low end of per-turn full-response times. Both denominators therefore make the
   reported overhead fraction **larger** than a generous choice would — the framing is held to
   the stricter standard, as ADR 0025 intended. Both URLs and the retrieval date are now also
-  recorded in row 7's own sourcing field (ADR 000Y); the seal-time snapshot remains owed at
+  recorded in row 7's own sourcing field (ADR 0042); the seal-time snapshot remains owed at
   step 3.
-- **Unanchored, and closed by deletion with the values untouched (2026-08-06, ADR 000Y):** the
+- **Unanchored, and closed by deletion with the values untouched (2026-08-06, ADR 0042):** the
   rationale clause "a representative tier-2 support agent is reported near 2.7 s median" could
   not be sourced to a dated, retrievable publication (searches on 2026-08-06 found no such
   figure; the nearest match is an arXiv sales-copilot report of a 2.6 s median — a different
@@ -295,7 +295,7 @@ requires before step 3:
   `T_full_ms`'s anchoring never rested on the deleted clause. The row's "specialised silicon
   near 0.18 s" clause was likewise not re-verified in the 2026-08-06 retrieval (the same source
   publishes those per-provider figures, but no current number was read back) and is **left in
-  place as not-re-verified** — a different state from unsourceable, per ADR 000Y; the
+  place as not-re-verified** — a different state from unsourceable, per ADR 0042; the
   denominator's anchor is the mainstream tier read back above.
 
 **Declaration — the per-mechanism claim boundary (ADR 0041; enforced in

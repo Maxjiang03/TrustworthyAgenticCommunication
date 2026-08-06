@@ -351,21 +351,23 @@ class TestSealGuards:
             check=True,
         )
 
-    def test_the_rq4_adr_citation_resolves_to_0041(self):
-        """The former placeholder-only guard: the RQ4 ADR has its number, so
-        every citation must resolve to the one 0041 file — and no OTHER
-        unassigned number may be invented (the amendments ADR stays the `000Y`
-        placeholder until the author numbers it). The old placeholder is
-        spelled joined so this guard is not itself a surviving occurrence."""
+    def test_the_adr_citations_resolve_to_their_numbered_files(self):
+        """The former placeholder-only guard: both once-placeholder ADRs have
+        their numbers (0041 at the gap-closure pass, 0042 at the seal's
+        STEP A), so every citation must resolve to exactly one numbered file
+        — and no number beyond the assigned ones may be invented. The old
+        placeholder letters are spelled joined so this guard is not itself a
+        surviving occurrence."""
         text = _pr()
         assert ("000" + "X") not in text
-        assert "ADR 0041" in text
-        numbered = sorted((REPO_ROOT / "adr").glob("0041-*.md"))
-        assert len(numbered) == 1
-        title = numbered[0].read_text(encoding="utf-8").splitlines()[0]
-        assert title.startswith("# 0041 —")
-        assert not re.search(r"ADR 004[2-9]", text)
-        assert "000Y" in text
+        assert ("000" + "Y") not in text
+        for number in ("0041", "0042"):
+            assert f"ADR {number}" in text, number
+            numbered = sorted((REPO_ROOT / "adr").glob(f"{number}-*.md"))
+            assert len(numbered) == 1, number
+            title = numbered[0].read_text(encoding="utf-8").splitlines()[0]
+            assert title.startswith(f"# {number} —"), number
+        assert not re.search(r"ADR 004[3-9]", text)
 
     def test_the_generalizes_ban_is_stated_and_obeyed(self):
         text = _pr()
@@ -385,7 +387,7 @@ class TestTheGapClosures:
         flat = " ".join(design.split())
         assert "RQ1–4, H4a/H4b, the per-family predicates" in flat
         # every surviving occurrence sits inside the dated amendment note
-        amendment = [ln for ln in design.splitlines() if "Amended 2026-08-06, ADR 000Y" in ln]
+        amendment = [ln for ln in design.splitlines() if "Amended 2026-08-06, ADR 0042" in ln]
         assert len(amendment) == 1
         assert design.count("H1–H9") == amendment[0].count("H1–H9") > 0
         assert "closed by amendment" in _pr_flat()
