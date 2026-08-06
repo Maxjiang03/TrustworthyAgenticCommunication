@@ -307,7 +307,7 @@ class GoldenThreadRunner:
             "resource_owner": (self._corpus["issuer"], resource_owner),
             "oauth_actor": (self._corpus["issuer"], actor_id),
             "monitor_attached": monitor_attached,
-            "run_mode": self.run_mode,  # threaded, not hardcoded (ADR 000Z)
+            "run_mode": self.run_mode,  # threaded, not hardcoded (ADR 0043)
         }
 
     def task_grant(self, scenario_id: str | None = None) -> list[list[str]]:
@@ -462,7 +462,7 @@ class GoldenThreadRunner:
             "resource_owner": (self._corpus["issuer"], resource_owner),
             "oauth_actor": (self._corpus["issuer"], actor_id),
             "monitor_attached": monitor_attached,
-            "run_mode": self.run_mode,  # threaded, not hardcoded (ADR 000Z)
+            "run_mode": self.run_mode,  # threaded, not hardcoded (ADR 0043)
         }
 
     def b2_dpop_setup(

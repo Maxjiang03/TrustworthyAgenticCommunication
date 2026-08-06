@@ -51,7 +51,7 @@ benign golden-thread task in all three scenarios -- the two F1 scenarios are
 the Specialist exceeding it -- so `tau_gt` is the benign requirement
 everywhere, and `R` differs from it exactly on the attack calls.
 
-## Two corpora, one generator (Part H steps 4-5; ADR 000Z)
+## Two corpora, one generator (Part H steps 4-5; ADR 0043)
 
 The v0.5 seal covered this file with `CORPUS_DIR`, `SEED_HEX` and `TASK_ID`
 hardcoded, so the only corpus it could produce was the pilot one -- byte for
@@ -445,7 +445,7 @@ SCENARIOS = [
 
 
 # =========================================================================== #
-# The CONFIRMATORY instance set (Part H step 4; ADR 000Z)
+# The CONFIRMATORY instance set (Part H step 4; ADR 0043)
 # =========================================================================== #
 # Thirteen instances, matched one-to-one with the pilot's thirteen. What may
 # NOT vary is the family, the `attack_subcase` string, the `relation`,

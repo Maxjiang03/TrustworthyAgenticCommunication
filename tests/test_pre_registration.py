@@ -486,7 +486,7 @@ class TestSealGuards:
         verified against the SEALED COMMIT rather than the working tree.
 
         Part H step 4 populates `fixtures/confirmatory/` after the seal (ADR
-        000Z), so a working-tree check would now contradict the design; the
+        0043), so a working-tree check would now contradict the design; the
         claim itself — that nothing but the README existed when the seal was
         taken — stays true forever and is asserted where it is true."""
         sealed_commit = "7872311"
@@ -509,15 +509,66 @@ class TestSealGuards:
         placeholder letters are spelled joined so this guard is not itself a
         surviving occurrence."""
         text = _pr()
-        assert ("000" + "X") not in text
-        assert ("000" + "Y") not in text
+        for placeholder in ("000" + "X", "000" + "Y", "000" + "Z"):
+            assert placeholder not in text
         for number in ("0041", "0042"):
             assert f"ADR {number}" in text, number
             numbered = sorted((REPO_ROOT / "adr").glob(f"{number}-*.md"))
             assert len(numbered) == 1, number
             title = numbered[0].read_text(encoding="utf-8").splitlines()[0]
             assert title.startswith(f"# {number} —"), number
-        assert not re.search(r"ADR 004[3-9]", text)
+        assert not re.search(r"ADR 004[4-9]", text)
+
+    def test_no_tracked_file_cites_an_adr_by_placeholder_letter(self):
+        """Repository-wide, not document-local: the reseal's PHASE 0 turned
+        the last placeholder (`000` + `Z`) into ADR 0043, and a placeholder
+        surviving inside a covered fixture would be sealed along with it. The
+        letters are spelled joined so this guard is never itself the
+        occurrence it hunts.
+
+        One kind of occurrence is legitimate and is allowed by construction: a
+        line that is a STATEMENT ABOUT the numbering — an ADR recording which
+        placeholder its number replaced — which must say so on the same line.
+        A bare citation cannot pass that."""
+        placeholders = ["000" + letter for letter in ("X", "Y", "Z")]
+        this_file = Path(__file__).resolve()
+        offenders = []
+        for name in _git("ls-files").split():
+            path = REPO_ROOT / name
+            if path.resolve() == this_file:
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (UnicodeDecodeError, OSError):
+                continue  # binary or unreadable: it cites nothing
+            for line in text.splitlines():
+                hits = [ph for ph in placeholders if ph in line]
+                if hits and "placeholder" not in line:
+                    offenders += [(name, ph, line.strip()[:60]) for ph in hits]
+        assert offenders == [], offenders
+
+    def test_the_0043_number_resolves_and_is_cited_where_the_work_landed(self):
+        """PHASE 0's rename, checked against the files that cite it rather
+        than against the ADR's own title alone."""
+        numbered = sorted((REPO_ROOT / "adr").glob("0043-*.md"))
+        assert len(numbered) == 1
+        adr = numbered[0].read_text(encoding="utf-8")
+        assert adr.splitlines()[0].startswith("# 0043 —")
+        assert "### Sealed files edited — THREE" in adr
+        for cited in (
+            "fixtures/pilot/golden_thread/generator.py",
+            "src/harness/runner.py",
+            "fixtures/confirmatory/README.md",
+        ):
+            assert f"`{cited}`" in adr, cited
+        citing = [
+            name
+            for name in _git("ls-files").split()
+            if "ADR 0043" in (REPO_ROOT / name).read_text(encoding="utf-8", errors="ignore")
+        ]
+        assert "fixtures/confirmatory/README.md" in citing
+        assert "src/harness/runner.py" in citing
+        assert "fixtures/pilot/golden_thread/generator.py" in citing
 
     def test_the_generalizes_ban_is_stated_and_obeyed(self):
         text = _pr()

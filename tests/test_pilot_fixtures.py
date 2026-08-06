@@ -196,7 +196,7 @@ class TestRedLines:
     def test_the_pilot_corpus_never_reaches_the_confirmatory_directory(self):
         """Red line 1 said `fixtures/confirmatory/` stays empty **until
         sealing**; the v0.5 seal happened and Part H step 4 populated it from
-        the sealed generator's confirmatory profile (ADR 000Z). What this file
+        the sealed generator's confirmatory profile (ADR 0043). What this file
         still owns is the PILOT side of the separation: no pilot document may
         appear there, under any name. The confirmatory corpus's own integrity
         is asserted in `tests/test_confirmatory_corpus.py`."""

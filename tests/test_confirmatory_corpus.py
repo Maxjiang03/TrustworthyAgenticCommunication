@@ -1,7 +1,7 @@
 """The confirmatory corpus: disjoint from the pilot, and structurally matched to it.
 
 Part H steps 4 and 5, and the bias guard that is the point of the exercise
-(ADR 000Z).
+(ADR 0043).
 
 Three properties, and the third is the one that matters:
 

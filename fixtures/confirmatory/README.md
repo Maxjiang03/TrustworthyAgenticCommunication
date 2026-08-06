@@ -8,7 +8,7 @@ uv run python fixtures/pilot/golden_thread/generator.py --profile confirmatory
 ```
 
 The generator lives at `fixtures/pilot/golden_thread/generator.py` and produces **both** corpora
-from one code path; its location is historical and is explained in ADR 000Z. `C_0` and `C_1` are
+from one code path; its location is historical and is explained in ADR 0043. `C_0` and `C_1` are
 computed by the frozen authorizer at generation time and asserted against the specification —
 never hand-written — and the three frozen digests `H(Γ)`, `H(Λ)` and `H(R)` are verified before
 anything is written.
@@ -39,7 +39,7 @@ unmitigated and which stays unmitigated; it bounds what could drift silently.
 
 Two limits are recorded rather than worked around: `mail.send`/`mail/outbox` is the entire derived
 egress set over the frozen `Ω`, so both F4 instances necessarily reuse it; and the principal
-identities do not vary, because the identity registry is frozen. See ADR 000Z.
+identities do not vary, because the identity registry is frozen. See ADR 0043.
 
 ## Provenance
 

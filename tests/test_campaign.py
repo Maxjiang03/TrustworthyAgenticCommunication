@@ -573,7 +573,7 @@ class TestTheOracleMatrix:
             assert "no effect ledger" in cell.note
 
     def test_the_confirmatory_corpus_is_only_ever_generated_never_hand_authored(self):
-        """Red line 1, re-pointed at what it now protects (ADR 000Z).
+        """Red line 1, re-pointed at what it now protects (ADR 0043).
 
         The red line reads *"do NOT create or populate `fixtures/confirmatory/`
         **before sealing**"* — and the v0.5 seal happened, so Part H step 4

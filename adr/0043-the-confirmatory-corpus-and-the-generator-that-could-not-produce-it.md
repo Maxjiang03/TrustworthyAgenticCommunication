@@ -1,4 +1,4 @@
-# 000Z — The confirmatory corpus, and the sealed generator that could not produce it
+# 0043 — The confirmatory corpus, and the sealed generator that could not produce it
 
 ## Context
 
@@ -36,12 +36,21 @@ inputs properly rather than relabel a corpus.
 manifest covers. It does **not** build a manifest, anchor, sign, or mark v0.5 superseded — that is
 task A2, after independent review — and `seal/` is untouched.
 
-### Sealed files edited, and why each had to be
+### Sealed files edited — THREE, and why each had to be
 
 | file | edit | why |
 |---|---|---|
 | `fixtures/pilot/golden_thread/generator.py` | a `CorpusProfile` parameterises output directory, seed, task id, corpus name, derivation prefix, context label, both delegation chains and the scenario set; `PILOT` carries the previous values unchanged; `CONFIRMATORY` is new | it is the object that could not produce a second corpus |
 | `src/harness/runner.py` | `run_mode` threaded through the constructor, **defaulting to `"pilot"`**, replacing the string hardcoded at both setup sites | a confirmatory campaign would otherwise have emitted records labelled `pilot`, and a mislabelled record is worse than no record |
+| `fixtures/confirmatory/README.md` | rewritten from the placeholder that described an empty directory to the record of a generated corpus: how it is produced, the disjointness and structural-match properties, the ADR 0007 seed-disclosure warning carried verbatim, and its unsealed status | it is the only document in the corpus directory that is not itself generated, and leaving it describing an empty directory would have made the sealed record wrong about its own contents |
+
+**A correction to this record, made rather than buried.** This ADR first reported **two** sealed
+files edited. That count was wrong: `fixtures/confirmatory/README.md` sits under the v0.5
+manifest's `fixtures/` coverage prefix and is in its covered set, so editing it was a third
+knowing edit to a sealed file. The edit itself was authorised — task A1's STEP 2 names the
+directory's README — and nothing about what was changed is in question; only the count was. It is
+recorded here because a reseal whose own ADR undercounts the sealed files it touched is exactly
+the kind of small drift the seal exists to make impossible.
 
 **Nothing else sealed changed.** No frozen value, no frozen row, no `Ω`, no `Γ`, no policy
 artifact, no identity registry, no family definition, no §E.4 cell, no arm, and no pilot scenario.
@@ -143,9 +152,9 @@ commit** `7872311`, where it is true and will remain true forever.
 
 ## Status
 
-proposed — 2026-08-06 (placeholder letter; the number is the Commander's). **The reseal is owed:**
-task A2 must rebuild the manifest over the new candidate, re-anchor, re-verify from a fresh clone,
-re-sign, and mark v0.5 superseded. Until it does, the repository is **unsealed**.
+proposed — 2026-08-06. **The reseal is owed:** task A2 must rebuild the manifest over the new
+candidate, re-anchor, re-verify from a fresh clone, re-sign, and mark v0.5 superseded. Until it
+does, the repository is **unsealed**.
 
 ## Consequences
 
