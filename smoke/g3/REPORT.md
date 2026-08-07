@@ -284,3 +284,75 @@ spans 0.0591 ms; this run's 2.7145 sits inside that band), so the change is **no
 boundary-verification cost** — which is what one would expect from raising a limit that was never
 reached on the happy path, and is recorded because "we changed the authorizer and the timing gate
 is unchanged" is a claim that should rest on a measurement rather than on an argument.
+
+### Seal-time re-run 5 — 2026-08-07, at the v0.8 sealing candidate `8ac7b21` — **THE SEPARATION FINDING CHANGED; THE SEAL STOPPED HERE**
+
+Re-run for the **v0.8** reseal (task B2 PHASE 1), first and alone under the cp936 console codepage,
+before any other gate ran. Not a re-adjudication: G-3's verdict is the 2026-08-02 adjudication.
+
+| | |
+|---|---|
+| **median** | **2.9684 ms** — **PASS (≤ 5 ms)** |
+| p95 / IQR | 3.9760 / **0.4413** ms |
+| batch medians | 3.1689, 2.8338, 2.9024, 3.4035 ms |
+| last-vs-first drift | **+7.4%** |
+| headroom to the bar | 2.0316 ms |
+| G-3.H1 / G-3.H2 | PASS (P-cores from `GetSystemCpuSetInformation`) / PASS (on AC) |
+
+**The seven medians: 2.8264 (adjudicated, the record) → 2.6928 → 2.6856 → 2.7363 → 2.6772 →
+2.7145 → 2.9684.** This is the **first** re-run to land **above** the adjudicated record
+(+0.1420 ms, **+5.02%**); all five before it landed below it.
+
+**The separation finding is CHANGED, and this run is why.** Recomputed exactly over the recorded
+batch tables (all C(8,4) = 70 labelings), against the adjudicated batches 2.9190 / 2.8259 / 2.8213
+/ 2.7511. The recomputation reproduces every previously published `(U, p)` pair before being
+trusted on the new one:
+
+| run | U | exact two-sided p | batch range | separates? |
+|---|---:|---:|---|---|
+| confirmation 2026-08-03 (2.6928) | 12 | 0.3429 | 2.6574–3.0324 (overlaps) | **no** |
+| seal-time re-run 1 (2.6856) | 16 | 0.0286 | 2.6750–2.6920 (disjoint) | yes, completely |
+| seal-time re-run 2 (2.7363) | 16 | 0.0286 | 2.7306–2.7458 (disjoint) | yes, completely |
+| seal-time re-run 3 (2.6772) | 16 | 0.0286 | 2.6664–2.6971 (disjoint) | yes, completely |
+| seal-time re-run 4 (2.7145) | 16 | 0.0286 | 2.7107–2.7290 (disjoint) | yes, completely |
+| **seal-time re-run 5 (2.9684)** | **14** | **0.1143** | **2.8338–3.4035 (OVERLAPS)** | **NO** |
+
+The declaration carried since the first re-run — *"the confirmation run does not separate from the
+adjudicated one; every seal-time re-run does, completely"* — **is no longer true as written.** Its
+first clause survives; its second does not. `docs/PRE_REGISTRATION.md` is **not** edited: changing
+a pre-registered document because a later measurement disagreed with it is the thing
+pre-registration exists to prevent. The disagreement is recorded here instead, and what to do about
+it is the Commander's.
+
+**What this run does NOT license.** It is a single run. U = 14 with p = 0.1143 is *weaker* evidence
+of a difference than the four disjoint runs, not evidence of *no* difference; and the gate verdict
+is untouched — 2.9684 ms passes the ADR 0025 threshold of 5 ms with 1.68× headroom, and every
+mandatory limb passed. **G-3 is still PASS.** What changed is the auxiliary claim about whether
+seal-time runs separate from the adjudicated run, never the gate.
+
+**Not re-run.** The rule this report has applied since the first re-run is *run once, not re-run
+for a better number*, and it binds hardest when the number is unwelcome. One run was taken and it
+is the one recorded.
+
+**The code is not the cause, and that is measured rather than argued.** Between the v0.7 seal
+(`17e11c9`) and this candidate (`8ac7b21`) exactly three covered files changed —
+`src/harness/campaign.py`, `src/harness/runner.py`, `src/harness/latency_collector.py`. G-3 times
+`B3Arm.decide` alone; `src/sut/baselines/b3.py`, `src/sut/baselines/base.py`,
+`src/sut/capability/authority.py` and `src/harness/authorizer/allowed.py` all carry **byte-identical
+git blobs** at the two commits. `campaign.py` and `latency_collector.py` are not imported by the
+spike at all, and `runner.py`'s change is purely additive — a new `TimingSeams.durations_ms()` that
+nothing on the timed path calls, plus a docstring. Nothing inside the timed span moved.
+
+**What the run's own shape says.** The IQR is **0.4413 ms against 0.1337 ms** last time — 3.3×
+wider — the drift is **+7.4%** where the previous five ran between −5.8% and −0.2%, and the batch
+medians are not a monotone thermal ramp (the *lowest*, 2.8338, is batch 2; the *highest*, 3.4035,
+is batch 4). A wider spread with an erratic batch order is the signature of contention rather than
+of a slower mechanism. Ambient load was sampled **before** the run and not during it — 4.85
+CPU-seconds over 8 s across 20 logical processors, roughly 3% of capacity, the largest consumers a
+browser and an editor which, like the pinned spike, prefer the P-cores. That is evidence, not a
+cause: **no cause is established, and none is claimed.**
+
+**Sighting C is not thereby explained either.** This is a spread within a 1,000-pair timing run,
+not the per-operation stall whose appearance would make Sighting C a measurement problem; the raw
+per-pair values are not persisted by the spike, so this run cannot settle that question in
+either direction.

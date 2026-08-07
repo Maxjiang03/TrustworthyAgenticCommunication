@@ -27,6 +27,55 @@ should expect from the sealed record.
 
 ---
 
+## D-008 — 2026-08-07 — The seventh G-3 median changed an auxiliary finding, and the v0.8 seal STOPPED on it
+
+**Environment drift observed on the row 9 platform**, which is what this file exists to carry.
+
+Task B2's PHASE 1 re-measured G-3 on the v0.8 sealing candidate `8ac7b21`, first and alone, before
+any other gate. **The gate PASSED: median 2.9684 ms against the ADR 0025 threshold of 5 ms.** No
+pre-registered predicate, threshold or analysis rule changed, and none was edited.
+
+**What did change** is the auxiliary claim `smoke/g3/REPORT.md` has carried since the first
+seal-time re-run: *"the confirmation run does not separate from the adjudicated one; every
+seal-time re-run does, completely."* Recomputed exactly over all C(8,4) = 70 labelings, this run
+gives **U = 14, exact two-sided p = 0.1143, batch range 2.8338–3.4035, which OVERLAPS** the
+adjudicated 2.7511–2.9190. Four of five seal-time re-runs separate completely; this one does not.
+The full table, the seven medians and the evidence that the drifted code is **not** the cause
+(`b3.py`, `base.py`, `authority.py` and `allowed.py` are byte-identical between `17e11c9` and
+`8ac7b21`, and G-3 times `B3Arm.decide` alone) are in `smoke/g3/REPORT.md`.
+
+**The seal was STOPPED at this point** — the B2 brief makes a changed finding a stopping condition.
+Gates G-6, G-7, G-10 and G-12 were **not** run; no manifest was built, no anchor stamped, nothing
+superseded and no sealing commit made. `docs/PRE_REGISTRATION.md` is untouched.
+
+**Not re-run for a better number.** One run was taken. The rule binds hardest when the number is
+unwelcome.
+
+## D-007 — 2026-08-07 — The sealed platform reader crashes under a PowerShell parent process. Fails closed; not fixed here.
+
+**A latent defect in a COVERED file**, `src/harness/measurement_platform.py`, found while reading
+frozen row 9 for the v0.8 seal. Recorded, **not fixed**, because fixing it mid-seal would add a
+third drifted covered file to a reseal whose scope the Commander had already measured.
+
+**What it is.** `_powershell()` calls `subprocess.run(..., text=True)` with **no `encoding=`**, so
+Python decodes the child's bytes with the locale codepage — `cp936` on this machine. What the child
+emits depends on the *parent*: under a `bash`/`cmd` parent, nested PowerShell writes **GBK**, which
+cp936 decodes correctly; under a **PowerShell** parent it writes **UTF-8**, which cp936 cannot
+decode. The result is `UnicodeDecodeError` inside `subprocess`, then `AttributeError: 'NoneType'
+object has no attribute 'strip'` at `active_power_scheme()`. **Row 9 cannot be read and G-3 cannot
+be adjudicated from a PowerShell parent.** This is the same defect class as the `smoke/g10/spike.py`
+decode fault fixed at the v0.7 seal.
+
+**Why it is not urgent: it fails CLOSED.** It either returns the correct value or crashes loudly.
+It never returns a *wrong* platform fact, so no measurement taken through it is in doubt — unlike
+the G-10 fault, which silently discarded evidence, or ADR 0046's, which turned a timeout into a
+denial. Row 9 as read for this seal is correct and complete: 37 leaves, `power_scheme_name` =
+U+9AD8 U+6027 U+80FD with zero replacement characters, matching `docs/measurement_platform.md`.
+
+**Why it matters anyway.** It is a **reproducibility** defect in sealed apparatus: an independent
+reproducer on Windows driving the campaign from PowerShell hits it on the first step. It is a
+candidate for an ADR and a fix at whatever reseal the Commander next authorises.
+
 ## D-006 — 2026-08-07 — RQ4's latency pass. The half of step 7 that had not run.
 
 **Not a departure from the plan; a departure from what was REPORTED.** The step 7 completion report
