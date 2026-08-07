@@ -246,6 +246,18 @@ reader will think of them too:** the random `KeyPair()` (0 failures in 300 direc
 CPU contention alone (0/6 under 16 busy-loop workers). A third — randomised test order — was
 refuted by checking: `pytest-randomly` is **not installed**, so order is deterministic.
 
+**The repair, and its validation.** ADR 0046 sets the budget explicitly (1 s, ~1000x the observed
+cost) and makes a limits breach **raise** rather than deny; the boundary re-raises it and the
+campaign records the cell **UNSCORABLE** with its cause, exactly as `clock_refusal` treats the
+straddle. Validated on the committed state: **twenty consecutive full-suite runs, 1571 passed
+every time, zero failures.** Before it: 1/6 at HEAD, 1/12 pooled, 1/18 on the `cdf185d` control.
+
+**Sighting C is recurring, and it is why the unscorable path matters more than the number.** Two of
+those runs took **217 s against a 36 s norm** and still passed. A stall of that size makes ANY
+wall-clock budget trippable, so the protection cannot be a larger constant — it has to be that a
+breach can never become a verdict. Cause of the stall itself: still **UNDETERMINED**, still open,
+now observed often enough to be routine rather than exceptional.
+
 **Not claimed:** that this is the same cause as Sightings A, B or C, or that the pre-repair
 control's unnamed failure was this test.
 
