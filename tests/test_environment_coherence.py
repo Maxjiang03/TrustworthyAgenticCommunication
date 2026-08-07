@@ -114,3 +114,92 @@ class TestTheDockerContextExcludesTheHostVirtualenv:
         what makes it safe, so this pins the shape the fix assumes."""
         dockerfile = (REPO_ROOT / "Dockerfile").read_text(encoding="utf-8")
         assert dockerfile.index("uv sync") < dockerfile.index("COPY . .")
+
+
+class TestTheConsoleDecodingOfPlatformQueries:
+    """DEVIATIONS D-007. The sealed platform reader shells out to PowerShell for
+    facts that row 9 seals, and what encoding comes back depends on the PARENT
+    process: GBK under a `bash`/`cmd` parent, UTF-8 under a PowerShell one.
+
+    The second instance of a defect class already paid for once -- `smoke/g10/`
+    was fixed for it a seal earlier. The shape of the fix matters as much as the
+    fix: a FIXED encoding repairs one parent and silently corrupts the other,
+    and a corrupted row 9 field is worse than an unread one.
+    """
+
+    def test_utf8_console_bytes_decode(self):
+        from src.harness.measurement_platform import _decode_console
+
+        assert _decode_console("高性能".encode("utf-8")) == "高性能"
+
+    def test_locale_codepage_bytes_decode_when_they_are_not_utf8(self):
+        """The `bash`-parent case on the row 9 platform: cp936 bytes, which are
+        NOT valid UTF-8. Derived from this machine's codepage at test time so
+        the test states a contract rather than hard-coding cp936."""
+        import locale
+
+        from src.harness.measurement_platform import _decode_console
+
+        codec = locale.getencoding()
+        try:
+            raw = "高性能".encode(codec)
+        except UnicodeEncodeError:  # pragma: no cover - a codepage without CJK
+            return
+        if raw == "高性能".encode("utf-8"):  # pragma: no cover - a UTF-8 locale
+            return
+        assert _decode_console(raw) == "高性能"
+        assert "\ufffd" not in _decode_console(raw)
+
+    def test_undecodable_bytes_are_REFUSED_rather_than_replaced(self):
+        """Fail closed. `errors="replace"` here would write mojibake into a
+        sealed platform fact, which no later reader could distinguish from a
+        machine that really is named that."""
+        import pytest
+
+        from src.harness.measurement_platform import PlatformError, _decode_console
+
+        with pytest.raises(PlatformError, match="guessed decoding"):
+            _decode_console(b"\xff\xfe\xff\xfe scheme")
+
+    def test_the_literal_fixed_encoding_would_have_corrupted_the_bash_parent(self):
+        """The rejected alternative, pinned so nobody re-applies it. This is why
+        `_decode_console` tries codecs strictly instead of fixing one."""
+        import locale
+
+        codec = locale.getencoding()
+        try:
+            raw = "高性能".encode(codec)
+        except UnicodeEncodeError:  # pragma: no cover
+            return
+        if raw == "高性能".encode("utf-8"):  # pragma: no cover - a UTF-8 locale
+            return
+        corrupted = raw.decode("utf-8", errors="replace")
+        assert "\ufffd" in corrupted and "高性能" not in corrupted
+
+    def test_powershell_captures_bytes_and_never_asks_subprocess_to_decode(self):
+        """Structural, so a future edit that reinstates `text=True` or pins an
+        encoding on the subprocess call is a test failure and not a surprise on
+        someone else's machine."""
+        import ast
+
+        source = (REPO_ROOT / "src" / "harness" / "measurement_platform.py").read_text(
+            encoding="utf-8"
+        )
+        tree = ast.parse(source)
+        function = next(
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.FunctionDef) and node.name == "_powershell"
+        )
+        calls = [
+            node
+            for node in ast.walk(function)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "run"
+        ]
+        assert len(calls) == 1, "expected exactly one subprocess.run in _powershell"
+        keywords = {keyword.arg for keyword in calls[0].keywords}
+        assert "text" not in keywords, "text=True makes subprocess guess the codec again"
+        assert "encoding" not in keywords, "a fixed encoding corrupts one of the two parents"
+        assert "capture_output" in keywords

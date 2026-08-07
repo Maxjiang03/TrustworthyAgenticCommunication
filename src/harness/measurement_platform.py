@@ -30,6 +30,7 @@ measurement is `smoke/g3/`'s.
 """
 
 import ctypes
+import locale
 import os
 import platform
 import re
@@ -197,14 +198,56 @@ def pin_to_performance_cores() -> tuple[int, ...]:
 # ---------------------------------------------------------------------------
 # power
 # ---------------------------------------------------------------------------
+def _decode_console(raw: bytes) -> str:
+    """Decode a Windows console tool's bytes, or REFUSE. Never guess silently.
+
+    **This is the second instance of a defect class this repository has already
+    paid for once** (DEVIATIONS D-007; the first was `smoke/g10/spike.py`, fixed
+    a seal earlier at v0.7, where `subprocess(text=True)` with no `encoding=`
+    threw on cp936 and discarded fourteen subgates' evidence).
+
+    Why a fixed encoding is not the fix here. `powercfg` writes the localised
+    power-scheme name in the OEM codepage, and **what reaches this process
+    depends on the PARENT**: under a `bash`/`cmd` parent the nested PowerShell
+    emits **GBK**, under a **PowerShell** parent it emits **UTF-8**. Both were
+    measured. So:
+
+    - `text=True` with no `encoding=` (what this did) decodes with the locale
+      codepage: correct under `bash`, and a hard `UnicodeDecodeError` under
+      PowerShell, which made row 9 unreadable and G-3 unadjudicable there;
+    - `encoding="utf-8", errors="replace"` fixes the PowerShell parent and
+      **silently turns the correct name into U+FFFD under `bash`** — the shell
+      every G-3 run and every row 9 read has actually used. That trades a loud
+      failure for a quiet wrong answer **in the code that reads the sealed
+      measurement platform**, which is the wrong direction.
+
+    So each candidate encoding is tried **strictly**, in order, and the first
+    that decodes cleanly wins — GBK bytes are rejected by UTF-8 on their first
+    lead byte, and UTF-8 bytes are accepted before the locale codepage is
+    reached. If none decodes, this **raises** rather than returning replacement
+    characters: `errors="replace"` would put mojibake into a sealed platform
+    fact, and this module's rule is that a value it cannot read is *reported,
+    not reconciled* — the same reason `performance_cpus()` fails closed.
+    """
+    for codec in ("utf-8", locale.getencoding()):
+        try:
+            return raw.decode(codec)
+        except (UnicodeDecodeError, LookupError):
+            continue
+    raise PlatformError(
+        "could not decode the console output of a platform query as UTF-8 or as the locale "
+        f"codepage ({locale.getencoding()}). Refusing to seal a row 9 field read through a "
+        "guessed decoding: a mojibake platform fact is worse than an unread one"
+    )
+
+
 def _powershell(script: str) -> str:
     result = subprocess.run(
         ["powershell", "-NoProfile", "-NonInteractive", "-Command", script],
-        capture_output=True,
-        text=True,
+        capture_output=True,  # BYTES, deliberately: see `_decode_console`
         timeout=120,
     )
-    return result.stdout.strip()
+    return _decode_console(result.stdout).strip()
 
 
 def on_ac_power() -> bool:

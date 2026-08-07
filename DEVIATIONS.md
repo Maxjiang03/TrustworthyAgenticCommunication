@@ -51,7 +51,7 @@ superseded and no sealing commit made. `docs/PRE_REGISTRATION.md` is untouched.
 **Not re-run for a better number.** One run was taken. The rule binds hardest when the number is
 unwelcome.
 
-## D-007 — 2026-08-07 — The sealed platform reader crashes under a PowerShell parent process. Fails closed; not fixed here.
+## D-007 — 2026-08-07 — The sealed platform reader crashes under a PowerShell parent process. **FIXED at task B2 STEP 2 (ADR `000C`).**
 
 **A latent defect in a COVERED file**, `src/harness/measurement_platform.py`, found while reading
 frozen row 9 for the v0.8 seal. Recorded, **not fixed**, because fixing it mid-seal would add a
@@ -73,8 +73,24 @@ denial. Row 9 as read for this seal is correct and complete: 37 leaves, `power_s
 U+9AD8 U+6027 U+80FD with zero replacement characters, matching `docs/measurement_platform.md`.
 
 **Why it matters anyway.** It is a **reproducibility** defect in sealed apparatus: an independent
-reproducer on Windows driving the campaign from PowerShell hits it on the first step. It is a
-candidate for an ADR and a fix at whatever reseal the Commander next authorises.
+reproducer on Windows driving the campaign from PowerShell hits it on the first step.
+
+**FIXED, at the Commander's instruction, in the v0.8 seal (ADR `000C`).** `_powershell()` now
+captures bytes and `_decode_console()` tries `utf-8` then the locale codepage **strictly**, taking
+the first clean decode and **raising** if neither works.
+
+**The instructed fix was `encoding="utf-8", errors="replace"` — the same one G-10 received — and it
+was measured before being applied, which is why it was not applied literally.** On this machine it
+repairs the PowerShell parent and **silently corrupts the `bash` parent**, turning `高性能` into
+`������` — and `bash` is the parent every one of the seven G-3 runs and every row 9 read has used.
+That would have traded a **loud crash** for a **quiet wrong answer inside a sealed platform fact**,
+which is the opposite of the direction this project fails in. The strict fallback chain is correct
+under both parents; all three behaviours are tabulated in ADR `000C`.
+
+**Verified after the fix:** row 9 read under a `bash` parent and under a PowerShell parent is
+**byte-identical, 37 leaves, 0 differing**, `power_scheme_name` = U+9AD8 U+6027 U+80FD, no
+replacement character under either. **No previously sealed row 9 value is in doubt** — the defect
+crashed or was correct, never wrong.
 
 ## D-006 — 2026-08-07 — RQ4's latency pass. The half of step 7 that had not run.
 
