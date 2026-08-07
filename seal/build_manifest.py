@@ -1,4 +1,4 @@
-"""Build the detached v0.7 seal manifest (Part H step 3, step 6).
+"""Build the detached v0.8 seal manifest (Part H step 3, step 6).
 
 Coverage is Part H step 3's list, made concrete file by file; every tracked
 file the manifest does NOT cover is enumerated inside the manifest with the
@@ -13,7 +13,7 @@ with `git cat-file blob <commit>:<path>` — so a fresh clone made with
 plumbing. The manifest is DETACHED: it lives under `seal/`, which it does not
 cover, and no covered file names it.
 
-    uv run python seal/build_manifest.py [--commit HEAD] [--out seal/manifest_v0.7.json]
+    uv run python seal/build_manifest.py [--commit HEAD] [--out seal/manifest_v0.8.json]
 """
 
 import argparse
@@ -34,6 +34,13 @@ COVERED_EXACT = {
     "pyproject.toml": "the dependency environment (declaration)",
     "uv.lock": "the dependency environment (resolved versions, with hashes)",
     "Dockerfile": "the dependency environment (pinned container, §J.1 item 2)",
+    "src/harness/latency_collector.py": (
+        "RQ4's INSTRUMENT, covered deliberately and named here rather than left to the src/ rule. "
+        "It produces results/raw/latency-pilot.json, which is the only data RQ4 and frozen row 1's "
+        "lightweight_claim have; at v0.7 it did not exist, so RQ4's pass ran on an UNSEALED "
+        "collector (DEVIATIONS D-006, ADR 0047). Sealing it is a principal reason this manifest "
+        "exists: the apparatus that produced a reported number must be inside the seal"
+    ),
 }
 COVERED_PREFIX = {
     "src/": "implementation and oracle code, incl. the configuration artifacts "
@@ -66,19 +73,32 @@ EXCLUDED_PREFIX = {
     "at step 3",
     "adr/": "the decision trail; a historical record pinned by the "
     "implementation commit, deliberately outside the hashed candidate so a "
-    "post-seal ADR can record a deviation without touching the seal",
+    "post-seal ADR can record a deviation without touching the seal. This "
+    "covers ADR 0047 (why RQ4's pass had no data) and the unnumbered `000C` "
+    "(the D-007 platform-reader fix): both EXPLAIN this seal and neither is "
+    "an input to a measurement, which is exactly the distinction this class "
+    "draws",
     "tools/": "repository-history proofs and re-run records (reframe, workplan, "
     "gate_rerun); records about the repository, not campaign inputs",
     "docs/workplan/": "archived work specifications; history, not apparatus",
     "seal/": "the manifest and its tooling — DETACHED by Part H step 6: a "
     "manifest never covers itself, and the temporal-anchor proof that will sit "
-    "beside it cannot be inside what it anchors",
+    "beside it cannot be inside what it anchors. The same rule excludes every "
+    "SUPERSEDED manifest and its proof under seal/superseded/ (v0.5, v0.6 and "
+    "now v0.7): they are kept forever and never deleted, but a superseded "
+    "manifest is a historical claim about a different tree, not an input to "
+    "this one",
     ".github/": "CI configuration; regression protection, never adjudicative "
     "(frozen row 2's own rule)",
-    "results/": "the campaign OUTPUT tree, write-once and empty until step 7 "
-    "(three .gitkeep placeholders at seal time); outputs are governed by §J.4's "
-    "raw-trace archival rule and are produced by the sealed apparatus, never "
-    "sealed before they exist",
+    "results/": "the campaign OUTPUT tree. **No longer empty: Part H step 7 RAN "
+    "ONCE on 2026-08-07 at the v0.7 sealing commit `17e11c9`, and the RQ4 "
+    "latency pass followed it.** Outputs stay EXCLUDED for the reason they "
+    "always were — an output is produced BY the sealed apparatus and cannot be "
+    "an input to it, and hashing a result into the manifest that adjudicates it "
+    "would make the seal circular. They are governed instead by §J.4's "
+    "raw-trace archival rule: immutable, admitted to version control by a "
+    "deliberate .gitignore change, and hashed in DEVIATIONS D-005 rather than "
+    "here",
 }
 EXCLUDED_EXACT = {
     "docs/threat_model.md": "threat model and assumptions page; context for the "
@@ -98,6 +118,30 @@ EXCLUDED_EXACT = {
         "the deviations log (§J.4 item 13). Deliberately EXCLUDED: it must be appendable after "
         "the seal without forcing a reseal, which is the entire point of keeping one. It records "
         "departures from the sealed design; it is not part of it"
+    ),
+    "results/raw/campaign-confirmatory.json": (
+        "THE RAW TRACE of the one confirmatory campaign, run ONCE on 2026-08-07 at the v0.7 "
+        "sealing commit `17e11c9`. An OUTPUT of the sealed apparatus, never an input: it is "
+        "excluded so the manifest cannot come to certify the result it exists to make "
+        "adjudicable. Immutability is carried elsewhere and more strongly — both its "
+        "committed-blob and on-disk SHA-256 are recorded in DEVIATIONS D-005, and it is in git "
+        "history, where it cannot be edited without rewriting it (§J.4 item 14)"
+    ),
+    "results/tables/results-confirmatory.json": (
+        "The scored cell table DERIVED from the raw trace by the covered analysis code. Excluded "
+        "as an output; anyone may recompute it from the trace with the sealed analysis layer, "
+        "which is the check that matters and which hashing it here would not add to"
+    ),
+    "results/tables/results-confirmatory.md": (
+        "The human-readable rendering of the same scored table. Excluded as an output, and "
+        "doubly so: a presentation layer is the last thing that should be able to force a reseal"
+    ),
+    "results/raw/latency-pilot.json": (
+        "RQ4's raw per-repetition span durations, measured on the PILOT corpus 2026-08-07 (ADR "
+        "0047, DEVIATIONS D-006). An OUTPUT, excluded on the same rule — but note the asymmetry "
+        "this manifest deliberately creates: the COLLECTOR that produced it "
+        "(src/harness/latency_collector.py) is COVERED for the first time here, while the data "
+        "it produced stays outside. Apparatus in, results out"
     ),
     ".pre-commit-config.yaml": "repository hygiene (lint hooks)",
     ".python-version": "developer convenience; the adjudicative interpreter "
@@ -127,9 +171,9 @@ def classify(path: str) -> "tuple[str, str] | None":
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="build the detached v0.7 seal manifest")
+    parser = argparse.ArgumentParser(description="build the detached v0.8 seal manifest")
     parser.add_argument("--commit", default="HEAD")
-    parser.add_argument("--out", default="seal/manifest_v0.7.json")
+    parser.add_argument("--out", default="seal/manifest_v0.8.json")
     args = parser.parse_args()
 
     commit = _git_bytes("rev-parse", args.commit).decode().strip()
@@ -156,20 +200,32 @@ def main() -> int:
         return 1
 
     manifest = {
-        "_what": "Detached seal manifest for the v0.7 candidate "
+        "_what": "Detached seal manifest for the v0.8 candidate "
         "(docs/EXPERIMENT_ARCHITECTURE_FINAL.md, Part H step 3). The manifest is "
         "detached: nothing it covers contains it, and it does not cover seal/. "
-        "v0.7 SUPERSEDES v0.6, which superseded v0.5; every superseded manifest and "
-        "its temporal-anchor proof is KEPT under seal/superseded/, never deleted. "
+        "v0.8 SUPERSEDES v0.7, which superseded v0.6, which superseded v0.5; every "
+        "superseded manifest and its temporal-anchor proof is KEPT under "
+        "seal/superseded/, never deleted. "
         "v0.5 was sealed with inputs from which no confirmatory corpus was producible "
         "(ADR 0043). v0.6 sealed a tree whose apparatus could not EXECUTE Part H step "
-        "7 and would, in two places, have measured wrongly: the oracle could never "
-        "verify a DeclassificationArtifact, and realized_harm_F4 was structurally "
-        "always False (ADR 0044). A third defect, found before the campaign and not "
-        "after it, turned a Datalog evaluation timeout into a DENIAL, which could "
-        "silently shrink an authority set on a busy machine (ADR 0046). No result is "
-        "superseded, because Part H step 7 has never run: the 'once' is unspent. "
-        "Each supersession is the seal working -- the defects were found by auditing "
+        "7 and would, in two places, have measured wrongly (ADR 0044), and a third "
+        "defect turned a Datalog evaluation timeout into a DENIAL (ADR 0046). "
+        "**v0.8 IS THE FIRST RESEAL THAT IS NOT A REPAIR OF A BROKEN SEAL, AND THE "
+        "FIRST TAKEN AFTER A RESULT EXISTS.** Part H step 7 RAN ONCE, on 2026-08-07, "
+        "at the v0.7 sealing commit 17e11c9: the 'once' is SPENT, the raw trace is "
+        "archived at results/raw/campaign-confirmatory.json, and **NO RESULT IS "
+        "SUPERSEDED BY THIS MANIFEST** -- v0.7 remains the seal under which the "
+        "campaign was run and against which it must be checked. v0.8 exists for three "
+        "reasons, none of which touches a campaign result: (1) RQ4's latency pass ran "
+        "on an UNSEALED collector, because src/harness/latency_collector.py did not "
+        "exist at v0.7 -- the apparatus behind a reported number was outside the seal "
+        "(DEVIATIONS D-006, ADR 0047), and it is COVERED here; (2) the sealed platform "
+        "reader crashed under a PowerShell parent process, so row 9 was unreadable and "
+        "G-3 unadjudicable there (D-007, ADR 000C); (3) the G-3 drift disclosure in "
+        "docs/PRE_REGISTRATION.md had become false and was amended BY DATED ADDITION, "
+        "with the original wording preserved verbatim -- a disclosure, never a "
+        "hypothesis, and no hypothesis, decision rule or gate criterion was touched. "
+        "Each supersession is the seal working -- every defect was found by auditing "
         "and running the sealed tree rather than by publishing from it.",
         "hash_definition": "SHA-256 over the committed git blob bytes (LF as stored). "
         "A fresh clone with core.autocrlf=false reproduces every hash by reading "
