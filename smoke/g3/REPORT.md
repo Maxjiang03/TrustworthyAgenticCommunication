@@ -356,3 +356,51 @@ cause: **no cause is established, and none is claimed.**
 not the per-operation stall whose appearance would make Sighting C a measurement problem; the raw
 per-pair values are not persisted by the spike, so this run cannot settle that question in
 either direction.
+
+### Seal-time re-run 6 — 2026-08-07, at the v0.8 sealing candidate `c9d63ee` — the EIGHTH median
+
+Re-run for the **v0.8** reseal (task B2 STEP 3), first and alone under the cp936 console codepage,
+before any other gate. Not a re-adjudication. Taken **after** the declaration in
+`docs/PRE_REGISTRATION.md` was amended (2026-08-07) and under the Commander's revised stopping
+condition: **stop only if this median falls outside the observed band 2.6772–2.9684 ms or fails the
+5 ms threshold.** It does neither.
+
+| | |
+|---|---|
+| **median** | **2.7527 ms** — **PASS (≤ 5 ms)** |
+| p95 / IQR | 3.1683 / **0.1161** ms |
+| batch medians | 2.7574, 2.7512, 2.7571, 2.7475 ms |
+| last-vs-first drift | **−0.4%** |
+| headroom to the bar | 2.2473 ms |
+| G-3.H1 / G-3.H2 | PASS (P-cores from `GetSystemCpuSetInformation`) / PASS (on AC) |
+
+**The eight medians: 2.8264 (adjudicated, the record) → 2.6928 → 2.6856 → 2.7363 → 2.6772 →
+2.7145 → 2.9684 → 2.7527.** The eighth sits **inside** the band the seventh widened, so the span
+is **unchanged at 2.6772–2.9684 ms (0.2912 ms, 1.46% of the 20 ms margin)** and the adjudicated
+2.8264 still sits inside it. **No stopping condition is met.**
+
+**The run's shape returned to the earlier pattern, which is itself informative.** IQR **0.1161 ms**
+against re-run 5's **0.4413 ms** — back to the 0.11–0.14 band of re-runs 1–4 — and drift **−0.4%**
+against re-run 5's **+7.4%**, with the batch medians tight (2.7475–2.7574, a spread of 0.0099 ms).
+Re-run 5 was the wide, erratic one and re-run 6 is not; **no cause is claimed for either**, and the
+two are recorded side by side rather than averaged.
+
+**Recomputed over all eight runs** (exact Mann-Whitney, all C(8,4) = 70 labelings per pair, from the
+recorded batch tables): **18 of the 28 pairwise comparisons separate completely** at U = 16,
+p = 0.0286, and 10 do not; **excluding the adjudicated run, 14 of 21 separate.** Re-run 6 separates
+completely from re-runs 1, 2, 3, 4 and 5, and does **not** separate from the adjudicated run.
+
+**The sharpest illustration the record now contains.** Re-run 2 (median 2.7363 ms) and re-run 6
+(median **2.7527 ms**) differ by **0.0164 ms — six tenths of one percent** — and the test reports
+**complete separation, U = 16, p = 0.0286**, the extreme attainable value. Two runs sixteen
+microseconds apart cannot meaningfully be said to differ, and `src/sut/baselines/b3.py`, which owns
+the `decide` call that is the only thing G-3 times, carries the **byte-identical blob `03ec47be`**
+at both commits. This is the amended declaration's point made as plainly as the data can make it:
+**at n = 4 vs 4 the statistic reaches its extreme whenever four tightly-clustered batch medians sit
+above four others, so "separates completely" here reports the tightness of each run, not a
+difference between them.**
+
+**The apparatus changed between re-run 5 and re-run 6, and not on the timed path.** `c9d63ee`
+carries the D-007 fix to `src/harness/measurement_platform.py` (ADR `000C`) and the amended
+`docs/PRE_REGISTRATION.md`. Neither is imported by the timed span: the platform reader runs once at
+start-up to pin cores and confirm AC, and `b3.py` is unchanged.

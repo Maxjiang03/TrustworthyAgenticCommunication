@@ -489,26 +489,40 @@ class TestTheAmendedG3Declaration:
     median owned by a report, and every one of the 21 pairwise comparisons
     RECOMPUTED here rather than read back from the document."""
 
-    def test_the_seven_medians_and_twenty_eight_batch_medians_trace_to_their_reports(self):
+    def test_every_median_and_batch_median_traces_to_its_owning_report(self):
         runs = _g3_runs()
-        assert len(runs) == 7, [run[0] for run in runs]
-        text = _pr()
-        seen: "list[float]" = []
+        assert len(runs) >= 7, [run[0] for run in runs]
         for name, median, batches, owner in runs:
             source = owner.read_text(encoding="utf-8")
             assert f"{median:.4f}" in source, f"{name}: median not in {owner.name}"
-            assert f"{median:.4f}" in text, f"{name}: median not in the pre-registration"
             assert len(batches) == 4, name
             for value in batches:
                 assert f"{value:.4f}" in source, f"{name}: batch median {value} not in {owner.name}"
-            seen.append(median)
-        assert len(seen) == 7
-        # 7 runs x 4 batches: the twenty-eight the amendment rests on.
-        assert sum(len(run[2]) for run in runs) == 28
+        # Four batch medians per run, every run.
+        assert sum(len(run[2]) for run in runs) == 4 * len(runs)
 
         # The two reports must agree on the adjudicated four, which both carry.
         adjudicated_from_rerun, _ = _rerun_batches()
         assert runs[0][2] == adjudicated_from_rerun
+
+    def test_the_documents_median_sequence_is_a_PREFIX_of_the_reports(self):
+        """The sealed document is dated; the gate report keeps running.
+
+        `docs/PRE_REGISTRATION.md` is a COVERED file, so a seal-time G-3 run
+        cannot be allowed to require editing it -- the gates would then never
+        have run on the tree that gets sealed. The invariant that keeps the
+        disclosure honest without that circularity is a PREFIX one: the
+        document's own list of medians must be exactly the first N the reports
+        record, in order. Later runs may EXTEND the record; none may contradict
+        the document, reorder it, or quietly drop a run from it.
+        """
+        documented = [float(value) for value in re.findall(r"\*\*(\d\.\d{4})\*\*", _pr())]
+        measured = [median for _, median, _, _ in _g3_runs()]
+        assert documented, "the pre-registration lists no medians"
+        assert len(documented) <= len(measured), (documented, measured)
+        assert documented == measured[: len(documented)], (documented, measured)
+        # And the document says how many it is speaking for.
+        assert f"measured **{len(documented)}**" in _pr() or "seven" in _pr_flat()
 
     def test_the_span_and_its_margin_fraction_are_derived_from_the_seven_medians(self):
         from src.harness import frozen_parameters as fp
@@ -528,10 +542,15 @@ class TestTheAmendedG3Declaration:
         assert max(medians) / fp.g3_threshold_ms() < 1.0, "a median exceeded the 5 ms threshold"
 
     def test_every_pairwise_mann_whitney_recomputes_from_the_parsed_tables(self):
-        """All 21 pairs, recomputed from the batch tables. The counts the
-        amendment states -- 13 separating, 8 not, and 9 of the 15 that exclude
-        the adjudicated run -- are DERIVED here and then required of the text."""
-        runs = _g3_runs()
+        """Every pair, recomputed from the batch tables rather than read back.
+
+        The counts are computed over exactly the runs the DOCUMENT speaks for
+        (its median list, which the prefix test pins to the reports), so that
+        the sealed document's stated counts stay checkable while the gate report
+        goes on accumulating runs after the seal.
+        """
+        documented = len(re.findall(r"\*\*(\d\.\d{4})\*\*", _pr()))
+        runs = _g3_runs()[:documented]
         separating = notseparating = 0
         separating_without_adjudicated = 0
         pairs_without_adjudicated = 0
@@ -547,9 +566,12 @@ class TestTheAmendedG3Declaration:
             if "adjudicated" not in (name_a, name_b):
                 pairs_without_adjudicated += 1
                 separating_without_adjudicated += disjoint
-        assert separating + notseparating == 21
-        assert (separating, notseparating) == (13, 8)
-        assert (separating_without_adjudicated, pairs_without_adjudicated) == (9, 15)
+        n = len(runs)
+        assert separating + notseparating == n * (n - 1) // 2
+        assert pairs_without_adjudicated == (n - 1) * (n - 2) // 2
+        # Both kinds of pair must be present, or the "some do and some do not"
+        # reading would be vacuous.
+        assert separating and notseparating
         text = _pr()
         assert f"{separating} separate completely" in text
         assert f"{notseparating} do not" in text
@@ -561,10 +583,40 @@ class TestTheAmendedG3Declaration:
         runs = _g3_runs()
         adjudicated = runs[0][1]
         later = [median for _, median, _, _ in runs[1:]]
-        assert len(later) == 6
-        assert all(median < adjudicated for median in later[:5]), later
-        assert later[5] > adjudicated
+        assert len(later) >= 6
+        above = [index for index, median in enumerate(later) if median > adjudicated]
+        assert above == [5], f"the first run above the record is no longer the seventh: {later}"
         assert "first" in _pr_flat() and "monotone" in _pr_flat()
+
+    def test_each_runs_median_lies_within_its_own_batch_medians(self):
+        """A median over four EQUAL batches must lie between the smallest and
+        largest batch median -- it cannot sit outside all four. So a report in
+        which it does has had the median or the batch row edited independently
+        of the other.
+
+        Added because a planted change that rewrote one run's batch medians and
+        left its median alone survived the first version of these checks: the
+        span test reads medians and the pairwise test reads batches, and nothing
+        compared the two halves of the same row.
+        """
+        for name, median, batches, owner in _g3_runs():
+            assert min(batches) <= median <= max(batches), (
+                f"{name} in {owner.name}: median {median} is outside its own batch medians "
+                f"{batches}, so one of the two has been edited"
+            )
+
+    def test_the_span_the_document_states_still_contains_every_later_run(self):
+        """The Commander's revised stopping condition, as a test: a seal-time
+        run outside the band the document declares is a STOP, so it must be a
+        test failure and not a paragraph nobody re-read."""
+        from src.harness import frozen_parameters as fp
+
+        medians = [median for _, median, _, _ in _g3_runs()]
+        low, high = min(medians), max(medians)
+        assert f"{low:.4f}–{high:.4f} ms" in _pr(), (
+            f"runs now span {low:.4f}-{high:.4f}, which the declaration does not state"
+        )
+        assert max(medians) < fp.g3_threshold_ms()
 
     def test_the_timed_code_is_byte_identical_across_the_five_sealtime_reruns(self):
         """`b3.py` owns the `decide` call that is the only thing G-3 times. The
