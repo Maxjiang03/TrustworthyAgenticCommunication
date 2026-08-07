@@ -219,9 +219,19 @@ exactly those sets. **The direction is AGAINST this work's hypothesis** (a capab
 more restrictive than it is), which is the same direction as Sightings B and the two ADR 0038
 reproductions — the §6.1 pattern still does not hold.
 
-**Not claimed:** that this is the same cause as Sightings A, B or C; that it is caused by the ADR
-0044 repairs (nothing they touch is on the biscuit authorizer path, and a pre-repair reproduction
-check was run — see below); or that it is resolved.
+**The pre-repair control, run rather than argued.** A fresh clone at `cdf185d` — the v0.6 sealing
+commit, before any ADR 0044 repair — was given **eighteen** full-suite runs on the same machine:
+**seventeen green (1408 passed), one RED with a single failure.** An intermittent full-suite
+failure therefore **predates the repairs**, at a rate (1/18) of the same order as the one observed
+after them (1/6, and 0/6 in an earlier set at the same HEAD — pooled, 1/12). That is evidence about timing and
+rate, not about identity: the harness captured only each run's summary line, so the failing test in
+that control run is not named here and is **not asserted to be this one**. What the control
+establishes is the claim that matters — the ADR 0044 repairs did not introduce intermittent
+full-suite failure into a suite that was previously deterministic, because it was not previously
+deterministic.
+
+**Not claimed:** that this is the same cause as Sightings A, B or C; that the pre-repair control's
+failure is the same test; or that any of it is resolved.
 
 ## Status
 
