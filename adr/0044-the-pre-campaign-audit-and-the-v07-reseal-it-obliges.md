@@ -128,6 +128,40 @@ the placeholder-letter convention of ADR 0042/0043 is not used here because the 
 before the file was written). **The reseal is owed:** the v0.7 candidate is not sealed by this ADR,
 and Part H step 7 remains forbidden until it is.
 
+### Repairs landed, 2026-08-07 — the v0.7 candidate
+
+Seven commits, each with seam tests watched failing against the unrepaired code first. Suite
+**1562 passed** on the row 9 platform, and CI is green for the first time since `ca360ae`.
+
+| commit | what it repaired |
+|---|---|
+| `a2f9730` | CI's shallow clone (`fetch-depth: 0`); `DEVIATIONS.md` opened; this ADR |
+| `593491d` | the declassification signature, the label directory, the stale observation |
+| `8a8d364` | the confirmatory sealed-truth read path, and the wall around it |
+| `b938c5a` | the Part H step 7 entry point and its two apparatus constants (ADR 0045) |
+| `77907f9` | the analysis layer: matrix as data, NOT-POPULATED, F4 qualification, H4a/H4b |
+| `12d4f72` | the one-second replay hole; one environment instead of two |
+| `42ee9ed` | dated corrections to four sealed documents; two guards that could evaporate |
+
+**Two defects were found by RUNNING the new code rather than by reading it**, and both are
+recorded because each would have reached the results chapter:
+
+1. The first join keyed observed cells by `(subcase, arm)` and collapsed the two monitor passes,
+   so every `A†` cell was compared against a `B` measured **under** a monitor — eight
+   "disagreements" that were entirely an artifact of the join. `A†` means *admitted absent the
+   shared monitor*, so the configuration is now part of the key.
+2. The first attempt to mark `NOT_POPULATED` matched §E.4's prose row labels to sealed-record
+   tokens by normalised string, and silently mis-marked three rows the corpus **does**
+   instantiate. A mis-marked row reads as covered, which is the one thing the F3 declaration
+   cannot tolerate. The correspondence is now an explicit table, checked fail-closed in both
+   directions.
+
+**What is NOT repaired, and is recorded as scope rather than fixed:** no test drives
+`credential_fault` through `run_scenario`, and separated (`sut_mode="separate"`) mode never injects
+one — its `fault` parameter is G-12's self-verdict vocabulary, a different set. The confirmatory
+campaign is single-process in-process by ADR 0034, so this bounds what the credential families
+measure rather than blocking step 7.
+
 ## Consequences
 
 - **Part H step 7 stays blocked** until the v0.7 seal is complete. The audit's finding that the
