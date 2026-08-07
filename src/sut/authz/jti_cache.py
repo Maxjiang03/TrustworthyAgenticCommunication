@@ -110,8 +110,17 @@ class JtiCache:
 
         Never revives a valid `jti`: only entries whose expiry has passed are
         removed, so a replay inside the window can never find the cache empty.
+
+        **The comparison is `<`, not `<=`, and the difference is one second of
+        replay.** ADR 0027 gives all three consumers ONE `Δ`, and
+        `src/sut/freshness.py` accepts a CLOSED window (`|now - iat| <= Δ`). A
+        half-open TTL disagreed with it at exactly `t + Δ`: the proof was still
+        fresh, the entry was already gone, and `B3⁺` admitted the bit-identical
+        in-`Δ` replay it exists to block -- in the one §E.4 row where `B3⁺`
+        differs from `B3` at all (ADR 0044). An entry now lives for as long as
+        the window will accept the proof it guards, and not one second less.
         """
-        expired = [key for key, expires_at in self._entries.items() if expires_at <= now]
+        expired = [key for key, expires_at in self._entries.items() if expires_at < now]
         for key in expired:
             del self._entries[key]
 

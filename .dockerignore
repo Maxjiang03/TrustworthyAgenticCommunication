@@ -1,0 +1,28 @@
+# The Dockerfile does `uv sync` and THEN `COPY . .`, so anything copied over
+# /app/.venv replaces the environment that was just built. On the row 9
+# machine .venv/ is a WINDOWS virtualenv -- Scripts/, a pyvenv.cfg naming a
+# Windows interpreter -- and copying it into a Linux image left
+# ENV PATH="/app/.venv/bin" pointing at a directory that does not exist. The
+# sealed reproduction container could not be built from a working tree, which
+# is the one thing a reproduction container has to do (ADR 0044).
+#
+# git ignores most of this already; Docker does not read .gitignore.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.uv-cache/
+.uv_cache/
+
+# Campaign output and evidence trees: large, regenerated, and never an input
+# to a build.
+results/
+smoke/g10/_ledger_tmp/
+
+# Repository metadata the image has no use for.
+.git/
+.github/
+.gitignore
+.dockerignore

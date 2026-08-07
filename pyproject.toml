@@ -6,12 +6,19 @@ authors = [{ name = "Yixian Jiang" }]
 license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.11"
+# numpy, scipy and pyyaml were declared here and imported by NOTHING -- verified
+# by an import scan across src/, analysis/, fixtures/, tests/, smoke/ and
+# tools/. They were also the sole cause of a split resolution: `uv.lock` is a
+# universal resolve, so a 3.11 interpreter and the sealed 3.13 one pinned
+# DIFFERENT numpy/scipy versions, which made "the pinned environment" two
+# environments. Removed rather than kept for a future need: an unused dependency
+# in a sealed environment is a claim the seal cannot support. The one
+# pre-registered statistic outside `analysis/` -- the exact Mann-Whitney U over
+# 70 labelings -- is stdlib `itertools.combinations`, and `analysis/latency.py`
+# implements its bootstrap CI with stdlib `random` + `statistics` (ADR 0044).
 dependencies = [
   "pydantic>=2.7",
-  "pyyaml>=6.0",
   "cryptography>=42.0",
-  "numpy>=1.26",
-  "scipy>=1.11",
   # Exact pin — verified by gate G-1 (ADR 0002); any version bump re-triggers G-1.
   "biscuit-python==0.4.0",
   # Exact pin — verified by gate G-8 (ADR 0005); any version bump re-triggers G-8.

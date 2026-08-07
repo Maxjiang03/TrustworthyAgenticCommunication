@@ -86,14 +86,27 @@ class TestTheCacheIsAdr0027s:
         assert cache.consume("inv", "same-id", now=0) is Consumption.DUPLICATE
 
     def test_an_entry_expires_after_delta_by_advancing_the_instant(self):
-        """No sleep: the injected instant moves instead (ADR 0027)."""
+        """No sleep: the injected instant moves instead (ADR 0027).
+
+        **The boundary second moved, and this test used to pin the defect.**
+        It asserted that `t + Δ` ADMITTED -- a half-open TTL -- while
+        `src/sut/freshness.py` accepts a CLOSED window, so at exactly `t + Δ`
+        the proof was still fresh and its `jti` was already released: `B3⁺`
+        admitted the in-`Δ` replay that is its only reason to exist, in the one
+        §E.4 row where it differs from `B3`. ADR 0027 gives all three consumers
+        ONE `Δ`, so the cache must guard a proof for as long as the window will
+        accept it. The property this test exists for -- entries DO expire, and
+        by advancing the injected instant rather than sleeping -- is unchanged
+        and still asserted one second later (ADR 0044).
+        """
         cache = JtiCache()
         assert cache.consume("inv", "cid", now=1_000) is Consumption.ADMITTED
-        assert cache.consume("inv", "cid", now=1_000 + 60) is Consumption.ADMITTED
-        # Negative arm: one second earlier it is still unexpired.
+        assert cache.consume("inv", "cid", now=1_000 + 61) is Consumption.ADMITTED
+        # Negative arm: AT the boundary it is still guarded, so the expiry
+        # above is the entry ageing out rather than the cache forgetting early.
         fresh = JtiCache()
         assert fresh.consume("inv", "cid", now=1_000) is Consumption.ADMITTED
-        assert fresh.consume("inv", "cid", now=1_000 + 59) is Consumption.DUPLICATE
+        assert fresh.consume("inv", "cid", now=1_000 + 60) is Consumption.DUPLICATE
 
     def test_overflow_fails_closed_and_evicts_no_unexpired_entry(self):
         """ADR 0027: availability is deliberately sacrificed to integrity.

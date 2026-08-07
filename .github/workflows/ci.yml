@@ -28,7 +28,10 @@ jobs:
 
       - uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.11"
+          # The SEALED interpreter (frozen_parameters row 9: Python 3.13.5).
+          # CI is regression protection only and never adjudicative (row 2),
+          # but it should protect the version the campaign is measured on.
+          python-version: "3.13"
 
       - name: Sync pinned environment (locked)
         run: uv sync --frozen
