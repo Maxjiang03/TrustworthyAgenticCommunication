@@ -19,8 +19,8 @@ the seal, which the git history and the ADR log already record.
 no re-run, and no post-seal infrastructure fix.** Every one of the 10 unscorable cells is a cell
 §E.4 marks `NA` in the sealed record — **none** was unscorable for a wall-clock straddle, an
 exhausted authorizer, or a runner error. The raw trace is archived at
-`results/raw/campaign-confirmatory.json` (SHA-256 recorded in D-005), admitted to version control
-by a deliberate `.gitignore` change as §J.4 item 14 requires.
+`results/raw/campaign-confirmatory.json` (both its committed-blob and on-disk SHA-256 recorded in
+D-005), admitted to version control by a deliberate `.gitignore` change as §J.4 item 14 requires.
 
 The entries below D-005 are **pre-campaign**, and are kept because each changes what a reader
 should expect from the sealed record.
@@ -35,18 +35,52 @@ gap where the campaign should be is indistinguishable from one nobody kept.
 
 **What ran.** `python -m src.harness.campaign_driver --run-mode confirmatory` (ADR 0045), once, at
 the sealing commit **`17e11c9`**, with **`git_dirty: false`**, on the row 9 platform, in-process and
-ledger-backed. 13 scenarios × 9 arms across three passes — the F1/F2/F3 chain once and the F4/F5
-chain under both monitor configurations, which is a property of the sealed corpus and not a choice
-(ADR 0045). **153 cells: 143 scored, 10 unscorable.** Wall time 13.6 s.
+ledger-backed. Wall time 13.6 s.
 
-**Artifacts, with hashes so the claim is checkable:**
+**The cell arithmetic, stated exactly rather than loosely.** The campaign is **not** 13 × 9 × 3:
+the three passes do not each cover all thirteen scenarios. The F1/F2/F3 chain runs **once**, with
+no monitor configuration to vary, and only the F4/F5 chain runs twice, because §E.4's `A†` —
+*admitted **absent** the shared monitor* — is only expressible if the same scenarios run under both.
 
-| artifact | SHA-256 |
-|---|---|
-| `results/raw/campaign-confirmatory.json` | `406b51f98c40a491e8c6a9aa645c89fa9aa67b6cc746457b41cefc2ee79c8495` |
+| pass | scenarios | arms | cells |
+|---|---:|---:|---:|
+| F1/F2/F3 chain, monitor-agnostic (`monitor_attached=None`) | 9 | 9 | 81 |
+| F4/F5 chain, `monitor_attached=False` | 4 | 9 | 36 |
+| F4/F5 chain, `monitor_attached=True` | 4 | 9 | 36 |
+| **total** | | | **153** |
 
-The run record inside it carries `git_commit = 17e11c9…`, `git_dirty = false`, and the three frozen
-digests `H(Γ)`/`H(R)`/`H(Λ)` matching `docs/frozen_parameters.md` exactly.
+**153 cells − 10 unscorable = 143 scored.** The split into two chains is a property of the sealed
+corpus and not a choice: the corpus declares two distinct task grants, so each chain needs its own
+provisioned AS (ADR 0045).
+
+**Artifacts, with BOTH hashes, because they differ and the difference has bitten this project
+three times.** Git converted LF to CRLF on checkout (`core.autocrlf=true` on this machine), so the
+bytes on disk are **not** the bytes in the commit. **A third party who clones and recomputes gets
+the committed-blob hash** — that is the one to check a copy against. The on-disk hash is what the
+run produced locally and is recorded only so the two are never confused for evidence of tampering.
+
+| artifact | committed blob (SHA-256) — **what a clone reproduces** | on disk after checkout (SHA-256) |
+|---|---|---|
+| `results/raw/campaign-confirmatory.json` | `5b7729c409c690a43f01275addaeebf465d7752c7d6581cc2659b9302b7258b3` | `406b51f98c40a491e8c6a9aa645c89fa9aa67b6cc746457b41cefc2ee79c8495` |
+| `results/tables/results-confirmatory.json` | `bf41635f2cf65bb113880261b000fa425f572302373f1b70aeea618594942f23` | `c5df94cc39f52b9178a6054bec88fedc0808f528445f0a701a6343ab5b67118e` |
+| `results/tables/results-confirmatory.md` | `83d6305eaa51815965f6f742742d7c60e221f1dbad721f9c98aed927c87a2c94` | `b6e163b8a8d2508eb62bb5c52b25528ed32e5bb9ce9a8bbfe86c0bc42e1c4170` |
+
+**Which is which was established mechanically, not by assertion.** For all three artifacts the
+committed blob contains **zero** CR bytes and the on-disk file contains 7672 / 1065 / 121 of them,
+and `on-disk bytes == committed blob with every LF replaced by CRLF` holds **exactly** in each
+case. Nothing but the line-ending conversion separates them; **no byte of any trace was rewritten,
+and nothing was re-run.**
+
+*Correction, same day.* This entry first recorded only the on-disk hash, as if it were the hash of
+the artifact. It is not the one anyone else can compute: a clone yields the committed blob, so a
+reader recomputing would have got a different value and been entitled to conclude the primary
+evidence artifact had been altered. **This is the CRLF/LF defect's third appearance** — it corrupted
+v0.5's manifest anchor, was handled deliberately at v0.6 and v0.7 by staging the manifest from raw
+disk bytes, and was then missed here because `results/` went in through a plain `git add`. The
+trace is **not** rewritten to match a hash; both hashes are recorded and named instead.
+
+The run record inside the raw trace carries `git_commit = 17e11c9…`, `git_dirty = false`, and the
+three frozen digests `H(Γ)`/`H(R)`/`H(Λ)` matching `docs/frozen_parameters.md` exactly.
 
 **Every unscorable cell, with its cause** (the pre-registration requires each to be reported):
 all **10** read *"NA per the sealed record"* — 4 on `cf-f1-chain-tamper` (`B0`, `B1`,
