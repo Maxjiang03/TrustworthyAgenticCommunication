@@ -6,17 +6,20 @@ confused-deputy problem, TV23). MSc Cybersecurity dissertation, University of Gl
 
 ## Current phase
 
-**Experimental apparatus, pilot corpus only.** Eight feasibility smoke gates have passed
-(`smoke/README.md` is the board), and as of 2026-07-30 the golden thread runs end to end: a
-Supervisor, an A2A delegation hop behind a port, a Specialist, an MCP tool call over the frozen
-ontology, and **two of the nine arms — `B0` and `B3`**. Seven gates remain (G-3, G-9, G-10,
-G-12, G-13, G-14, G-15); the apparatus they need now exists, but **this apparatus adjudicates no
-gate**, and no gate status changed when it was built.
+**Sealed, awaiting the confirmatory campaign.** As of 2026-08-07: **all fifteen** feasibility
+smoke gates pass on the pilot corpus (`smoke/README.md` is the board), **all nine arms** are
+built, the pre-registration is authored (`docs/PRE_REGISTRATION.md`), the confirmatory corpus is
+generated (ADR 0043), and the repository has been sealed twice — v0.5 (`805425e`) and v0.6
+(`cdf185d`), each with a detached manifest and an OpenTimestamps anchor.
 
-The pre-registration is deliberately a stub until the gates pass (`docs/PRE_REGISTRATION.md`),
-`fixtures/confirmatory/` stays empty until sealing, and **no latency number has been measured or
-reported** — the G-3 threshold and the equivalence margin (`docs/frozen_parameters.md` rows 2 and
-1) are UNSET and must be fixed from external engineering need first.
+**A v0.7 reseal is owed, and Part H step 7 — the confirmatory campaign — has NOT run.** A pre-run
+audit (ADR 0044) found that the apparatus could not execute step 7 and would, in two places, have
+measured wrongly; the repairs are in place and the reseal follows. Every deviation is recorded in
+`DEVIATIONS.md` rather than in a commit message.
+
+All eleven `docs/frozen_parameters.md` rows are settled — ten set, one (`task_authorization_policy`)
+deferred by decision (ADR 0028) and never to be filled. **The only timing figures that exist are
+G-3's, and they live in `smoke/g3/REPORT.md` and nowhere else.**
 
 *(Update note, 2026-07-30: this section previously read "Repository skeleton — pre-smoke-test.
 Implementation logic has not begun," which was true when written and stopped being true in the
@@ -38,7 +41,8 @@ is committed.
 | `make lint` | `pre-commit run --all-files` (ruff + ruff-format) |
 | `make test` | `pytest -q` |
 | `make gate GATE=g1` | run one gate's spike (`smoke/g{1,2,4,5,6,7,8,11}/`). POSIX-flavoured — on Windows run `uv run python smoke/g11/spike.py` directly |
-| `make reproduce` | placeholder — available only after sealing |
+| `make campaign` | Part H step 7 — runs the frozen campaign ONCE, refuses to overwrite a result (ADR 0045) |
+| `make reproduce` | regenerates every table from `results/raw/` (`analysis/report.py`) |
 
 Without `make` (e.g. plain Windows), run the underlying commands directly:
 `uv sync`, `uvx pre-commit run --all-files`, `uv run pytest -q`.
@@ -59,7 +63,7 @@ cross-platform. Windows is the sealed measurement platform; the POSIX variant is
 - `src/harness/` — the instrument (imports `sut`, never the reverse; except `src/sut/oauth_as/`,
   which it may never import). All three import rules are enforced by an AST suite
   (`tests/test_import_redlines.py`), not by convention alone
-- `docs/` — architecture, threat model, frozen parameters, pre-registration stub
+- `docs/` — architecture, threat model, frozen parameters, pre-registration
 - `adr/` — one file per decision
 - `fixtures/pilot/` vs `fixtures/confirmatory/` — strictly disjoint; confirmatory stays **empty** until post-seal
 - `results/raw|tables|figures/` — write-once raw traces and derived outputs (later phases)

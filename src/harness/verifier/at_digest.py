@@ -57,11 +57,31 @@ _TAGS_IN_USE = (
     b"AASC-DECLASS-v1",  # ADR 0030, DeclassificationArtifact domain
     b"AASC-APPROVAL-v1",  # ADR 0030, ApprovalArtifact domain
 )
-assert TAG not in _TAGS_IN_USE, "access_token_hash tag must be unique"
-# Pairwise distinctness across the whole family, not merely against this tag:
-# a new construction that collided with any tag in service would silently let
-# one digest be reinterpreted as another.
-assert len(set(_TAGS_IN_USE + (TAG,))) == len(_TAGS_IN_USE) + 1, "domain tags must be distinct"
+
+
+def _check_domain_separation() -> None:
+    """Every domain tag in service must be distinct, checked at import.
+
+    Pairwise across the whole family, not merely against this tag: a new
+    construction colliding with any tag in service would silently let one
+    digest be reinterpreted as another, which is the entire property domain
+    separation buys.
+
+    **Raises rather than asserts.** These were two module-level `assert`
+    statements, and `python -O` strips those -- so the only guard against
+    cross-domain reinterpretation vanished under an optimisation flag nobody
+    would think of as a security setting (ADR 0044).
+    """
+    if TAG in _TAGS_IN_USE:
+        raise AccessTokenDigestError(
+            f"access_token_hash tag {TAG!r} is already in service as another domain"
+        )
+    tags = _TAGS_IN_USE + (TAG,)
+    if len(set(tags)) != len(tags):
+        raise AccessTokenDigestError(
+            "domain tags must be pairwise distinct; a collision lets one digest be "
+            "reinterpreted as another"
+        )
 
 
 class AccessTokenDigestError(Exception):
@@ -74,6 +94,12 @@ class UnsupportedVersionError(AccessTokenDigestError):
 
 class NonAsciiTokenError(AccessTokenDigestError):
     """The presented token is not ASCII, so it is not a compact serialization."""
+
+
+# Checked once, at import, after the exception type it raises exists. Import
+# order is the point: nothing in this module can be used before the domain
+# separation it depends on has been verified.
+_check_domain_separation()
 
 
 def access_token_hash(token: str | bytes, *, version: int = 1) -> str:

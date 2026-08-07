@@ -64,8 +64,8 @@ Not yet authored. Per Part H, the pre-registration is written and sealed only AF
 - [UNVERIFIED-IA] — a property a library/environment must have, not yet confirmed in code. NEVER state one as fact; each is gated by a smoke test (design Part F.4 / Part G).
 
 ## Red lines (do not cross without an explicit instruction from the author)
-1. Do NOT create or populate `fixtures/confirmatory/` before sealing (Part H). It stays empty.
-2. Do NOT run a confirmatory campaign, seal, or generate v0.5 until every in-scope smoke gate passes on the pilot corpus.
+1. **DISCHARGED 2026-08-06 (ADR 0043).** Was: do NOT create or populate `fixtures/confirmatory/` before sealing (Part H); it stays empty. The corpus was generated at Part H **step 4**, which is after step 3's seal, so the rule was satisfied rather than broken — and it is recorded as discharged because a rule that reads as a live prohibition on work already done teaches the wrong thing to the next reader.
+2. **PARTLY DISCHARGED.** All fifteen in-scope gates passed on the pilot corpus and the seal was taken twice (v0.5 `805425e`, v0.6 `cdf185d`). **The campaign half STANDS:** do NOT run a confirmatory campaign until the v0.7 reseal is complete (ADR 0044).
 3. Gates G-2, G-6, G-7 are construct-validity life-or-death (Biscuit monotonicity under the frozen authorizer Γ; complete mediation; independent effect ledger). If any fails, STOP and apply the gate-outcome fallback; do not proceed on that branch.
 4. The oracle NEVER reads a SUT-computed verdict or digest; it recomputes from raw evidence + sealed truth + the external effect ledger.
 5. `τ_gt` is oracle-only; no system-under-test principal may read it.

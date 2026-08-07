@@ -478,8 +478,39 @@ class TestRetainedReferences:
 
 
 class TestSealGuards:
-    def test_the_document_says_it_is_not_sealed(self):
-        assert "AUTHORED, NOT SEALED" in _pr()
+    def test_the_document_states_its_sealing_status_truthfully(self):
+        """RECOMPUTED against the repository, not pinned to a phrase.
+
+        This asserted the literal string "AUTHORED, NOT SEALED", which was true
+        until step 3 ran and false afterwards -- so it would have gone on
+        passing only for as long as the document was wrong in the other
+        direction. What must hold is that the status line agrees with what the
+        repository actually contains: if a manifest exists, the document may
+        not claim nothing is sealed, and if a reseal is owed it must say so
+        (ADR 0044).
+        """
+        text = _pr()
+        # The LIVE claim only: everything from the status line up to the dated
+        # correction. The correction quotes the superseded wording verbatim --
+        # that is what makes it a record rather than an edit -- and a guard
+        # that could not tell a claim from a quotation of a withdrawn one
+        # would force the record to be deleted to stay green.
+        live = text[: text.index("*Dated correction")] if "*Dated correction" in text else text
+        manifests = sorted((REPO_ROOT / "seal").glob("manifest_v*.json"))
+        if manifests:
+            assert "nothing in this repository is sealed yet" not in live, (
+                f"{[p.name for p in manifests]} exist; the status line contradicts them"
+            )
+            assert "SEALED at" in live, "the status line must name the seals that were taken"
+        else:  # pragma: no cover - the pre-seal state, kept so the guard is symmetric
+            assert "NOT SEALED" in text
+
+    def test_a_superseded_claim_is_corrected_with_a_date_not_deleted(self):
+        """A pre-registration whose status is edited without a record stops
+        being a pre-registration."""
+        text = _pr()
+        assert "Dated correction" in text
+        assert "No prediction, predicate, threshold, hypothesis" in text
 
     def test_the_confirmatory_directory_was_readme_only_at_the_sealed_commit(self):
         """The document's claim is about the state it pre-registers, so it is
@@ -511,13 +542,21 @@ class TestSealGuards:
         text = _pr()
         for placeholder in ("000" + "X", "000" + "Y", "000" + "Z"):
             assert placeholder not in text
-        for number in ("0041", "0042"):
-            assert f"ADR {number}" in text, number
+        # EVERY ADR the document cites must resolve to exactly one numbered
+        # file whose title carries that number. This replaced a guard that
+        # forbade `ADR 004[4-9]` outright -- which protected against citing an
+        # ADR that did not exist yet, but by banning a range rather than by
+        # checking resolution, so it also banned citing one that DOES exist.
+        # The property is the same and now holds for any number (ADR 0044).
+        cited = sorted(set(re.findall(r"ADR (\d{4})", text)))
+        assert cited, "the document cites no ADR at all"
+        for number in cited:
             numbered = sorted((REPO_ROOT / "adr").glob(f"{number}-*.md"))
-            assert len(numbered) == 1, number
+            assert len(numbered) == 1, f"ADR {number} resolves to {len(numbered)} files"
             title = numbered[0].read_text(encoding="utf-8").splitlines()[0]
             assert title.startswith(f"# {number} —"), number
-        assert not re.search(r"ADR 004[4-9]", text)
+        for required in ("0041", "0042"):
+            assert required in cited, required
 
     def test_no_tracked_file_cites_an_adr_by_placeholder_letter(self):
         """Repository-wide, not document-local: the reseal's PHASE 0 turned

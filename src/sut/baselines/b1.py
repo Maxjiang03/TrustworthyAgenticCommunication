@@ -129,8 +129,15 @@ class B1Arm:
                     "authority_consulted": False,
                 }
             )
-        except Exception:  # noqa: BLE001 -- log loss is never a prevention outcome
-            pass
+        except Exception as exc:  # noqa: BLE001 -- log loss is never a prevention outcome
+            # The verdict is deliberately unaffected: an arm that blocked
+            # because its own audit sink failed would be measuring the sink.
+            # But the failure must not be INVISIBLE -- G-12's
+            # `log_integrity_failure` is the only downstream detector, and it
+            # cannot detect a write nobody recorded failing. Counted on the
+            # arm, where the harness already reads `audit_log` (ADR 0044).
+            self.audit_write_failures = getattr(self, "audit_write_failures", 0) + 1
+            self.last_audit_error = f"{type(exc).__name__}: {exc}"
         return admitted, reason
 
     def _decide(self) -> tuple[bool, str]:

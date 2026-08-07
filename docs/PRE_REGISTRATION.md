@@ -1,12 +1,23 @@
 # Pre-Registration — the frozen design, recorded before any confirmatory data exists
 
-**Status: AUTHORED, NOT SEALED.** This is Part H **step 2** of the seal loop
-(`docs/EXPERIMENT_ARCHITECTURE_FINAL.md`, Part H), authored after all fifteen Part G gates were
-adjudicated on the pilot corpus and before any confirmatory scenario, seed or measurement exists.
-Step 3 — freezing and hashing the v0.5 candidate under a detached manifest with a public temporal
-anchor — has **not** been performed; nothing in this repository is sealed yet, and
-`fixtures/confirmatory/` is empty. Any earlier draft of this document is superseded and must not
-be reused.
+**Status: AUTHORED. SEALED at v0.5 and v0.6; a v0.7 reseal is owed and Part H step 7 has not
+run.** This is Part H **step 2** of the seal loop (`docs/EXPERIMENT_ARCHITECTURE_FINAL.md`,
+Part H), authored after all fifteen Part G gates were adjudicated on the pilot corpus and **before
+any confirmatory measurement exists** — which is still true, and is the only clause here that
+carries evidential weight.
+
+*Dated correction, 2026-08-07 (ADR 0044). The paragraph above read "Step 3 … has **not** been
+performed; nothing in this repository is sealed yet, and `fixtures/confirmatory/` is empty." All
+three clauses were true when written and are now false: the confirmatory corpus was generated
+(ADR 0043, commit `cbd3638`), step 3 was performed twice — v0.5 at `805425e` and v0.6 at
+`cdf185d`, both anchored — and v0.6 is superseded by a v0.7 candidate after a pre-run audit found
+the apparatus could not execute step 7 and would, in two places, have measured wrongly. The
+correction is dated rather than silently applied: a pre-registration whose status line is edited
+without a record is no longer a pre-registration. **No prediction, predicate, threshold, hypothesis
+or declaration in this document has been altered by any reseal**, and the two declarations in §2
+and §4 stand verbatim as first registered.*
+
+Any earlier draft of this document is superseded and must not be reused.
 
 **Derivation rule.** Every statement here restates a decision the repository already records — a
 frozen row in `docs/frozen_parameters.md`, an ADR, a gate report, or the design document — and

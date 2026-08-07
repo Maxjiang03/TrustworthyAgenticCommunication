@@ -1,10 +1,17 @@
-# Frozen (Seal-Time) Parameters — 10 of 11 set, 1 deferred by decision
+# Frozen (Seal-Time) Parameters — 10 of 11 set, 1 deferred by decision, 0 open
 
 Every parameter below **must** be frozen and hashed before sealing
 (`EXPERIMENT_ARCHITECTURE_FINAL.md`, Part H step 3). **Rows 1 (ADR 0026), 2 and 7 (ADR 0025), 3 (ADR 0027), 4, 6 and 10 (ADR 0022), 8 (ADR 0016)
 and 11 (ADR 0019) are set. Row 5 is **deferred by decision** (ADR 0028) and is never to be
-filled. Row 9 alone is still open, and it is read off the measurement box at seal time rather
-than chosen.** The equivalence
+filled. **Row 9 was the last to be set** (2026-08-02) and is the only one **read** off the
+measurement box rather than chosen, so **no row is open**.
+
+*(Dated correction, 2026-08-07, ADR 0044: this sentence read "Row 9 alone is still open", which
+contradicted row 9's own entry — SET, 2026-08-02 — three lines below it. Row 11's closing clause
+likewise called row 5 "still UNSET" where row 5 reads DEFERRED BY DECISION; a deferred row is not
+an unset one, and ADR 0028 turns on exactly that distinction. Both are corrected here; no value
+moved, and `src/harness/frozen_parameters.py` reads the same `name = value` tokens before and
+after.)* The equivalence
 margin and the G-3 latency smoke threshold **must** be fixed from external engineering need
 **before any timing measurement** (Part H step 2; Part G, G-3; Part J.2 item 9) — the G-3
 threshold first, the equivalence margin separately and after it, both before any confirmatory
@@ -29,10 +36,10 @@ fails closed** rather than defaulting.
 | 8 | `Ω` (action/resource ontology) and `Γ` (authorizer configuration) — frozen and hashed as `H(Γ)` | **SET (ADR 0016).** `Ω` = 7 `(action, resource)` elements over 5 tools; `Γ` = the MSc-profile authorizer plus its matched `−attenuation` ablation. Artifact: `src/harness/authorizer/omega_gamma_v1.json`. `H(Γ) = f63320c9da3731a6ea04dc51d9f6852f3a3e130182ce3a7fe251158751333deb` | ADR 0016: the smallest vocabulary in which the golden thread, amplification, two-hop strict attenuation and every retained attack family are expressible, with `Γ` written against the four G-2 criteria; amendable by a later ADR until Part H step 3, and any amendment re-triggers G-2 and the G-4 effective-authority limb. |
 | 9 | Sealed measurement platform — OS + exact Windows version/build (decision: ADR 0014; the campaign runs on Windows, the ledger enforcement is Win32-only) | **SET (2026-08-02, read from the machine).** `sealed_platform = Windows 25H2 build 26200.8875; 12th Gen Intel(R) Core(TM) i7-12700H; 14C/20T (12P/8E logical); 15.75 GiB DDR4; power scheme da75b896-eea0-461c-a43a-73a73caf9f43 (High performance), on AC` | The only frozen row that is **read rather than chosen**. Every field is machine-read by `src/harness/measurement_platform.py`; the Commander's transcription was a cross-check, and the machine-read value is what is sealed. Full record, including the P/E-core split detected through `GetSystemCpuSetInformation` and the hazard state as found, in `docs/measurement_platform.md`. ADR 0025: **any change to this row invalidates a G-3 adjudication on the previous platform** — so a power-plan, hardware, driver or Windows-build change re-triggers G-3. |
 | 10 | Oracle classification policy — the **high-risk action set** (Part I `is_high_risk`, F5/approval) and the **sensitive-label set** (Part I `is_sensitive`, F4/egress) | **SET (ADR 0022).** `high_risk_actions = {mail.send, notes.delete}`; `sensitive_labels = {sensitive}`. Same artifact and `H(Λ)` as rows 4 and 6. | ADR 0022: `mail.send` is externally visible and `notes.delete` irreversible, whereas `calendar.read`/`notes.read` are reads and `notes.write` is reversible inside the user's own store. Registered (not decided) by gate G-2, which exposed that neither set is owned by any other row — and fixed here **in the same ADR as row 4**, exactly as this row required, because `sensitive_labels` depends on row 4's vocabulary. |
-| 11 | Identity-plane registry (§F.2.1) — `actor_of(·)` → exactly one principal → exactly one `htc_holder` key, plus the recorded resource owners — frozen and hashed as `H(R)` | **SET (ADR 0019).** 3 principals + the AS root key, 3 actor claims, 1 resource owner. Artifact: `src/harness/verifier/identity_registry_v1.json`. `H(R) = d1bfc5ffcb22e2ded736f5248b99b9f019ba314b93ddd808e50ea522b3fb4cbe` | ADR 0019: every entry carries a stated necessity and the loader rejects one without it; the artifact fixes **structure and derivation labels, not key bytes**, because holder keys are per-campaign material from sealed seeds (ADR 0007) — the same line ADR 0016 drew for `Γ` and `κ`. Amendable by a later ADR until Part H step 3; any amendment re-triggers G-11 and G-4's `actor→holder` limb. **Not** the `task_authorization_policy` (row 5, still UNSET). |
+| 11 | Identity-plane registry (§F.2.1) — `actor_of(·)` → exactly one principal → exactly one `htc_holder` key, plus the recorded resource owners — frozen and hashed as `H(R)` | **SET (ADR 0019).** 3 principals + the AS root key, 3 actor claims, 1 resource owner. Artifact: `src/harness/verifier/identity_registry_v1.json`. `H(R) = d1bfc5ffcb22e2ded736f5248b99b9f019ba314b93ddd808e50ea522b3fb4cbe` | ADR 0019: every entry carries a stated necessity and the loader rejects one without it; the artifact fixes **structure and derivation labels, not key bytes**, because holder keys are per-campaign material from sealed seeds (ADR 0007) — the same line ADR 0016 drew for `Γ` and `κ`. Amendable by a later ADR until Part H step 3; any amendment re-triggers G-11 and G-4's `actor→holder` limb. **Not** the `task_authorization_policy` (row 5, DEFERRED BY DECISION — ADR 0028 — which is not the same as unset, and the distinction is the whole of that decision). |
 
 **No number in this document was measured.** Rows 1, 2 and 7 fix the bars and the denominators **before** any timing measurement, exactly as Part H step 2 and §J.2 item 9 require; a threshold chosen after seeing the data is a description of the data wearing a threshold's clothes. `IA-3` stays `[UNVERIFIED-IA]` until **G-3 actually runs on the row 9 platform** — fixing a threshold is not verifying an assumption, and none of ADR 0025/0026 may ever be cited as if it were.
 
 Related frozen artifacts sealed alongside these values (Part F.2.1, Part H step 3): the hashes of all
-configuration in the v0.5 candidate manifest. *(The identity-plane registry was named here as a
+configuration in the sealed candidate manifest (`seal/manifest_v0.6.json` at the time of writing; superseded manifests are kept under `seal/superseded/` and never deleted). *(The identity-plane registry was named here as a
 related artifact and is now row 11, set by ADR 0019.)*
