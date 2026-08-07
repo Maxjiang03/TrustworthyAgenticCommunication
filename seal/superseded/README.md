@@ -1,8 +1,47 @@
 # Superseded seal manifests — kept, never deleted
 
-Three manifests live here. None is the seal; the seal is `../manifest_v0.7.json`. All are kept
+Four manifests live here. None is the seal; the seal is `../manifest_v0.8.json`. All are kept
 because each `.ots` proof anchors **those exact manifest bytes**, and a superseded record that
 vanishes is indistinguishable from one that never existed.
+
+**Read the dates.** Each entry below is a statement about the supersession it describes, at the
+time it happened. In particular, both entries under v0.6 and v0.5 say *"no result is superseded,
+because Part H step 7 has never run."* **That was true when written and is no longer true of the
+project**: step 7 ran once on 2026-08-07, under **v0.7**. It remains true of what those entries
+claim — neither v0.5 nor v0.6 ever produced a result — and the sentences are left exactly as
+written rather than retrofitted, because a superseded record that gets edited to match later facts
+is no longer a record.
+
+## `manifest_v0.7.json` + `.ots` — the v0.7 seal, superseded 2026-08-07 by v0.8
+
+Built over commit `9b75ba1` and anchored; the sealing commit was `17e11c9`.
+
+**v0.7 IS THE SEAL UNDER WHICH THE EXPERIMENT WAS RUN, and superseding it does not disturb that.**
+Part H step 7 executed **once**, on 2026-08-07, at `17e11c9`: 143 scored cells, 10 unscorable, no
+abort and no re-run (DEVIATIONS D-005). The raw trace is archived at
+`results/raw/campaign-confirmatory.json`. **No result is superseded by v0.8** — v0.7 is the
+manifest the confirmatory campaign must be checked against, its anchor still covers those exact
+bytes, and it is the reason this file must never be deleted.
+
+**Why it was superseded — three reasons, none of them a defect that touched a campaign result:**
+
+- **RQ4's instrument was outside the seal.** `src/harness/latency_collector.py` did not exist at
+  v0.7, so the latency pass that produced `results/raw/latency-pilot.json` — the only data RQ4 and
+  frozen row 1's `lightweight_claim` have — ran on an **unsealed collector** (DEVIATIONS D-006,
+  ADR 0047). v0.8 covers it. The apparatus behind a reported number belongs inside the seal.
+- **The sealed platform reader crashed under a PowerShell parent process**, so `frozen_parameters`
+  row 9 could not be read and G-3 could not be adjudicated from that parent at all — a
+  reproducibility defect in a covered file (D-007, ADR `000C`). It failed **closed**, so no row 9
+  value ever sealed is in doubt.
+- **The G-3 drift disclosure in `docs/PRE_REGISTRATION.md` had become false.** A seventh median
+  (2.9684 ms) was the first to land above the adjudicated 2.8264, which falsified the recorded
+  claims that the medians were *"monotone downward"* and that the drift *"favours the lightweight
+  framing"*. It was amended **by dated addition with the original wording preserved verbatim**. A
+  **disclosure**, never a hypothesis: no hypothesis, decision rule or gate criterion was touched,
+  and the adjudicated figure is unchanged.
+
+**This is the first supersession that is not a repair of a broken seal.** v0.5 and v0.6 were
+superseded because the trees they sealed could not do what the design said; v0.7 could, and did.
 
 ## `manifest_v0.6.json` + `.ots` — the v0.6 seal, superseded 2026-08-07 by v0.7
 
