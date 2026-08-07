@@ -41,7 +41,7 @@ regression use only.
 """
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from biscuit_auth import (
@@ -62,6 +62,34 @@ from src.harness.oracle import commitment
 # carrying an element placeholder is instantiated once per element of the
 # authority set; every other placeholder is substituted once.
 _ELEMENT_PLACEHOLDERS = ("<action>", "<resource>")
+
+
+# The Datalog evaluation budget, set EXPLICITLY rather than inherited.
+#
+# `biscuit-python`'s default is `max_time = 1 millisecond` of WALL CLOCK (with
+# max_facts=1000, max_iterations=100). Exceeding any of them raises
+# `AuthorizationError("Reached Datalog execution limits")` -- the same class a
+# genuine policy denial raises -- so a run that ran out of time was recorded as
+# a refusal. `Allowed(P_i; Γ, κ, Ω)` runs this once per candidate element, so a
+# timeout silently drops an element from an authority set, and amplification is
+# a function of exactly those sets (ADR 0038 Sighting D; ADR 0046).
+#
+# One second is ~1000x the observed per-run cost, so a breach now means a
+# runaway evaluation rather than a garbage-collection pause. It is deliberately
+# FINITE: an unbounded authorizer could hang the campaign instead of failing.
+# The fact/iteration limits keep the library's defaults -- they are structural,
+# bounded by `Ω` and `Γ`, and do not depend on how busy the machine is.
+AUTHORIZER_MAX_TIME = timedelta(seconds=1)
+
+
+class AuthorizerExhausted(frozen_config.FrozenConfigError):
+    """The Datalog evaluation hit a limit. **NEVER a verdict.**
+
+    A limits breach says nothing about whether the token authorizes the
+    candidate -- the evaluation did not finish. Recording it as a denial is how
+    a busy machine silently shrinks an authority set, so this propagates and
+    the caller fails closed by CRASHING rather than by quietly denying.
+    """
 
 
 class AuthorizerProfileError(frozen_config.FrozenConfigError):
@@ -223,6 +251,18 @@ def check_profile(doc: dict[str, Any], gamma: dict[str, Any] | None = None) -> N
             raise AuthorizerProfileError(f"out of profile: `trusting` annotation in {name!r}")
 
 
+def _is_limits_breach(exc: BaseException) -> bool:
+    """Distinguish "ran out of budget" from "was refused on the merits".
+
+    `biscuit-python` raises one exception class for both, so the text is the
+    only discriminator the binding offers. Matched loosely on purpose -- a
+    wording change upstream should widen this, never narrow it -- and a test
+    forces a real breach rather than trusting the string (ADR 0046).
+    """
+    text = str(exc).lower()
+    return "limit" in text or "timeout" in text or "timed out" in text
+
+
 def authorize_candidate(
     token_bytes: bytes,
     root_pub: PublicKey,
@@ -245,10 +285,24 @@ def authorize_candidate(
     )
     for fact in context.facts():
         builder.add_fact(fact)
+    limits = builder.limits()
+    limits.max_time = AUTHORIZER_MAX_TIME
+    builder.set_limits(limits)
     authorizer = builder.build(token)
     try:
         index = authorizer.authorize()
     except AuthorizationError as exc:
+        # A LIMITS breach is not a denial: the evaluation did not finish, so it
+        # says nothing about whether the token authorizes this candidate.
+        # Recorded as a refusal -- which is what happened before ADR 0046 --
+        # it would silently drop an element from an authority set whenever the
+        # machine was busy.
+        if _is_limits_breach(exc):
+            raise AuthorizerExhausted(
+                f"the authorizer hit a Datalog execution limit on {candidate!r} "
+                f"(budget {AUTHORIZER_MAX_TIME}); this is NOT a denial and must not be "
+                f"recorded as one: {_ascii(str(exc))}"
+            ) from exc
         return False, _ascii(str(exc))
     return True, f"allow policy index {index}"
 

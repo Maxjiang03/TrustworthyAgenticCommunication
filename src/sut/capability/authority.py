@@ -18,7 +18,7 @@ field (4) or a non-Ed25519 `PublicKey.algorithm` (field 1 != 0) fails closed
 before any Datalog runs.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from biscuit_auth import (
@@ -42,6 +42,23 @@ _ALG_ED25519_WIRE = 0
 
 class SutAuthorityError(Exception):
     """Base: the SUT-side authority layer failed closed."""
+
+
+# The Datalog evaluation budget, set explicitly. Independent of the harness's
+# constant by construction (D13/D21 keep the two implementations apart) but
+# deliberately the SAME VALUE: a different budget would make one side's
+# authority set depend on a limit the other does not share, which is an
+# apparatus difference that would be reported as a mechanism difference.
+#
+# `biscuit-python` defaults to 1 millisecond of WALL CLOCK, and a breach raises
+# the same `AuthorizationError` a policy denial raises -- so a busy machine
+# silently shrank an authority set (ADR 0038 Sighting D; ADR 0046).
+AUTHORIZER_MAX_TIME = timedelta(seconds=1)
+
+
+class AuthorizerExhausted(SutAuthorityError):
+    """The Datalog evaluation hit a limit. NEVER a verdict: the evaluation did
+    not finish, so it says nothing about whether the token authorizes."""
 
 
 class OutOfProfileError(SutAuthorityError):
@@ -131,9 +148,19 @@ def permits(
     )
     for fact in facts:
         builder.add_fact(fact)
+    limits = builder.limits()
+    limits.max_time = AUTHORIZER_MAX_TIME
+    builder.set_limits(limits)
     try:
         builder.build(token).authorize()
-    except AuthorizationError:
+    except AuthorizationError as exc:
+        # A limits breach is not a denial -- see AUTHORIZER_MAX_TIME above.
+        text = str(exc).lower()
+        if "limit" in text or "timeout" in text or "timed out" in text:
+            raise AuthorizerExhausted(
+                f"the authorizer hit a Datalog execution limit on {element!r} "
+                f"(budget {AUTHORIZER_MAX_TIME}); this is NOT a denial: {exc}"
+            ) from exc
         return False
     return True
 

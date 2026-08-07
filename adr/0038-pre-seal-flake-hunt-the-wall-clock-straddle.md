@@ -181,7 +181,7 @@ nondeterminism, so a slow run is not by itself a threat to them. But an unexplai
 excursion on the campaign machine **must be reported if it occurs during the campaign**, and a
 campaign run exhibiting it must not be quietly accepted as equivalent to one that did not.
 
-## Sighting D — the frozen-authorizer positive arm, full-suite only, CAUSE UNDETERMINED
+## Sighting D — the frozen-authorizer positive arm — ROOT CAUSE IDENTIFIED (ADR 0046)
 
 **Seen 2026-08-07**, during the ADR 0044 repair work, at HEAD `d99cd60`.
 
@@ -230,8 +230,24 @@ establishes is the claim that matters — the ADR 0044 repairs did not introduce
 full-suite failure into a suite that was previously deterministic, because it was not previously
 deterministic.
 
-**Not claimed:** that this is the same cause as Sightings A, B or C; that the pre-repair control's
-failure is the same test; or that any of it is resolved.
+**ROOT CAUSE, found 2026-08-07 and recorded in ADR 0046.** `biscuit-python`'s authorizer defaults
+to **`max_time = 1 millisecond` of WALL CLOCK**, and exceeding it raises
+`AuthorizationError("Reached Datalog execution limits")` — the same exception class a genuine
+policy denial raises. Both authorizer call sites caught that class and returned a **refusal**, so
+an evaluation that ran out of time was recorded as *the token does not authorize this element*.
+Under full-suite load — accumulated heap, GC pauses, background threads — a normally
+sub-millisecond evaluation occasionally exceeded the budget, and the positive arm read as a denial.
+
+Confirmed by forcing the condition rather than by inference: with `max_time` set to zero the
+authorizer raises exactly that error, and `authorize_candidate` returned `(False, …)` — a deny.
+
+**Two of this sighting's own hypotheses were refuted on the way, and are kept because the next
+reader will think of them too:** the random `KeyPair()` (0 failures in 300 direct iterations) and
+CPU contention alone (0/6 under 16 busy-loop workers). A third — randomised test order — was
+refuted by checking: `pytest-randomly` is **not installed**, so order is deterministic.
+
+**Not claimed:** that this is the same cause as Sightings A, B or C, or that the pre-repair
+control's unnamed failure was this test.
 
 ## Status
 

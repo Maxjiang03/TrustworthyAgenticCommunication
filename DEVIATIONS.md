@@ -53,10 +53,10 @@ frozen row; they restore the oracle to what §Part I and ADR 0030 already specif
 found after the run, Part H's no-result-driven-tuning rule would have forbidden the fix and the
 affected families would have been reported as invalid.
 
-## D-004 — 2026-08-07 — A G-2 semantics test fails intermittently in the full suite. OPEN, cause undetermined, and it must be resolved before the campaign.
+## D-004 — 2026-08-07 — A G-2 semantics test failed intermittently. ROOT CAUSE FOUND AND FIXED before the campaign (ADR 0046).
 
-**Departure from:** nothing pre-registered — this is an **open defect in the apparatus**, recorded
-here because it bears on a red-line gate and on the quantity the study measures.
+**Departure from:** nothing pre-registered — this was a defect in the apparatus, recorded here
+because it bears on a red-line gate and on the quantity the study measures.
 
 **What happened.** `tests/test_frozen_authorizer_semantics.py::test_frozen_gamma_denies_third_party_widening`
 failed once in six full-suite runs at HEAD `d99cd60`. The failure is in the **positive arm** — a
@@ -75,12 +75,24 @@ than it is. That is the same direction as ADR 0038's Sighting B and both of its 
 it is stated because the project's §6.1 pattern (*every dormant defect failed toward the
 hypothesis*) still does not hold.
 
-**Status: OPEN.** It is **not** claimed resolved, **not** claimed to share a cause with Sightings
-A–C, and **not** attributed to the ADR 0044 repairs — nothing they touch is on the biscuit
-authorizer path, and a pre-repair reproduction check was run against `cdf185d` to test that
-directly rather than argue it. **This must be resolved, or its scope bounded and declared, before
-Part H step 7 runs.** A campaign whose authority sets can be intermittently under-computed does not
-measure what this study says it measures.
+**Status: ROOT CAUSE FOUND AND FIXED, before any campaign ran (ADR 0046).** The pinned
+`biscuit-python` authorizer defaults to a **one-millisecond wall-clock** evaluation budget, and a
+breach raises the same exception class a policy denial raises — so both call sites recorded a
+timeout as a refusal. Under full-suite load a normally sub-millisecond evaluation occasionally
+exceeded it. The budget is now set explicitly (1 s, ~1000× the observed cost) and **a limits breach
+raises instead of denying**, on both sides independently.
+
+**What this would have done to the results, stated plainly because it is the reason this entry
+exists:** an element could be dropped from an authority set on a busy machine, silently. Amplification
+is a function of those sets, so a table could have carried a number that was an artifact of machine
+load — in the direction that makes a capability arm look *more* restrictive than it is. **No result
+is affected, because no campaign has run.** Had it been found afterwards, Part H's no-result-driven-
+tuning rule would have forbidden the repair and the affected families would have had to be reported
+as unreliable.
+
+Not attributed to the ADR 0044 repairs: the defect is in `biscuit-python`'s defaults and in error
+handling that predates them, and an eighteen-run control at `cdf185d` showed intermittent failure
+before any repair.
 
 ## D-003 — 2026-08-07 — The campaign driver was smoke-tested against the CONFIRMATORY corpus before the seal. Reported, not buried.
 

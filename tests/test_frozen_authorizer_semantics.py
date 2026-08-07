@@ -307,8 +307,13 @@ def test_frozen_gamma_denies_third_party_widening(chain, doc, context, keypair):
     assert permitted is False
 
     # Positive arm: a genuinely granted element still authorizes on the same token.
-    granted, _ = ev.authorize_candidate(tp, keypair.public_key, gamma, U_TASK[0], context)
-    assert granted is True
+    granted, why = ev.authorize_candidate(tp, keypair.public_key, gamma, U_TASK[0], context)
+    # The evidence string is carried into the message deliberately. This
+    # assertion discarded it, and `authorize_candidate` converts EVERY
+    # `AuthorizationError` into a deny -- so a refusal for an unexpected reason
+    # was indistinguishable from a refusal for the expected one. ADR 0038's
+    # Sighting D cost several reproduction runs to that (ADR 0044).
+    assert granted is True, f"a granted element was refused: {why}"
 
 
 def test_trusting_authorizer_refused_but_would_have_admitted(chain, doc, context, keypair):
