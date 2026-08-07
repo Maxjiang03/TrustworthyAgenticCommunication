@@ -1,4 +1,4 @@
-"""Build the detached v0.6 seal manifest (Part H step 3, step 6).
+"""Build the detached v0.7 seal manifest (Part H step 3, step 6).
 
 Coverage is Part H step 3's list, made concrete file by file; every tracked
 file the manifest does NOT cover is enumerated inside the manifest with the
@@ -13,7 +13,7 @@ with `git cat-file blob <commit>:<path>` — so a fresh clone made with
 plumbing. The manifest is DETACHED: it lives under `seal/`, which it does not
 cover, and no covered file names it.
 
-    uv run python seal/build_manifest.py [--commit HEAD] [--out seal/manifest_v0.6.json]
+    uv run python seal/build_manifest.py [--commit HEAD] [--out seal/manifest_v0.7.json]
 """
 
 import argparse
@@ -46,7 +46,7 @@ COVERED_PREFIX = {
     "generator produces BOTH corpora from one code path and its location is "
     "historical (ADR 0043)",
     "fixtures/confirmatory/": "the CONFIRMATORY scenario specifications and seed "
-    "(Part H step 4) — a SEALED INPUT at v0.6, where at v0.5 this directory held "
+    "(Part H step 4) — a SEALED INPUT since v0.6, where at v0.5 this directory held "
     "a README and nothing else. Specifications and seeds only: no token byte and "
     "no signature is stored anywhere under fixtures/, because Biscuit tokens are "
     "not byte-reproducible across mints (ADR 0007)",
@@ -127,9 +127,9 @@ def classify(path: str) -> "tuple[str, str] | None":
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="build the detached v0.6 seal manifest")
+    parser = argparse.ArgumentParser(description="build the detached v0.7 seal manifest")
     parser.add_argument("--commit", default="HEAD")
-    parser.add_argument("--out", default="seal/manifest_v0.6.json")
+    parser.add_argument("--out", default="seal/manifest_v0.7.json")
     args = parser.parse_args()
 
     commit = _git_bytes("rev-parse", args.commit).decode().strip()
@@ -156,15 +156,21 @@ def main() -> int:
         return 1
 
     manifest = {
-        "_what": "Detached seal manifest for the v0.6 candidate "
+        "_what": "Detached seal manifest for the v0.7 candidate "
         "(docs/EXPERIMENT_ARCHITECTURE_FINAL.md, Part H step 3). The manifest is "
         "detached: nothing it covers contains it, and it does not cover seal/. "
-        "v0.6 SUPERSEDES v0.5 (seal/superseded/): v0.5 was sealed with inputs from "
-        "which no confirmatory corpus was producible, so the corpus was generated "
-        "under ADR 0043 and the candidate resealed. The superseded manifest and its "
-        "temporal-anchor proof are kept, not deleted -- four independent fail-closed "
-        "layers refused the shortcut of relabelling the pilot corpus, and that record "
-        "is worth more than a tidy seal directory.",
+        "v0.7 SUPERSEDES v0.6, which superseded v0.5; every superseded manifest and "
+        "its temporal-anchor proof is KEPT under seal/superseded/, never deleted. "
+        "v0.5 was sealed with inputs from which no confirmatory corpus was producible "
+        "(ADR 0043). v0.6 sealed a tree whose apparatus could not EXECUTE Part H step "
+        "7 and would, in two places, have measured wrongly: the oracle could never "
+        "verify a DeclassificationArtifact, and realized_harm_F4 was structurally "
+        "always False (ADR 0044). A third defect, found before the campaign and not "
+        "after it, turned a Datalog evaluation timeout into a DENIAL, which could "
+        "silently shrink an authority set on a busy machine (ADR 0046). No result is "
+        "superseded, because Part H step 7 has never run: the 'once' is unspent. "
+        "Each supersession is the seal working -- the defects were found by auditing "
+        "and running the sealed tree rather than by publishing from it.",
         "hash_definition": "SHA-256 over the committed git blob bytes (LF as stored). "
         "A fresh clone with core.autocrlf=false reproduces every hash by reading "
         "the checked-out file bytes directly.",

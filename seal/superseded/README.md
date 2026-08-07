@@ -1,10 +1,38 @@
 # Superseded seal manifests — kept, never deleted
 
-Two manifests live here. Neither is the seal; the seal is `../manifest_v0.6.json`. Both are kept
+Three manifests live here. None is the seal; the seal is `../manifest_v0.7.json`. All are kept
 because each `.ots` proof anchors **those exact manifest bytes**, and a superseded record that
 vanishes is indistinguishable from one that never existed.
 
-## `manifest_v0.5.json` + `.ots` — the v0.5 seal, superseded 2026-08-06 by v0.6
+## `manifest_v0.6.json` + `.ots` — the v0.6 seal, superseded 2026-08-07 by v0.7
+
+Built over commit `b5afa10` and anchored; the sealing commit was `cdf185d`.
+
+**Why it was superseded, stated plainly: v0.6 sealed a tree whose apparatus could not EXECUTE Part
+H step 7, and which would, in two places, have measured wrongly.** Found by auditing the sealed
+tree before running it rather than by publishing from it (ADR 0044):
+
+- the confirmatory corpus had **no sealed-truth read path** — `SEALED_DIRS` mapped only the pilot
+  directory, so the campaign died on its first cell;
+- **no entry point existed** for step 7 at all, nothing wrote `results/raw/`, and the analysis
+  could not read a campaign result even if one had been produced;
+- the oracle **could never verify a `DeclassificationArtifact`** (a pydantic `bytes` coercion of a
+  base64url string), so every arm correctly admitting the benign control `cf-f4-declassified` —
+  `B3` and `B3⁺` included — would have been scored `admission_breach`;
+- **`realized_harm_F4` was structurally always `False`**: the ingestion `LabelDirectory` was never
+  constructed anywhere in `src/`, so a sensitive egress that really executed scored as no harm.
+
+A third defect was found while validating the repairs and is recorded in **ADR 0046**: a Datalog
+evaluation timeout was returned as a **denial**, and `Allowed()` runs the authorizer once per
+element of `Ω`, so a busy machine could silently shrink an authority set — the quantity this study
+measures.
+
+**No result is superseded, because Part H step 7 has never run.** The "once" is unspent. v0.6 is
+a correct seal over the tree it described, its OpenTimestamps anchor remains valid over those exact
+bytes, and it proves the confirmatory corpus existed and was hashed on 2026-08-07 before any of
+these repairs were written. That is why it stays.
+
+## `manifest_v0.5.json` + `.ots` — the v0.5 seal, superseded 2026-08-06 by v0.6 (itself now superseded)
 
 Built over commit `7872311` and anchored; the sealing commit was `805425e`.
 
