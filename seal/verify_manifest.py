@@ -1,4 +1,4 @@
-"""Independently verify the detached v0.5 seal manifest against a fresh clone.
+"""Independently verify the detached v0.6 seal manifest against a fresh clone.
 
 This is NOT the code that produced the manifest and shares none of it: where
 `build_manifest.py` enumerates coverage rules and reads blob bytes through git

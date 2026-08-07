@@ -1,0 +1,1081 @@
+{
+  "_what": "Detached seal manifest for the v0.6 candidate (docs/EXPERIMENT_ARCHITECTURE_FINAL.md, Part H step 3). The manifest is detached: nothing it covers contains it, and it does not cover seal/. v0.6 SUPERSEDES v0.5 (seal/superseded/): v0.5 was sealed with inputs from which no confirmatory corpus was producible, so the corpus was generated under ADR 0043 and the candidate resealed. The superseded manifest and its temporal-anchor proof are kept, not deleted -- four independent fail-closed layers refused the shortcut of relabelling the pilot corpus, and that record is worth more than a tidy seal directory.",
+  "hash_definition": "SHA-256 over the committed git blob bytes (LF as stored). A fresh clone with core.autocrlf=false reproduces every hash by reading the checked-out file bytes directly.",
+  "implementation_commit": "b5afa102348d36353acdb72c408cbef6a9e68847",
+  "coverage_rule": "Part H step 3's list: design document, implementation commit, oracle code, analysis code, all configuration, the dependency environment and the sealed measurement platform, the corpus generator with its seeds, derivation rule and scenario specifications for BOTH corpora (fixtures/pilot/ and fixtures/confirmatory/), plus PRE_REGISTRATION.md and the row 7 source snapshot.",
+  "covered": {
+    "Dockerfile": "e4d1ef6f3a6e62f4f44e9f6d471656f18be99a95c0c2b3419f49f55271895040",
+    "analysis/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "analysis/__init__.py": "a737ccc1e1105d757d9017ef30c828827ba72ba6909d96071cf3c8c40c569763",
+    "analysis/latency.py": "73560873a06945e8ea1b1c15b74140cab2e8c75ad3bc4224156294e954fca932",
+    "analysis/security.py": "86619ff96d3df58380dd44da0d15a3448a4156c617607ac27525800353f17e08",
+    "docs/EXPERIMENT_ARCHITECTURE_FINAL.md": "248fd9f06ef077ce3d0f916ce254ca1efed48844856b2d058de9109e2f78e0d8",
+    "docs/PRE_REGISTRATION.md": "6d7dcec0dcd28261eeeba0800d549eda544560ad9a932a6f3307ae8d4448b46a",
+    "docs/frozen_parameters.md": "3f21884c52841b82a129f868a89c2f943539cc624754f5dfb178724a78924842",
+    "docs/measurement_platform.md": "222ac27afc649a0ceed5798d60116fad5259d5b1958d7d1dd8946efa899d80ef",
+    "docs/row7_snapshot/README.md": "be09f6388f2dd42e44a1204316e1992d6a0ae0729a63d41c4e0c9f5f796087c6",
+    "docs/row7_snapshot/methodology-performance-benchmarking-2026-08-06.html": "148080599cd02ec5c5539302340fd4bf796c0fa290e1851f9d703936e9894cf9",
+    "docs/row7_snapshot/models-2026-08-06.html": "aedef5950c09c7c49e956f08942c747b15aa975d77150fca705f4e1f745b6978",
+    "fixtures/confirmatory/README.md": "fd8e97a69bb91e4a506bda79f43eedf3563cc0a3987fe78800649cdc74229dcd",
+    "fixtures/confirmatory/corpus.json": "cb80b2b63bb245733bb2c47d73c205510fd190776e3a3635dc081c87ac94f8e9",
+    "fixtures/confirmatory/sealed/cf-benign.json": "63680738285a0830fcde21ecb716fe87e835f8fcdbce6675d8901f61b886bb21",
+    "fixtures/confirmatory/sealed/cf-f1-chain-tamper.json": "97e7ebd2891af334e61285b47603fbaa38bab9fb03c5fe9707c458bb4ddb84ee",
+    "fixtures/confirmatory/sealed/cf-f1-root.json": "fe866cbccbf3d34088ab844d6b5369830a60674d332d8de9b2207a46f5f6ff4e",
+    "fixtures/confirmatory/sealed/cf-f1-terminal.json": "60ae2f9d5a9f50ff0730d2389726d1d7a14489ec1ecb226f3e6d1ca42b1b0c08",
+    "fixtures/confirmatory/sealed/cf-f2-invalid-credential.json": "12d83ba9f9ee511ea55f63c3d23157ccce250d521ad2fbf36b91215e7995e894",
+    "fixtures/confirmatory/sealed/cf-f2-unauthenticated-caller.json": "828d33b9a6c6b57c886f2b6a88e2a7b7899f7eeb2bbe722b09acef20df93bbe2",
+    "fixtures/confirmatory/sealed/cf-f2-wrong-holder-proof.json": "a6c3bc47ee1c20564ea8d7b7cce6f1956ff658eaa239cf9e5a260002e2815b92",
+    "fixtures/confirmatory/sealed/cf-f3-audience-mismatch.json": "d7580db995dfac58da42ad86cafb7cc1f2cbf3af82f772cc964c431f82b6becb",
+    "fixtures/confirmatory/sealed/cf-f3-stolen-at-key-substitution.json": "868bcb2207a81aab94904226ec8d738b02dafc7ffabc39c0367a27608c062690",
+    "fixtures/confirmatory/sealed/cf-f4-declassified.json": "81120ffed9b22e71bf5d5b0daf8d27550feb2aa6c8429a8914b5b6c013f510b3",
+    "fixtures/confirmatory/sealed/cf-f4-sensitive-egress.json": "b6fd7c97efff089094feae3c1203a0905b4de13b4ea626c6ac8432876000250b",
+    "fixtures/confirmatory/sealed/cf-f5-approved.json": "b311aa7e9feabd0a62f60fd0676e84b99ba7fed6f6b45084805be3a6f83ffdce",
+    "fixtures/confirmatory/sealed/cf-f5-unapproved-high-risk.json": "915c466d1dad16eb0d6c82b4c2bb06a97604cafc9ae12a1af8ce7cbfa8f9dbe4",
+    "fixtures/confirmatory/sut_visible/cf-benign.json": "d52eb6d11a2b7f8681cdfed7bc6ca8865471b6c659391cc2d3597d7dd52f7f40",
+    "fixtures/confirmatory/sut_visible/cf-f1-chain-tamper.json": "b834c144ab93dcf697bd80fffa4227809f583bbc1ed38edbccf9a8215417722f",
+    "fixtures/confirmatory/sut_visible/cf-f1-root.json": "52c572762e0b7e1af110d2d589177b3bbb8666ba25675cd554052815ed3f7d49",
+    "fixtures/confirmatory/sut_visible/cf-f1-terminal.json": "ef8d77c1639f7eeec92769e9d2ba66c5bf9a56804791af78b499ff9b6b7abfe4",
+    "fixtures/confirmatory/sut_visible/cf-f2-invalid-credential.json": "36345a4884c586d035e7375ecc9f64e248dee7bd44a6f93423c2f069272f3bf1",
+    "fixtures/confirmatory/sut_visible/cf-f2-unauthenticated-caller.json": "83421dd7c04d83ccd95a86f220fc946cffb2fdce77bff2bdd625faf5dd336cbd",
+    "fixtures/confirmatory/sut_visible/cf-f2-wrong-holder-proof.json": "e77d39d571dbebededa51e09855be0a1e458360aa125472f74489d55c0ae7296",
+    "fixtures/confirmatory/sut_visible/cf-f3-audience-mismatch.json": "cea63652758e0317d6ef23a2db0a97c92e342118115021ca401a78f470474fc2",
+    "fixtures/confirmatory/sut_visible/cf-f3-stolen-at-key-substitution.json": "3d8adcfb76dbb534fbe2817f467b36fb1c12b77567bb4861e64c6e8cf9ca1185",
+    "fixtures/confirmatory/sut_visible/cf-f4-declassified.json": "e629349b420f4d1aba3a0f0d5c8af14b899c261f6721efb368a6bd1eeaa8c8e1",
+    "fixtures/confirmatory/sut_visible/cf-f4-sensitive-egress.json": "5401bab7afe41ced1d275c4b7745ea472e98d9c405ef3be61e43ed27a9524946",
+    "fixtures/confirmatory/sut_visible/cf-f5-approved.json": "e436bf87c4a029e6766294c5f982f2d5ba2111bcfe5148f540c52b8f8afec17d",
+    "fixtures/confirmatory/sut_visible/cf-f5-unapproved-high-risk.json": "4e42795f19e40c6c430f51e81786146e6eace7137addef706860dce6d091fef7",
+    "fixtures/pilot/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fixtures/pilot/golden_thread/README.md": "f70768f14ebcf4c3d9aca350f39a73e2719a3166cf672cbac1886f21086b638e",
+    "fixtures/pilot/golden_thread/corpus.json": "df02561d1b30638690b05cbcf802eb98b3278681c06dbef493aa7ab015c1e2b2",
+    "fixtures/pilot/golden_thread/generator.py": "bc51e9054d49f03df82fa75c58369d601bba39b2f349eec1d0d86b38979d674f",
+    "fixtures/pilot/golden_thread/sealed/gt-benign.json": "77de74c245d02fbfcdf7d9bba438e4b2681a59086ac747aafcb2059db74c82ba",
+    "fixtures/pilot/golden_thread/sealed/gt-f1-chain-tamper.json": "357ed3613f5c6713a9e26de363aaa5d19b4ddf104fa3f1ffe63cd501b4cc6e84",
+    "fixtures/pilot/golden_thread/sealed/gt-f1-root.json": "dfe52ad18503e6b8332ac8046fa171bf0eec05ae749968898d70c1e78c8c26e7",
+    "fixtures/pilot/golden_thread/sealed/gt-f1-terminal.json": "066789fcbe5f0502609c34b7b462e638910fe4178c11f34b9c7d2e107cde25bf",
+    "fixtures/pilot/golden_thread/sealed/gt-f2-invalid-credential.json": "25de0a7af12be3c3d074f0b7654bee96cd9b879b62167ef2a0f93a2a650ca63e",
+    "fixtures/pilot/golden_thread/sealed/gt-f2-unauthenticated-caller.json": "4a7b429d581b87b7ee58eafce45b1dc70fb265488af106cf52d4afa0c87364d6",
+    "fixtures/pilot/golden_thread/sealed/gt-f2-wrong-holder-proof.json": "657fed4844dabca030eb1116b26feac727c2f83355cb6b286df1d3df7ab1880b",
+    "fixtures/pilot/golden_thread/sealed/gt-f3-audience-mismatch.json": "ce7558b6ce1d664a567f8992355bb048ae2cb323dca330edfe821080f3648d76",
+    "fixtures/pilot/golden_thread/sealed/gt-f3-stolen-at-key-substitution.json": "a45110f84ae38c4ab90adec0f39df80f0c5bdacaf166a84d6dde04937ae5491f",
+    "fixtures/pilot/golden_thread/sealed/gt-f4-declassified.json": "d125e3daff13a545c28e2993014f7a0340704394dbe935704663245a08efa11e",
+    "fixtures/pilot/golden_thread/sealed/gt-f4-sensitive-egress.json": "814810153abfc751108fcc0fc28f25c91196f42d3d0be6a43758ebd37b73eb3b",
+    "fixtures/pilot/golden_thread/sealed/gt-f5-approved.json": "546735cb76bab0a9953848ac7cff1e78b5eea28cd6251cc6d00a55bd4557bd03",
+    "fixtures/pilot/golden_thread/sealed/gt-f5-unapproved-high-risk.json": "5dee57dbd01aeae7860af694c17f3953a803ee74921e6a2c4745a3681f515ea0",
+    "fixtures/pilot/golden_thread/sut_visible/gt-benign.json": "a1821717c49ef6fffaa0e1acae619904a03409c896b631c0c5b5ccbba5e980e7",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f1-chain-tamper.json": "6a29d7229c95d8897925887e28eaf07bb137f95b1091f3369a8520bdd6dbdf3c",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f1-root.json": "ff064c30c08eed2f02f730fc01c2cf549bdee442fe7cb59d1a750a09c05f35ca",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f1-terminal.json": "e444742a9a788806f38068ea3cf818a036a648671f5525f0acca3e7bdf860a42",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f2-invalid-credential.json": "a4b92ac3740394eb11b1ff93ac8b389b7659c38b11080836dcbc6c0d0ac1f014",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f2-unauthenticated-caller.json": "2f30fd6052b4478d95c6e5c527c6db61e42caa3622ddad5daad0ebef29ce9de3",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f2-wrong-holder-proof.json": "d2ec0a6e5ca168a53dfa7befdf98f43e343e536dc95e16079e60f1a17474d89a",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f3-audience-mismatch.json": "254a9b34d372376882352266eb7e76c25c2e5207774419c632520bc3232fdfdb",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f3-stolen-at-key-substitution.json": "9f282b6d7606631d72148accb2d06d5454f8f830bcba8969d9181bdced4a263b",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f4-declassified.json": "d0b5d92263780fd4527c79812acacc4ede8665e1bf8905b9f7cf45a1a9a9c011",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f4-sensitive-egress.json": "261da39d2d990c1e3a3f2459339c51d02fc224ad61813b982d32519a9106654b",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f5-approved.json": "2da2d3ea12953af8f9efed1f88d4bda6163198856f26739a73b222aa9c5092d4",
+    "fixtures/pilot/golden_thread/sut_visible/gt-f5-unapproved-high-risk.json": "48adb3551743aefc85709e81b25c88a753107e39ee7923b49dbf393aa26c6410",
+    "pyproject.toml": "1d8ec1e454f3374ce9f3c7547d5f377527f37aa8f3a03d9e0b1e546efa04a8a6",
+    "src/__init__.py": "bff074fb3ad362d670dc0c01a4bf67f10761abd0c0e53b088d7c7f8a80abd730",
+    "src/harness/__init__.py": "ad5d52aee00f0ac995d94f2e5222d554a8fa11148f9b48577a4c6aad3713ac20",
+    "src/harness/as_process.py": "5a56e19d02cd01f6d8eca04ec1d28d9552863757d6793abfe28c50f87acf8896",
+    "src/harness/authorizer/__init__.py": "2b256e179f233f4f95be846c4e9abce9b8bd3bf26ac3960697b420bfa2177124",
+    "src/harness/authorizer/allowed.py": "a5b8e3b56ce7790b76c44215385e48adcfd349ecb47b8fd502c81a961ee8a765",
+    "src/harness/authorizer/frozen_config.py": "eed5b2a2e24c763a3d384addc2f77aeca80ed846e940bbb01257490fb1b91efc",
+    "src/harness/authorizer/omega_gamma_v1.json": "51482eea128c208e51d88c09e95e77553238eb4cf931fdbdb8899dbc2410d4d1",
+    "src/harness/campaign.py": "8de29e5b191351538b99879e84a5b15a386975722ac0ffce18175978da62d88b",
+    "src/harness/credential_faults.py": "88f995a4aee048f816d71404f56cac315ef76401958f332c4144726d1e46e2e9",
+    "src/harness/effect_ledger.py": "394ec01eafd850624ec98e90d0b2af75bdabee014f64aaf04dd31a4609d3c681",
+    "src/harness/effectors.py": "9f789efaea2ebd7da94634593b101e7ffae5792302de89cd76ef53f145f5db00",
+    "src/harness/fault_injection.py": "8bee931fe44fea39007c4e10685bf1d1d4332a6773fa912bfcc153e74b4f0352",
+    "src/harness/frozen_parameters.py": "17a074bf65bd0763f2080588b0bb70b003d798763db8cd9edce458d208be78e5",
+    "src/harness/key_material.py": "ca8eda7eff7df49a5aa742f000dfebd70c40eccda30af15efb8cf3a22d5cc3c4",
+    "src/harness/matrix_grouping.py": "b538a7c0c2950c1602a301097a700b0978d885ba0159afabbcce34d5940812d6",
+    "src/harness/measurement_platform.py": "c53f8daa4900f45310a19b67c588ea08297443e263b6501220b90825609c6187",
+    "src/harness/mediation/__init__.py": "e86e255d7595f8971de20f8947d7c719c368f4093efcbbdd3371ae3a7d79b51e",
+    "src/harness/mediation/boundary.py": "a6a5d03d70442629ad7ca443c520a2df6cdb12005ae9cacedf8a0090220f189b",
+    "src/harness/oracle/__init__.py": "9e4a4b01dbf04bd5a591abcda0624410b73fd4af13d775aad4f99dcd8bd17d32",
+    "src/harness/oracle/artifacts.py": "b1200a23cbf1c102a4c8f3445c08775e81b06a1bcdfbafc3e0e41246f9ad845f",
+    "src/harness/oracle/commitment.py": "38016b7c1562018ca290d594dc8e4d8699b9ff42abfb96dab20617e6bc18b231",
+    "src/harness/oracle/jcs_digest.py": "0f1d20cf0f7c30cf9123be7e7e6263b829693399791d8c012f26013ea25f22ea",
+    "src/harness/oracle/predicates.py": "3c7a012d0c0a567688cd5f46ea38a32add5c1ffa5083a9f9d01aca4a286a69f0",
+    "src/harness/policy/__init__.py": "58d1c728778eda8cba63002e81a4902765d976add7c86094caad717baa734c2e",
+    "src/harness/policy/frozen_policy.py": "12474c6863c70aed99acf21f99b93f8bd452b5034184739d443fd7f78b488f4d",
+    "src/harness/policy/label_approval_v1.json": "f3a71c2c2505fff2459f884c845f2d3506818f8ce0b99e4afd18ff6facbcc4ac",
+    "src/harness/policy/label_artifacts.py": "9063d254b1d5b682e001d7459cb87011ca528ce0fccc233061c54930f92ea660",
+    "src/harness/policy/label_directory.py": "aed73822db0afd3815cc55edee22922518403e13aec7b5c7239552d403e1c840",
+    "src/harness/replay_arbiter.py": "66826c7204b32b532958f328d6560d0cdc06fee4f5f7cda1119ea163df3b4a91",
+    "src/harness/runner.py": "fb9511aeed7f080008f387f1f092d32eb617992b9ed28e6e2343edf4811aa095",
+    "src/harness/schema.py": "69910007a7f1feac50ef2383c7ee3cc9c2b83f41a022134c46cdbcfb359cb087",
+    "src/harness/sealed_truth.py": "9d764e5bbc408a2e987bc735393e7e3d3705fd0d18da253edca6100a1338e6dc",
+    "src/harness/sut_process.py": "6c8088fca4e6ac221aaa76e168830c077053e9a8894883d712b258487fbe741b",
+    "src/harness/verifier/__init__.py": "c9fbcdf27b06c47fbf45619ea5684269194f4e397120e5674a4c8575eb9a4f93",
+    "src/harness/verifier/at_digest.py": "fcd8a94a728f1decdee4361a5275a1bf9721abcd387dcf66f55f4d3d9796512b",
+    "src/harness/verifier/credential_principal.py": "62e7eebd08ec35dca03d498e776151a38fa5c7ea0b39f818390bdca0ddd4dfb1",
+    "src/harness/verifier/holder_binding.py": "d4abc48872207773da81263adae3800a4c907b5b8b665504ab17f7200082aff1",
+    "src/harness/verifier/identity_registry_v1.json": "6e8e7c9c5c98a0e10e6ead89de511f7e7ead0b748d31acd402f186cd712ab969",
+    "src/harness/verifier/label_context.py": "19d01fee3832657e01097844ff7aac52bce00af343d843ebaed5843abaaab5ea",
+    "src/harness/verifier/matched_authority.py": "a90880f7e2ae8890c87bd1f80b21674ebf1d844d0f8b75a85f9a4bd0bbe1c2e7",
+    "src/harness/verifier/registry.py": "3f0d90e08540bffbadacfcbac78368aed6bb0f05d8c46d77741d3b69588c194d",
+    "src/sut/__init__.py": "e59c6048a5657aeb69a08ccf4e8089886afaea84b1ad0c6465aa968185727659",
+    "src/sut/agents/__init__.py": "48a08274b6849afa9568127f8fa866ca173b6f87a5678707eddfc2114d4315ad",
+    "src/sut/agents/specialist.py": "9860144130df94b13c2d2c242cfdb8c43a9e48e18ef351c82dafeac00a0a5dba",
+    "src/sut/agents/supervisor.py": "739d250f0dc1cc4e1fa7fea6b37057ca9064f09737b84c1e331482c71a1a458d",
+    "src/sut/authz/__init__.py": "9d3d1cfcd90ea4bb8055495d1d28de54ee129b946f1f5c00761373518d5aae56",
+    "src/sut/authz/boundary.py": "3b59e892eca483c27e0ecf0a77c43ccf19a8a9fc88ab20f31e4d80f04ead0af0",
+    "src/sut/authz/boundary_policy.py": "dd8e6c3a0386bad21d60b5fad60840c27982bd217d21ecab5e581e1badb7ae80",
+    "src/sut/authz/capability_path.py": "1a21063edfbdd627522f363b07e93dc47c6cfa50cadea27c9a2357cf1248dacf",
+    "src/sut/authz/jti_cache.py": "24e70408b6e114abcc210145e1d07a0cbe5fd239210e1efaba118c54f9185b3f",
+    "src/sut/authz/label_context.py": "0b9a8ac7506e522729a773ad8b06f6970ae69ba54d70a7d3759466c165a57735",
+    "src/sut/authz/reference_monitor.py": "0872a73e97c6a1a89429c3143aec3a2cfe3dc6735633da3a92adbf680df73346",
+    "src/sut/authz/registry_view.py": "241080490eb1693fa909fda08d77abeadde2af0d6c3e23edac74b0b2f8cbfda8",
+    "src/sut/authz/replay_client.py": "77d1c8fd45cc9f8ebb1d7d8c0aad5205a28afa18e0091edbfcf121e244f2ae71",
+    "src/sut/baselines/__init__.py": "c9332467c3637df26cb4daa65f064ec34733fd3e71dbacdc570a46b94f33c498",
+    "src/sut/baselines/b0.py": "342ee355fa27aad82c67bb915c4ff570c35f4ad129a026d171152e92b966f056",
+    "src/sut/baselines/b1.py": "e249136ad2fd719c79a8d2f8254cbf491d2383baa7def4762d7b734965b777f1",
+    "src/sut/baselines/b2_broad.py": "28628d594a0ba53333959956f5e6c4dca23fa75c2badd951a898d1489c0d1a67",
+    "src/sut/baselines/b2_dpop.py": "054e270d808bcd519b43eaa3cebb64567d1fa88bf624a8f9f2cb141f1753b763",
+    "src/sut/baselines/b2_exchange_task.py": "8f50fa3c10562b6f1880269073c60e27d0bbfaa91b775ebcae77a9b8aa98a302",
+    "src/sut/baselines/b3.py": "ae327354713f7cbc89d559da2b8546b71796e41efe9a3f7db0ba51dda541e496",
+    "src/sut/baselines/b3_plus.py": "49668cfb2e81a50b6040c2447ac3e32a78ae1d0cf4083039b7ac2a85ea2fcfff",
+    "src/sut/baselines/b_cap.py": "ae8188f9945764d4a90f713108a0c73df53f82d9fd8a82f61bd09bca1a3c2430",
+    "src/sut/baselines/base.py": "603e24f74401053589b2a37929ae8823f3e6399517b9a1349a33ebce62f9deee",
+    "src/sut/capability/__init__.py": "ca6523c742b8a09382ed50a0600d1c140543cdb1d92b8b29f03119fee5597f4b",
+    "src/sut/capability/authority.py": "d77d9ff4822a57fc3168bcf504a2fd8269b6c0dcdb14da727e48535bbe192c88",
+    "src/sut/capability/digests.py": "fda9865312c89287c01c66ff1da7ae10169b6173dce3f0f5338c65efbcfc4252",
+    "src/sut/capability/signer.py": "ad3a4c53264f5ce855f8cd151a4428a4081420adce880eee9f6522285ed94cd9",
+    "src/sut/dpop.py": "6868c7543365cd4f1cf1fd1a3ebc1170e628b5cdf7fe723ae7659205a26af160",
+    "src/sut/freshness.py": "ab9204d8316f76d03fd0d1d9404d1b938a83adc3b4b0d9def8204e37f74cde58",
+    "src/sut/jcs.py": "5bf0050e634ecae36a6fd7565f9540631fbd85a080a73b6ac7ffc3aeaf6bf87f",
+    "src/sut/oauth_as/__init__.py": "9cd6d955c5787fc5c5e96ef7f45cac4676ef9dac46996cd910a5c559c9854149",
+    "src/sut/oauth_as/__main__.py": "7bad7c62bf22f87118649cdc7cf74099c7d6844e420dda417982b08f780efb17",
+    "src/sut/oauth_as/config.py": "4356dd5e95a39a4e2a0e9212d21461d3167fe827a512e642b7787e5c19175bd5",
+    "src/sut/oauth_as/errors.py": "38da7a57e845df62513860d38c1a2200058dec5eb898d57b7de1f05c79e3f6b8",
+    "src/sut/oauth_as/exchange.py": "91c5b19b5ae658095a6516df987e317ee824d771048c2a6ad6a1838d152dfe93",
+    "src/sut/oauth_as/keys.py": "734e7f65bd9709f82cf95e63781f5fff54771f93396b45cbc5c38e29e38a3073",
+    "src/sut/oauth_as/rar.py": "ead253a2e351c7a2c7ac7f335976be230be6530d9060653a5ab2a6c4a74710ff",
+    "src/sut/oauth_as/server.py": "b175f444d457d50a10da46e36d6df8a532960a362390e6dce7afc3bff132fc6c",
+    "src/sut/oauth_as/tokens.py": "dd7c9927daaa7b931dfacaec493f785aa1e1fac49e70e876c01a8ad8fc0b25d5",
+    "src/sut/protocol/__init__.py": "0bbf42ec8b9967538eeb51f9a18ab3b27ca2b972ecfc004f4646e26cce399ccd",
+    "src/sut/protocol/a2a.py": "faa2deccb4ad78bee891b96441285e67220705425566c286bc7d9331e37d036f",
+    "src/sut/protocol/mcp_tools.py": "f81e6a583789f848d95a5181aeeccf6b26497d8cc204dc7fb0c6cb0f127e5d4f",
+    "src/sut/protocol/required_authority.py": "800b7d6edde8fe313eed0dfb3bbe6148d1f749ea227b4334681e5599917db8e4",
+    "src/sut/replay_arbiter/__init__.py": "17a736bd5278915e7821a71974baedcdde5a9e028aff6fc7a08273ec3a78e93e",
+    "src/sut/replay_arbiter/__main__.py": "6074fadf116ea4fa1bbe808e1a4f0e11655c62baaddb71e1a0d39088ff77266c",
+    "src/sut/sut_process/__init__.py": "cad7a2496cf37ed34667e15ff0d9b218c92a888f6af9eda7fd4642eeb4d59b43",
+    "src/sut/sut_process/__main__.py": "ddc3b6e58cc598baa278b55d2d5a1935162d9da95a9c222d3db2cebf7099c48f",
+    "src/sut/sut_process/wire.py": "1ab6e55d6b1b32f152cee0c71f66d66618c5d4341245d05d986cdd9396b99ded",
+    "uv.lock": "4983bf894bac419ec8e5b2e955c0becac75d66c7c461c6960aeef1a963a9c9b0"
+  },
+  "not_covered": [
+    {
+      "path": ".editorconfig",
+      "reason": "repository hygiene"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "reason": "CI configuration; regression protection, never adjudicative (frozen row 2's own rule)"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "repository hygiene"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "repository hygiene (lint hooks)"
+    },
+    {
+      "path": "LICENSE",
+      "reason": "licensing; not apparatus"
+    },
+    {
+      "path": "Makefile",
+      "reason": "developer convenience targets; not apparatus"
+    },
+    {
+      "path": "PROJECT_RULES.md",
+      "reason": "project governance; process, not apparatus"
+    },
+    {
+      "path": "README.md",
+      "reason": "repository front page; navigation, not apparatus"
+    },
+    {
+      "path": "adr/0001-record-architecture-decisions.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0002-python-biscuit-library.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0003-capability-commitment-scheme.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0004-build-vs-reuse.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0005-jcs-library.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0006-dpop-jose-library.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0007-corpus-generators-not-tokens.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0008-g4-spike-parallelisation.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0009-hjcs-construction.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0010-llm-demonstration-scope.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0011-commitment-string-encoding.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0012-ingress-digest-construction.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0013-mcp-sdk-pin.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0014-ledger-platform-decision.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0015-as-placement.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0016-omega-gamma-freeze.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0017-as-profile-phase2.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0018-access-token-hash.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0019-identity-plane-registry.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0020-a2a-port-in-process-adapter.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0021-phase1-provisioning-in-as-process.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0022-label-approval-policy-freeze.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0023-label-sink-verdict-correction.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0024-delegating-client-base-token-carries-the-task-grant.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0025-llm-turn-denominators-and-the-g3-latency-threshold.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0026-the-equivalence-margin-and-the-measured-segment.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0027-the-freshness-window-and-the-replay-cache-budget.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0028-f2-wrong-principal-deferred-row-5-not-frozen.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0029-ladder-row-determines-the-base-grant.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0030-label-plumbing-and-the-boundary-owned-reference-monitor.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0031-e4-bcap-f3-oauth-negative-controls-are-b-not-na.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0032-e4-bcap-f4-f5-cells-are-a-not-a-dagger.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0033-the-replay-cache-is-a-single-writer-arbiter-process.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0034-the-campaign-is-single-process-and-b3-plus-keeps-the-in-process-cache.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0035-e4-f2-invalid-credential-b0-is-a-not-na.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0036-reference-allow-needs-a-credential-family-gate.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0037-the-held-out-third-is-cut.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0038-pre-seal-flake-hunt-the-wall-clock-straddle.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0039-one-clock-per-cell-the-campaign-adopts-the-cells-clock.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0040-the-phase-1-token-window-one-outcome-for-every-arm.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0041-rq4-analysis-completed-and-the-two-limits-of-the-e5-bit-derivation.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0042-three-pre-seal-amendments-the-part-h-list-row-7s-rationale-and-the-unscorable-definition.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/0043-the-confirmatory-corpus-and-the-generator-that-could-not-produce-it.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/README.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "adr/template.md",
+      "reason": "the decision trail; a historical record pinned by the implementation commit, deliberately outside the hashed candidate so a post-seal ADR can record a deviation without touching the seal"
+    },
+    {
+      "path": "docs/threat_model.md",
+      "reason": "threat model and assumptions page; context for the dissertation, pinned by the implementation commit, not named by step 3"
+    },
+    {
+      "path": "docs/workplan/BOOTSTRAP_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/README.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/consolidation-adr7-10/CONSOLIDATION_ADR7_10_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/consolidation-adr7-10/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp1-golden-thread/EXP1_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp1-golden-thread/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp2-strong-baselines/EXP2_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp2-strong-baselines/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp3-full-ladder/EXP3_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp3-full-ladder/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp4-f345-monitor/EXP4_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp4-f345-monitor/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp5-process-separation/EXP5_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp5-process-separation/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp6-oracle-and-campaign/EXP6_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp6-oracle-and-campaign/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp7-subcases-and-heldout/EXP7_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/exp7-subcases-and-heldout/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g1/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g1/SMOKE_G1_CORRECTIVE_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g1/SMOKE_G1_RESOLUTION_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g1/SMOKE_G1_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g11/G11_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g11/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g2/G2_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g2/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g4-phase1/G4_PHASE1_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g4-phase1/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g4-phase2/G4_PHASE2_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g4-phase2/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g6g7/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g6g7/SMOKE_G6_G7_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g8g5/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/g8g5/SMOKE_G8_G5_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/ledger-platform/LEDGER_PLATFORM_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/ledger-platform/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/omega-gamma-freeze/MANIFEST.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "docs/workplan/archive/omega-gamma-freeze/OMEGA_GAMMA_FREEZE_TASK.md",
+      "reason": "archived work specifications; history, not apparatus"
+    },
+    {
+      "path": "results/figures/.gitkeep",
+      "reason": "the campaign OUTPUT tree, write-once and empty until step 7 (three .gitkeep placeholders at seal time); outputs are governed by §J.4's raw-trace archival rule and are produced by the sealed apparatus, never sealed before they exist"
+    },
+    {
+      "path": "results/raw/.gitkeep",
+      "reason": "the campaign OUTPUT tree, write-once and empty until step 7 (three .gitkeep placeholders at seal time); outputs are governed by §J.4's raw-trace archival rule and are produced by the sealed apparatus, never sealed before they exist"
+    },
+    {
+      "path": "results/tables/.gitkeep",
+      "reason": "the campaign OUTPUT tree, write-once and empty until step 7 (three .gitkeep placeholders at seal time); outputs are governed by §J.4's raw-trace archival rule and are produced by the sealed apparatus, never sealed before they exist"
+    },
+    {
+      "path": "seal/build_manifest.py",
+      "reason": "the manifest and its tooling — DETACHED by Part H step 6: a manifest never covers itself, and the temporal-anchor proof that will sit beside it cannot be inside what it anchors"
+    },
+    {
+      "path": "seal/manifest_v0.5.json",
+      "reason": "the manifest and its tooling — DETACHED by Part H step 6: a manifest never covers itself, and the temporal-anchor proof that will sit beside it cannot be inside what it anchors"
+    },
+    {
+      "path": "seal/manifest_v0.5.json.ots",
+      "reason": "the manifest and its tooling — DETACHED by Part H step 6: a manifest never covers itself, and the temporal-anchor proof that will sit beside it cannot be inside what it anchors"
+    },
+    {
+      "path": "seal/superseded/README.md",
+      "reason": "the manifest and its tooling — DETACHED by Part H step 6: a manifest never covers itself, and the temporal-anchor proof that will sit beside it cannot be inside what it anchors"
+    },
+    {
+      "path": "seal/superseded/manifest_v0.5-20f68f5.json",
+      "reason": "the manifest and its tooling — DETACHED by Part H step 6: a manifest never covers itself, and the temporal-anchor proof that will sit beside it cannot be inside what it anchors"
+    },
+    {
+      "path": "seal/superseded/manifest_v0.5-20f68f5.json.ots",
+      "reason": "the manifest and its tooling — DETACHED by Part H step 6: a manifest never covers itself, and the temporal-anchor proof that will sit beside it cannot be inside what it anchors"
+    },
+    {
+      "path": "seal/verify_manifest.py",
+      "reason": "the manifest and its tooling — DETACHED by Part H step 6: a manifest never covers itself, and the temporal-anchor proof that will sit beside it cannot be inside what it anchors"
+    },
+    {
+      "path": "smoke/README.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g1/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g1/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g10/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g10/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g11/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g11/fixture.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g11/reencode.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g11/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g12/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g12/campaign.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g12/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g13/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g13/fixture.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g13/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g14/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g14/fixture.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g14/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g15/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g15/fixture.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g15/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g2/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g2/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g3/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g3/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g4/DESIGN.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g4/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g4/SCOPE.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g4/campaign.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g4/forge_attempt.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g4/probe_authlib.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g4/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g5/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g5/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g6/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g6/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g7/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g7/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g8/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g8/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g9/REPORT.md",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "smoke/g9/spike.py",
+      "reason": "gate spikes and adjudication reports; the gate record is provenance (named in this manifest's `gates` block) and is pinned by the implementation commit — Part H runs gates at step 1, it does not hash them at step 3"
+    },
+    {
+      "path": "tests/__init__.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_a2a_port.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_agents_and_b0.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_analysis.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_analysis_rq4.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_b1.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_b2_broad.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_b2_dpop.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_b2_exchange_task.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_b3_plus.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_b_cap.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_campaign.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_campaign_clock.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_capability_commitment.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_carried_notes.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_complete_mediation.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_confirmatory_corpus.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_credential_enumeration.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_dpop_binding.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_effect_ledger.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_f3_matrix.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_f45_matrix.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_frozen_authorizer_semantics.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_frozen_policy.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_frozen_scalars.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_golden_thread_b0.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_golden_thread_b3.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_holder_binding.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_import_redlines.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_jcs_canonicalization.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_label_context_agreement.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_label_directory.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_matched_authority.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_matrix_grouping.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_mcp_tools.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_measured_segment.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_nine_arm_matrix.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_oauth_as.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_omega_gamma_freeze.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_oracle_f3.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_oracle_predicates.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_phase1_provisioning.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_pilot_fixtures.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_placeholder.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_pre_registration.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_reference_monitor.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_required_authority.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_runner.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_sealed_truth_wall.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_shared_monitor.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_sut_mode_equivalence.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_sut_process.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tests/test_sut_signer_agreement.py",
+      "reason": "the validation suite over the covered artifacts; pinned by the implementation commit and not named by Part H step 3's coverage list — hashing it would change no campaign computation"
+    },
+    {
+      "path": "tools/clock_fix/REPORT.md",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/clock_fix/compare_cells.py",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/clock_fix/evidence/campaign-cells-after.json",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/clock_fix/evidence/campaign-cells-before.json",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/clock_fix/evidence/campaign-cells-straddled-guard-off.json",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/clock_fix/evidence/campaign-cells-straddled-guard-on.json",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/clock_fix/evidence/reproduction-postfix-summary.json",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/clock_fix/snapshot_cells.py",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/flake_hunt/REPORT.md",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/flake_hunt/evidence/run-000.log",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/flake_hunt/evidence/run-001.log",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/flake_hunt/evidence/summary-20260802-230731-f45-c6.json",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/flake_hunt/evidence/summary-20260802-230828-f45-1cpu.json",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/flake_hunt/evidence/summary-20260802-231000-fullsuite-1cpu.json",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/flake_hunt/evidence/summary.json",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/gate_rerun/REPORT.md",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/gate_rerun/logs/00-platform-before.log",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/gate_rerun/logs/01-g3.log",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/gate_rerun/logs/02-g6.log",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/gate_rerun/logs/03-g7.log",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/gate_rerun/logs/04-g12.log",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/gate_rerun/logs/05-g10.log",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/gate_rerun/logs/06-suite.log",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/gate_rerun/logs/07-platform-after.log",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/reframe/REPORT.md",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/reframe/verify_ast.py",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/reframe/verify_rename.py",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/repeat_runner.py",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    },
+    {
+      "path": "tools/workplan/verify_prune.py",
+      "reason": "repository-history proofs and re-run records (reframe, workplan, gate_rerun); records about the repository, not campaign inputs"
+    }
+  ],
+  "environment_note": "uv.lock (covered) is the resolved dependency set, enforced by `uv sync --locked`; the adjudicative interpreter and OS are the row 9 record (docs/measurement_platform.md, frozen row 9).",
+  "counts": {
+    "tracked": 387,
+    "covered": 161,
+    "excluded": 226
+  }
+}

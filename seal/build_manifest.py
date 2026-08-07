@@ -1,4 +1,4 @@
-"""Build the detached v0.5 seal manifest (Part H step 3, step 6).
+"""Build the detached v0.6 seal manifest (Part H step 3, step 6).
 
 Coverage is Part H step 3's list, made concrete file by file; every tracked
 file the manifest does NOT cover is enumerated inside the manifest with the
@@ -13,7 +13,7 @@ with `git cat-file blob <commit>:<path>` — so a fresh clone made with
 plumbing. The manifest is DETACHED: it lives under `seal/`, which it does not
 cover, and no covered file names it.
 
-    uv run python seal/build_manifest.py [--commit HEAD] [--out seal/manifest_v0.5.json]
+    uv run python seal/build_manifest.py [--commit HEAD] [--out seal/manifest_v0.6.json]
 """
 
 import argparse
@@ -41,9 +41,17 @@ COVERED_PREFIX = {
     "identity_registry_v1.json = H(R)) and the seed→keypair derivation rule "
     "(src/harness/key_material.py)",
     "analysis/": "the analysis code, frozen with the rest (§J.3 item 12)",
-    "fixtures/": "the corpus generator, its scenario specifications and the "
-    "deterministic key seeds (fixtures/pilot/golden_thread/), and the "
-    "README-only fixtures/confirmatory/ (empty until step 4 by design)",
+    "fixtures/pilot/": "the corpus generator, the PILOT scenario specifications "
+    "and the deterministic key seeds (fixtures/pilot/golden_thread/); the "
+    "generator produces BOTH corpora from one code path and its location is "
+    "historical (ADR 0043)",
+    "fixtures/confirmatory/": "the CONFIRMATORY scenario specifications and seed "
+    "(Part H step 4) — a SEALED INPUT at v0.6, where at v0.5 this directory held "
+    "a README and nothing else. Specifications and seeds only: no token byte and "
+    "no signature is stored anywhere under fixtures/, because Biscuit tokens are "
+    "not byte-reproducible across mints (ADR 0007)",
+    "fixtures/": "any other fixture artifact, covered by the same rule as the two "
+    "corpora above so that no fixture path can fall out of coverage silently",
     "docs/row7_snapshot/": "the seal-time snapshot of frozen row 7's two sources",
 }
 # Every other tracked file must fall in exactly one of these exclusion
@@ -108,9 +116,9 @@ def classify(path: str) -> "tuple[str, str] | None":
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="build the detached v0.5 seal manifest")
+    parser = argparse.ArgumentParser(description="build the detached v0.6 seal manifest")
     parser.add_argument("--commit", default="HEAD")
-    parser.add_argument("--out", default="seal/manifest_v0.5.json")
+    parser.add_argument("--out", default="seal/manifest_v0.6.json")
     args = parser.parse_args()
 
     commit = _git_bytes("rev-parse", args.commit).decode().strip()
@@ -137,9 +145,15 @@ def main() -> int:
         return 1
 
     manifest = {
-        "_what": "Detached seal manifest for the v0.5 candidate "
+        "_what": "Detached seal manifest for the v0.6 candidate "
         "(docs/EXPERIMENT_ARCHITECTURE_FINAL.md, Part H step 3). The manifest is "
-        "detached: nothing it covers contains it, and it does not cover seal/.",
+        "detached: nothing it covers contains it, and it does not cover seal/. "
+        "v0.6 SUPERSEDES v0.5 (seal/superseded/): v0.5 was sealed with inputs from "
+        "which no confirmatory corpus was producible, so the corpus was generated "
+        "under ADR 0043 and the candidate resealed. The superseded manifest and its "
+        "temporal-anchor proof are kept, not deleted -- four independent fail-closed "
+        "layers refused the shortcut of relabelling the pilot corpus, and that record "
+        "is worth more than a tidy seal directory.",
         "hash_definition": "SHA-256 over the committed git blob bytes (LF as stored). "
         "A fresh clone with core.autocrlf=false reproduces every hash by reading "
         "the checked-out file bytes directly.",
@@ -147,7 +161,8 @@ def main() -> int:
         "coverage_rule": "Part H step 3's list: design document, implementation "
         "commit, oracle code, analysis code, all configuration, the dependency "
         "environment and the sealed measurement platform, the corpus generator "
-        "with its seeds, derivation rule and scenario specifications, plus "
+        "with its seeds, derivation rule and scenario specifications for BOTH "
+        "corpora (fixtures/pilot/ and fixtures/confirmatory/), plus "
         "PRE_REGISTRATION.md and the row 7 source snapshot.",
         "covered": covered,
         "not_covered": excluded,
