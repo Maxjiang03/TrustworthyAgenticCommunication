@@ -78,6 +78,11 @@ def mint_correlation_id() -> str:
     return secrets.token_hex(16)
 
 
+def corpus_key_for(corpus_dir: Path) -> str:
+    """The registered sealed-corpus name for a corpus directory (fails closed)."""
+    return sealed_truth.corpus_key(corpus_dir)
+
+
 def frozen_label_order() -> tuple[str, ...]:
     """Row 4's total order over the label vocabulary, from the frozen policy.
 
@@ -276,6 +281,11 @@ class GoldenThreadRunner:
         verify_frozen_configuration()  # before any scenario runs (fail closed)
         self.run_mode = run_mode
         self._corpus_dir = corpus_dir
+        # Which sealed corpus this runner adjudicates against, resolved from
+        # the directory it was given and validated against the wall's own
+        # allowlist. Without it `run_scenario` defaulted to the PILOT sealed
+        # directory, so a confirmatory run raised on its first cell (ADR 0044).
+        self._corpus_key = sealed_truth.corpus_key(corpus_dir)
         # Optional only because a non-ledger-backed run has nowhere to write;
         # a ledger-backed run without a directory fails closed below.
         self._ledger_dir = Path(ledger_dir) if ledger_dir is not None else None
@@ -613,7 +623,7 @@ class GoldenThreadRunner:
         if sut_mode not in ("in-process", "separate"):
             raise RunnerError(f"unknown sut_mode {sut_mode!r} (in-process | separate)")
         visible = self.visible(scenario_id)
-        sealed = sealed_truth.load_sealed(scenario_id)
+        sealed = sealed_truth.load_sealed(scenario_id, corpus=self._corpus_key)
         correlation_id = mint_correlation_id()
         timing = TimingSeams(correlation_id=correlation_id)
         end_to_end_start = time.perf_counter_ns()

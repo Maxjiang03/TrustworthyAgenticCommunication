@@ -42,7 +42,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from src.harness import credential_faults, frozen_parameters, key_material, matrix_grouping
+from src.harness import (
+    credential_faults,
+    frozen_parameters,
+    key_material,
+    matrix_grouping,
+    sealed_truth,
+)
 from src.harness.authorizer import frozen_config
 from src.harness.oracle import predicates as P
 from src.harness.oracle.artifacts import OracleConfig
@@ -974,8 +980,15 @@ def run_campaign(
 
 
 def _sealed_document(corpus_root: Path, scenario_id: str) -> dict[str, Any]:
-    path = corpus_root / "sealed" / f"{scenario_id}.json"
-    return json.loads(path.read_text(encoding="utf-8"))
+    """Sealed truth, through the wall rather than around it.
+
+    This opened the file directly, which meant the `_refuse_sut_frames()`
+    tripwire never ran for it -- so the runtime half of red line 5 did not
+    cover the confirmatory corpus at all, and the guard that makes the wall
+    a wall was one `json.loads` away from being bypassed by any future caller
+    reached from SUT code (ADR 0044).
+    """
+    return sealed_truth.load_sealed(scenario_id, corpus=sealed_truth.corpus_key(corpus_root))
 
 
 def _visible_document(corpus_root: Path, scenario_id: str) -> dict[str, Any]:
