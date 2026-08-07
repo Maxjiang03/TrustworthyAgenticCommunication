@@ -14,11 +14,51 @@ infrastructure fix applied between the seal and a re-run, with the fix commit's 
 environment drift observed on the row 9 platform. **What does not:** ordinary development before
 the seal, which the git history and the ADR log already record.
 
-**Status: no campaign has been run.** Part H step 7's "once" is unspent. There is therefore no
-abort, no re-run and no post-seal infrastructure fix to report. The entries below are pre-campaign
-and are recorded because each one changes what a reader should expect from the sealed record.
+**Status: THE CONFIRMATORY CAMPAIGN RAN ONCE on 2026-08-07, at the v0.7 sealing commit
+`17e11c9`.** Part H step 7's "once" is **spent**. It completed in a single execution: **no abort,
+no re-run, and no post-seal infrastructure fix.** Every one of the 10 unscorable cells is a cell
+§E.4 marks `NA` in the sealed record — **none** was unscorable for a wall-clock straddle, an
+exhausted authorizer, or a runner error. The raw trace is archived at
+`results/raw/campaign-confirmatory.json` (SHA-256 recorded in D-005), admitted to version control
+by a deliberate `.gitignore` change as §J.4 item 14 requires.
+
+The entries below D-005 are **pre-campaign**, and are kept because each changes what a reader
+should expect from the sealed record.
 
 ---
+
+## D-005 — 2026-08-07 — Part H step 7 executed. One run, no abort, no re-run.
+
+**Not a departure.** Recorded here because §J.4 item 13 asks for abort and re-run events, and the
+honest report of "there were none" is worth as much as a list of them — a deviations log with a
+gap where the campaign should be is indistinguishable from one nobody kept.
+
+**What ran.** `python -m src.harness.campaign_driver --run-mode confirmatory` (ADR 0045), once, at
+the sealing commit **`17e11c9`**, with **`git_dirty: false`**, on the row 9 platform, in-process and
+ledger-backed. 13 scenarios × 9 arms across three passes — the F1/F2/F3 chain once and the F4/F5
+chain under both monitor configurations, which is a property of the sealed corpus and not a choice
+(ADR 0045). **153 cells: 143 scored, 10 unscorable.** Wall time 13.6 s.
+
+**Artifacts, with hashes so the claim is checkable:**
+
+| artifact | SHA-256 |
+|---|---|
+| `results/raw/campaign-confirmatory.json` | `406b51f98c40a491e8c6a9aa645c89fa9aa67b6cc746457b41cefc2ee79c8495` |
+
+The run record inside it carries `git_commit = 17e11c9…`, `git_dirty = false`, and the three frozen
+digests `H(Γ)`/`H(R)`/`H(Λ)` matching `docs/frozen_parameters.md` exactly.
+
+**Every unscorable cell, with its cause** (the pre-registration requires each to be reported):
+all **10** read *"NA per the sealed record"* — 4 on `cf-f1-chain-tamper` (`B0`, `B1`,
+`B2-broad-noexchange`, `B2-exchange-broad`) and 6 on `cf-f2-wrong-holder-proof` (those four plus
+`B2-exchange-task` and `B-cap`). These are §E.4's own `NA` cells: arms that cannot express the
+case. **No cell was lost to a wall-clock straddle, to an exhausted authorizer, or to a runner
+error** — the three apparatus failure modes that would have made a cell unmeasurable for a reason
+having nothing to do with the mechanisms.
+
+**No result-driven change was made after seeing any number.** Nothing in the apparatus, the
+analysis, the corpus or the pre-registration has been edited since the seal; this entry and the
+`.gitignore` line that archives the trace are the only writes, and neither can alter a verdict.
 
 ## D-001 — 2026-08-07 — The v0.6 seal is superseded before any campaign, for apparatus defects found by pre-run audit
 

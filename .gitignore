@@ -30,6 +30,15 @@ Thumbs.db
 results/**
 !results/**/
 !results/**/.gitkeep
+# THE CONFIRMATORY CAMPAIGN RAN 2026-08-07, and Part H step 7's "once" is spent.
+# §J.4 item 14: raw traces are immutable and archived. These three paths are
+# admitted DELIBERATELY, which is what the rule above exists to require -- a
+# raw trace must never be committed by accident, and must never be absent by
+# accident either. Committing them puts them in history, where they cannot be
+# edited without rewriting it.
+!results/raw/campaign-confirmatory.json
+!results/tables/results-confirmatory.json
+!results/tables/results-confirmatory.md
 smoke/g10/_ledger_tmp/
 
 # Working-tree copies of task specifications the Commander issues at the

@@ -1,0 +1,1065 @@
+{
+  "agreement": {
+    "agreed": 80,
+    "deferred": [
+      {
+        "cells": {},
+        "family": "F2",
+        "reason": "row 5 has no anchor outside the author's judgement, so freezing it would measure conformance to an artifact this author invented (ADR 0028). Reported as deferred \u2014 unscored, never as NA.",
+        "state": "deferred \u2014 unscored (ADR 0028)",
+        "subcase": "F2 wrong_principal (frozen task\u2192principal policy)"
+      }
+    ],
+    "disagreed": [],
+    "not_populated": [
+      {
+        "cells": {},
+        "family": "F3",
+        "reason": "the campaign does not instantiate this subcase; its prediction is untouched by the measurement and is NOT reported as confirmed, as passing, or inside any per-family count (pre-registered \u00a74)",
+        "state": "NOT POPULATED BY THE CAMPAIGN",
+        "subcase": "F3 dpop-first-use-body-mutation (T-tool/T-args)"
+      },
+      {
+        "cells": {},
+        "family": "F3",
+        "reason": "the campaign does not instantiate this subcase; its prediction is untouched by the measurement and is NOT reported as confirmed, as passing, or inside any per-family count (pre-registered \u00a74)",
+        "state": "NOT POPULATED BY THE CAMPAIGN",
+        "subcase": "F3 expired token (OAuth neg. control)"
+      },
+      {
+        "cells": {},
+        "family": "F3",
+        "reason": "the campaign does not instantiate this subcase; its prediction is untouched by the measurement and is NOT reported as confirmed, as passing, or inside any per-family count (pre-registered \u00a74)",
+        "state": "NOT POPULATED BY THE CAMPAIGN",
+        "subcase": "F3 dpop-captured-proof-replay (bit-identical)"
+      }
+    ],
+    "unmeasured": [
+      {
+        "arm": "B0",
+        "expected": "NA",
+        "observed": "",
+        "subcase": "F1-chain-tamper"
+      },
+      {
+        "arm": "B1",
+        "expected": "NA",
+        "observed": "",
+        "subcase": "F1-chain-tamper"
+      },
+      {
+        "arm": "B2-broad-noexchange",
+        "expected": "NA",
+        "observed": "",
+        "subcase": "F1-chain-tamper"
+      },
+      {
+        "arm": "B2-exchange-broad",
+        "expected": "NA",
+        "observed": "",
+        "subcase": "F1-chain-tamper"
+      },
+      {
+        "arm": "B0",
+        "expected": "NA",
+        "observed": "",
+        "subcase": "F2 wrong_holder_proof / wrong_dpop_key"
+      },
+      {
+        "arm": "B1",
+        "expected": "NA",
+        "observed": "",
+        "subcase": "F2 wrong_holder_proof / wrong_dpop_key"
+      },
+      {
+        "arm": "B2-broad-noexchange",
+        "expected": "NA",
+        "observed": "",
+        "subcase": "F2 wrong_holder_proof / wrong_dpop_key"
+      },
+      {
+        "arm": "B2-exchange-broad",
+        "expected": "NA",
+        "observed": "",
+        "subcase": "F2 wrong_holder_proof / wrong_dpop_key"
+      },
+      {
+        "arm": "B2-exchange-task",
+        "expected": "NA",
+        "observed": "",
+        "subcase": "F2 wrong_holder_proof / wrong_dpop_key"
+      },
+      {
+        "arm": "B-cap",
+        "expected": "NA",
+        "observed": "",
+        "subcase": "F2 wrong_holder_proof / wrong_dpop_key"
+      }
+    ]
+  },
+  "cells_scored": 143,
+  "class_macro": {
+    "F1": {
+      "coverage": {
+        "defined": 3,
+        "instantiated": 3
+      },
+      "quantities": {
+        "admission_breach": {
+          "count": 8,
+          "rate": 0.25,
+          "total": 32
+        },
+        "false_block": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 32
+        },
+        "log_integrity_failure": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 32
+        },
+        "observed_forwarded": {
+          "count": 17,
+          "rate": 0.53125,
+          "total": 32
+        },
+        "realized_harm": {
+          "count": 8,
+          "rate": 0.25,
+          "total": 32
+        },
+        "reference_allow": {
+          "count": 9,
+          "rate": 0.28125,
+          "total": 32
+        }
+      }
+    },
+    "F2": {
+      "coverage": {
+        "defined": 3,
+        "instantiated": 3
+      },
+      "quantities": {
+        "admission_breach": {
+          "count": 2,
+          "rate": 0.09523809523809523,
+          "total": 21
+        },
+        "false_block": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 21
+        },
+        "log_integrity_failure": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 21
+        },
+        "observed_forwarded": {
+          "count": 2,
+          "rate": 0.09523809523809523,
+          "total": 21
+        },
+        "realized_harm": {
+          "count": 2,
+          "rate": 0.09523809523809523,
+          "total": 21
+        },
+        "reference_allow": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 21
+        }
+      }
+    },
+    "F3": {
+      "coverage": {
+        "defined": 5,
+        "instantiated": 2
+      },
+      "coverage_warning": "F3 is instantiated in part: 2 of 5 subcases. This fraction travels with every number in this row (pre-registered \u00a74).",
+      "quantities": {
+        "admission_breach": {
+          "count": 8,
+          "rate": 0.4444444444444444,
+          "total": 18
+        },
+        "false_block": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 18
+        },
+        "log_integrity_failure": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 18
+        },
+        "observed_forwarded": {
+          "count": 8,
+          "rate": 0.4444444444444444,
+          "total": 18
+        },
+        "realized_harm": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 18
+        },
+        "reference_allow": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 18
+        }
+      }
+    },
+    "F4": {
+      "coverage": {
+        "defined": 1,
+        "instantiated": 1
+      },
+      "qualification": "F4 agreement between the two corpora MUST NOT be reported as replication of the same strength as F1, F2, F3 or F5: `\u03a9`'s frozen size makes `(mail.send, mail/outbox)` the entire derivable egress set, so the F4 confirmatory instances share their pilot siblings' whole (tool, resource) element and are less independent of the pilot than the other families' are. This is a limit on what was measured; it does not mitigate instance-selection bias, which stays unmitigated (ADR 0037, \u00a7J.5 item 23).",
+      "quantities": {
+        "admission_breach": {
+          "count": 10,
+          "rate": 0.2777777777777778,
+          "total": 36
+        },
+        "false_block": {
+          "count": 2,
+          "rate": 0.05555555555555555,
+          "total": 36
+        },
+        "log_integrity_failure": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 36
+        },
+        "observed_forwarded": {
+          "count": 26,
+          "rate": 0.7222222222222222,
+          "total": 36
+        },
+        "realized_harm": {
+          "count": 10,
+          "rate": 0.2777777777777778,
+          "total": 36
+        },
+        "reference_allow": {
+          "count": 18,
+          "rate": 0.5,
+          "total": 36
+        }
+      }
+    },
+    "F5": {
+      "coverage": {
+        "defined": 1,
+        "instantiated": 1
+      },
+      "quantities": {
+        "admission_breach": {
+          "count": 10,
+          "rate": 0.2777777777777778,
+          "total": 36
+        },
+        "false_block": {
+          "count": 2,
+          "rate": 0.05555555555555555,
+          "total": 36
+        },
+        "log_integrity_failure": {
+          "count": 0,
+          "rate": 0.0,
+          "total": 36
+        },
+        "observed_forwarded": {
+          "count": 26,
+          "rate": 0.7222222222222222,
+          "total": 36
+        },
+        "realized_harm": {
+          "count": 10,
+          "rate": 0.2777777777777778,
+          "total": 36
+        },
+        "reference_allow": {
+          "count": 18,
+          "rate": 0.5,
+          "total": 36
+        }
+      }
+    }
+  },
+  "clustered_by_template": {
+    "admission_breach": {
+      "F1:chain-tamper": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 5
+      },
+      "F1:root": {
+        "count": 4,
+        "rate": 0.4444444444444444,
+        "total": 9
+      },
+      "F1:terminal": {
+        "count": 4,
+        "rate": 0.4444444444444444,
+        "total": 9
+      },
+      "F2:invalid_credential": {
+        "count": 1,
+        "rate": 0.1111111111111111,
+        "total": 9
+      },
+      "F2:unauthenticated_caller": {
+        "count": 1,
+        "rate": 0.1111111111111111,
+        "total": 9
+      },
+      "F2:wrong_holder_proof": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 3
+      },
+      "F3:audience_mismatch": {
+        "count": 2,
+        "rate": 0.2222222222222222,
+        "total": 9
+      },
+      "F3:dpop-stolen-AT-key-substitution": {
+        "count": 6,
+        "rate": 0.6666666666666666,
+        "total": 9
+      },
+      "F4:label-confusion:no-declassification": {
+        "count": 10,
+        "rate": 0.5555555555555556,
+        "total": 18
+      },
+      "F5:approval-forgery:no-artifact": {
+        "count": 10,
+        "rate": 0.5555555555555556,
+        "total": 18
+      },
+      "benign:F4-control:valid-declassification": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "benign:F5-control:valid-approval": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "benign:golden-thread": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      }
+    },
+    "false_block": {
+      "F1:chain-tamper": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 5
+      },
+      "F1:root": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F1:terminal": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F2:invalid_credential": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F2:unauthenticated_caller": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F2:wrong_holder_proof": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 3
+      },
+      "F3:audience_mismatch": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F3:dpop-stolen-AT-key-substitution": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F4:label-confusion:no-declassification": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "F5:approval-forgery:no-artifact": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "benign:F4-control:valid-declassification": {
+        "count": 2,
+        "rate": 0.1111111111111111,
+        "total": 18
+      },
+      "benign:F5-control:valid-approval": {
+        "count": 2,
+        "rate": 0.1111111111111111,
+        "total": 18
+      },
+      "benign:golden-thread": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      }
+    },
+    "log_integrity_failure": {
+      "F1:chain-tamper": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 5
+      },
+      "F1:root": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F1:terminal": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F2:invalid_credential": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F2:unauthenticated_caller": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F2:wrong_holder_proof": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 3
+      },
+      "F3:audience_mismatch": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F3:dpop-stolen-AT-key-substitution": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F4:label-confusion:no-declassification": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "F5:approval-forgery:no-artifact": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "benign:F4-control:valid-declassification": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "benign:F5-control:valid-approval": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "benign:golden-thread": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      }
+    },
+    "observed_forwarded": {
+      "F1:chain-tamper": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 5
+      },
+      "F1:root": {
+        "count": 4,
+        "rate": 0.4444444444444444,
+        "total": 9
+      },
+      "F1:terminal": {
+        "count": 4,
+        "rate": 0.4444444444444444,
+        "total": 9
+      },
+      "F2:invalid_credential": {
+        "count": 1,
+        "rate": 0.1111111111111111,
+        "total": 9
+      },
+      "F2:unauthenticated_caller": {
+        "count": 1,
+        "rate": 0.1111111111111111,
+        "total": 9
+      },
+      "F2:wrong_holder_proof": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 3
+      },
+      "F3:audience_mismatch": {
+        "count": 2,
+        "rate": 0.2222222222222222,
+        "total": 9
+      },
+      "F3:dpop-stolen-AT-key-substitution": {
+        "count": 6,
+        "rate": 0.6666666666666666,
+        "total": 9
+      },
+      "F4:label-confusion:no-declassification": {
+        "count": 10,
+        "rate": 0.5555555555555556,
+        "total": 18
+      },
+      "F5:approval-forgery:no-artifact": {
+        "count": 10,
+        "rate": 0.5555555555555556,
+        "total": 18
+      },
+      "benign:F4-control:valid-declassification": {
+        "count": 16,
+        "rate": 0.8888888888888888,
+        "total": 18
+      },
+      "benign:F5-control:valid-approval": {
+        "count": 16,
+        "rate": 0.8888888888888888,
+        "total": 18
+      },
+      "benign:golden-thread": {
+        "count": 9,
+        "rate": 1.0,
+        "total": 9
+      }
+    },
+    "realized_harm": {
+      "F1:chain-tamper": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 5
+      },
+      "F1:root": {
+        "count": 4,
+        "rate": 0.4444444444444444,
+        "total": 9
+      },
+      "F1:terminal": {
+        "count": 4,
+        "rate": 0.4444444444444444,
+        "total": 9
+      },
+      "F2:invalid_credential": {
+        "count": 1,
+        "rate": 0.1111111111111111,
+        "total": 9
+      },
+      "F2:unauthenticated_caller": {
+        "count": 1,
+        "rate": 0.1111111111111111,
+        "total": 9
+      },
+      "F2:wrong_holder_proof": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 3
+      },
+      "F3:audience_mismatch": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F3:dpop-stolen-AT-key-substitution": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F4:label-confusion:no-declassification": {
+        "count": 10,
+        "rate": 0.5555555555555556,
+        "total": 18
+      },
+      "F5:approval-forgery:no-artifact": {
+        "count": 10,
+        "rate": 0.5555555555555556,
+        "total": 18
+      },
+      "benign:F4-control:valid-declassification": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "benign:F5-control:valid-approval": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "benign:golden-thread": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      }
+    },
+    "reference_allow": {
+      "F1:chain-tamper": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 5
+      },
+      "F1:root": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F1:terminal": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F2:invalid_credential": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F2:unauthenticated_caller": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F2:wrong_holder_proof": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 3
+      },
+      "F3:audience_mismatch": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F3:dpop-stolen-AT-key-substitution": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 9
+      },
+      "F4:label-confusion:no-declassification": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "F5:approval-forgery:no-artifact": {
+        "count": 0,
+        "rate": 0.0,
+        "total": 18
+      },
+      "benign:F4-control:valid-declassification": {
+        "count": 18,
+        "rate": 1.0,
+        "total": 18
+      },
+      "benign:F5-control:valid-approval": {
+        "count": 18,
+        "rate": 1.0,
+        "total": 18
+      },
+      "benign:golden-thread": {
+        "count": 9,
+        "rate": 1.0,
+        "total": 9
+      }
+    }
+  },
+  "corpus": "confirmatory",
+  "deferred": [
+    {
+      "cells": {},
+      "family": "F2",
+      "reason": "row 5 has no anchor outside the author's judgement, so freezing it would measure conformance to an artifact this author invented (ADR 0028). Reported as deferred \u2014 unscored, never as NA.",
+      "state": "deferred \u2014 unscored (ADR 0028)",
+      "subcase": "F2 wrong_principal (frozen task\u2192principal policy)"
+    }
+  ],
+  "expected_matrix": [
+    {
+      "cells": {
+        "B-cap": "B",
+        "B0": "A",
+        "B1": "A",
+        "B2-broad-noexchange": "A",
+        "B2-exchange-broad": "A",
+        "B2-exchange-task": "B",
+        "B2-exchange-task-DPoP": "B",
+        "B3": "B",
+        "B3+": "B"
+      },
+      "family": "F1",
+      "reason": "",
+      "state": "predicted",
+      "subcase": "F1-root (R \u2284 U_task)"
+    },
+    {
+      "cells": {
+        "B-cap": "B",
+        "B0": "A",
+        "B1": "A",
+        "B2-broad-noexchange": "A",
+        "B2-exchange-broad": "A",
+        "B2-exchange-task": "B",
+        "B2-exchange-task-DPoP": "B",
+        "B3": "B",
+        "B3+": "B"
+      },
+      "family": "F1",
+      "reason": "",
+      "state": "predicted",
+      "subcase": "F1-terminal (R \u2286 U_task, R \u2284 C_n)"
+    },
+    {
+      "cells": {
+        "B-cap": "B",
+        "B0": "NA",
+        "B1": "NA",
+        "B2-broad-noexchange": "NA",
+        "B2-exchange-broad": "NA",
+        "B2-exchange-task": "B",
+        "B2-exchange-task-DPoP": "B",
+        "B3": "B",
+        "B3+": "B"
+      },
+      "family": "F1",
+      "reason": "",
+      "state": "predicted",
+      "subcase": "F1-chain-tamper"
+    },
+    {
+      "cells": {
+        "B-cap": "B",
+        "B0": "A",
+        "B1": "B",
+        "B2-broad-noexchange": "B",
+        "B2-exchange-broad": "B",
+        "B2-exchange-task": "B",
+        "B2-exchange-task-DPoP": "B",
+        "B3": "B",
+        "B3+": "B"
+      },
+      "family": "F2",
+      "reason": "",
+      "state": "predicted",
+      "subcase": "F2 invalid_credential"
+    },
+    {
+      "cells": {},
+      "family": "F2",
+      "reason": "row 5 has no anchor outside the author's judgement, so freezing it would measure conformance to an artifact this author invented (ADR 0028). Reported as deferred \u2014 unscored, never as NA.",
+      "state": "deferred \u2014 unscored (ADR 0028)",
+      "subcase": "F2 wrong_principal (frozen task\u2192principal policy)"
+    },
+    {
+      "cells": {
+        "B-cap": "NA",
+        "B0": "NA",
+        "B1": "NA",
+        "B2-broad-noexchange": "NA",
+        "B2-exchange-broad": "NA",
+        "B2-exchange-task": "NA",
+        "B2-exchange-task-DPoP": "B",
+        "B3": "B",
+        "B3+": "B"
+      },
+      "family": "F2",
+      "reason": "",
+      "state": "predicted",
+      "subcase": "F2 wrong_holder_proof / wrong_dpop_key"
+    },
+    {
+      "cells": {
+        "B-cap": "B",
+        "B0": "A",
+        "B1": "B",
+        "B2-broad-noexchange": "B",
+        "B2-exchange-broad": "B",
+        "B2-exchange-task": "B",
+        "B2-exchange-task-DPoP": "B",
+        "B3": "B",
+        "B3+": "B"
+      },
+      "family": "F2",
+      "reason": "",
+      "state": "predicted",
+      "subcase": "F2 unauthenticated_caller"
+    },
+    {
+      "cells": {
+        "B-cap": "A",
+        "B0": "A",
+        "B1": "A",
+        "B2-broad-noexchange": "A",
+        "B2-exchange-broad": "A",
+        "B2-exchange-task": "A",
+        "B2-exchange-task-DPoP": "B",
+        "B3": "B",
+        "B3+": "B"
+      },
+      "family": "F3",
+      "reason": "",
+      "state": "predicted",
+      "subcase": "F3 dpop-stolen-AT-key-substitution (T-reuse)"
+    },
+    {
+      "cells": {},
+      "family": "F3",
+      "reason": "the campaign does not instantiate this subcase; its prediction is untouched by the measurement and is NOT reported as confirmed, as passing, or inside any per-family count (pre-registered \u00a74)",
+      "state": "NOT POPULATED BY THE CAMPAIGN",
+      "subcase": "F3 dpop-first-use-body-mutation (T-tool/T-args)"
+    },
+    {
+      "cells": {
+        "B-cap": "B",
+        "B0": "A",
+        "B1": "A",
+        "B2-broad-noexchange": "B",
+        "B2-exchange-broad": "B",
+        "B2-exchange-task": "B",
+        "B2-exchange-task-DPoP": "B",
+        "B3": "B",
+        "B3+": "B"
+      },
+      "family": "F3",
+      "reason": "",
+      "state": "predicted",
+      "subcase": "F3 audience mismatch (OAuth neg. control)"
+    },
+    {
+      "cells": {},
+      "family": "F3",
+      "reason": "the campaign does not instantiate this subcase; its prediction is untouched by the measurement and is NOT reported as confirmed, as passing, or inside any per-family count (pre-registered \u00a74)",
+      "state": "NOT POPULATED BY THE CAMPAIGN",
+      "subcase": "F3 expired token (OAuth neg. control)"
+    },
+    {
+      "cells": {},
+      "family": "F3",
+      "reason": "the campaign does not instantiate this subcase; its prediction is untouched by the measurement and is NOT reported as confirmed, as passing, or inside any per-family count (pre-registered \u00a74)",
+      "state": "NOT POPULATED BY THE CAMPAIGN",
+      "subcase": "F3 dpop-captured-proof-replay (bit-identical)"
+    },
+    {
+      "cells": {
+        "B-cap": "A",
+        "B0": "A",
+        "B1": "A",
+        "B2-broad-noexchange": "A\u2020",
+        "B2-exchange-broad": "A\u2020",
+        "B2-exchange-task": "A\u2020",
+        "B2-exchange-task-DPoP": "A\u2020",
+        "B3": "B",
+        "B3+": "B"
+      },
+      "family": "F4",
+      "reason": "",
+      "state": "predicted",
+      "subcase": "F4 sensitive egress, no declassification"
+    },
+    {
+      "cells": {
+        "B-cap": "A",
+        "B0": "A",
+        "B1": "A",
+        "B2-broad-noexchange": "A\u2020",
+        "B2-exchange-broad": "A\u2020",
+        "B2-exchange-task": "A\u2020",
+        "B2-exchange-task-DPoP": "A\u2020",
+        "B3": "B",
+        "B3+": "B"
+      },
+      "family": "F5",
+      "reason": "",
+      "state": "predicted",
+      "subcase": "F5 high-risk action, no approval artifact"
+    }
+  ],
+  "hypotheses": [
+    {
+      "evidence": {
+        "body_mutation": {
+          "B2-exchange-task": null,
+          "B2-exchange-task-DPoP": null,
+          "B3": null
+        },
+        "reuse": {
+          "B2-exchange-task": "A",
+          "B2-exchange-task-DPoP": "B",
+          "B3": "B"
+        }
+      },
+      "hypothesis": "H4a",
+      "reasons": [
+        "attack (ii), tool/argument substitution after signing, is the `F3 dpop-first-use-body-mutation` row -- NOT POPULATED BY THE CAMPAIGN (pre-registered \u00a74). Half of H4a's prediction is therefore unmeasured, and the measured half alone does not support the whole hypothesis."
+      ],
+      "verdict": "NOT DETERMINED"
+    },
+    {
+      "evidence": {
+        "instantiated": false
+      },
+      "hypothesis": "H4b",
+      "reasons": [
+        "the corpus instantiates no compromised-holder scenario: its holder faults substitute another holder's key (H4a's adversary, who does NOT possess the terminal holder identity key), so H4b's premise is never staged",
+        "in-scope-vs-out-of-scope containment IS measured, by F1-root and F1-terminal, but those are not compromised-holder instances and are not reported as if they were"
+      ],
+      "verdict": "NOT DETERMINED"
+    }
+  ],
+  "instance_micro": {
+    "admission_breach": {
+      "count": 38,
+      "rate": 0.26573426573426573,
+      "total": 143
+    },
+    "false_block": {
+      "count": 4,
+      "rate": 0.027972027972027972,
+      "total": 143
+    },
+    "log_integrity_failure": {
+      "count": 0,
+      "rate": 0.0,
+      "total": 143
+    },
+    "observed_forwarded": {
+      "count": 79,
+      "rate": 0.5524475524475524,
+      "total": 143
+    },
+    "realized_harm": {
+      "count": 30,
+      "rate": 0.2097902097902098,
+      "total": 143
+    },
+    "reference_allow": {
+      "count": 45,
+      "rate": 0.3146853146853147,
+      "total": 143
+    }
+  },
+  "not_populated": [
+    {
+      "cells": {},
+      "family": "F3",
+      "reason": "the campaign does not instantiate this subcase; its prediction is untouched by the measurement and is NOT reported as confirmed, as passing, or inside any per-family count (pre-registered \u00a74)",
+      "state": "NOT POPULATED BY THE CAMPAIGN",
+      "subcase": "F3 dpop-first-use-body-mutation (T-tool/T-args)"
+    },
+    {
+      "cells": {},
+      "family": "F3",
+      "reason": "the campaign does not instantiate this subcase; its prediction is untouched by the measurement and is NOT reported as confirmed, as passing, or inside any per-family count (pre-registered \u00a74)",
+      "state": "NOT POPULATED BY THE CAMPAIGN",
+      "subcase": "F3 expired token (OAuth neg. control)"
+    },
+    {
+      "cells": {},
+      "family": "F3",
+      "reason": "the campaign does not instantiate this subcase; its prediction is untouched by the measurement and is NOT reported as confirmed, as passing, or inside any per-family count (pre-registered \u00a74)",
+      "state": "NOT POPULATED BY THE CAMPAIGN",
+      "subcase": "F3 dpop-captured-proof-replay (bit-identical)"
+    }
+  ],
+  "run_mode": "confirmatory",
+  "scenarios": [
+    "cf-benign",
+    "cf-f1-chain-tamper",
+    "cf-f1-root",
+    "cf-f1-terminal",
+    "cf-f2-invalid-credential",
+    "cf-f2-unauthenticated-caller",
+    "cf-f2-wrong-holder-proof",
+    "cf-f3-audience-mismatch",
+    "cf-f3-stolen-at-key-substitution",
+    "cf-f4-declassified",
+    "cf-f4-sensitive-egress",
+    "cf-f5-approved",
+    "cf-f5-unapproved-high-risk"
+  ],
+  "statistical_note": "Security and blocking outcomes are exact counts and rates only. No confidence interval is placed on any security proportion (\u00a7D.26): a fixed author-constructed suite has no random-sampling population and the verdicts are deterministic. Repetition is used only to detect nondeterminism.",
+  "unscorable": [
+    {
+      "arm": "B0",
+      "cause": "NA per the sealed record",
+      "scenario_id": "cf-f1-chain-tamper"
+    },
+    {
+      "arm": "B1",
+      "cause": "NA per the sealed record",
+      "scenario_id": "cf-f1-chain-tamper"
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "cause": "NA per the sealed record",
+      "scenario_id": "cf-f1-chain-tamper"
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "cause": "NA per the sealed record",
+      "scenario_id": "cf-f1-chain-tamper"
+    },
+    {
+      "arm": "B0",
+      "cause": "NA per the sealed record",
+      "scenario_id": "cf-f2-wrong-holder-proof"
+    },
+    {
+      "arm": "B1",
+      "cause": "NA per the sealed record",
+      "scenario_id": "cf-f2-wrong-holder-proof"
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "cause": "NA per the sealed record",
+      "scenario_id": "cf-f2-wrong-holder-proof"
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "cause": "NA per the sealed record",
+      "scenario_id": "cf-f2-wrong-holder-proof"
+    },
+    {
+      "arm": "B2-exchange-task",
+      "cause": "NA per the sealed record",
+      "scenario_id": "cf-f2-wrong-holder-proof"
+    },
+    {
+      "arm": "B-cap",
+      "cause": "NA per the sealed record",
+      "scenario_id": "cf-f2-wrong-holder-proof"
+    }
+  ]
+}
