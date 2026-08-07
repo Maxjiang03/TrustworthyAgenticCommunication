@@ -53,6 +53,35 @@ frozen row; they restore the oracle to what §Part I and ADR 0030 already specif
 found after the run, Part H's no-result-driven-tuning rule would have forbidden the fix and the
 affected families would have been reported as invalid.
 
+## D-004 — 2026-08-07 — A G-2 semantics test fails intermittently in the full suite. OPEN, cause undetermined, and it must be resolved before the campaign.
+
+**Departure from:** nothing pre-registered — this is an **open defect in the apparatus**, recorded
+here because it bears on a red-line gate and on the quantity the study measures.
+
+**What happened.** `tests/test_frozen_authorizer_semantics.py::test_frozen_gamma_denies_third_party_widening`
+failed once in six full-suite runs at HEAD `d99cd60`. The failure is in the **positive arm** — a
+genuinely granted element failing to authorize — not in the security assertion. Full record,
+including a proposed mechanism that was tested and **refuted**, in **ADR 0038, Sighting D**.
+
+**Why it is recorded as a deviation rather than a flaky test.** Gate **G-2** is one of the three
+construct-validity life-or-death gates (`PROJECT_RULES.md` red line 3), and the code path this
+test exercises is the one that computes every `C_i = Allowed(P_i; Γ, κ, Ω)` — once per candidate
+element. If a legitimate authorization can intermittently return a denial, an authority set can be
+computed **smaller than it is**, and authorization-scope amplification is a function of exactly
+those sets. A flake here is not cosmetic; it is a threat to the measurement.
+
+**Direction: AGAINST this work's hypothesis** — it makes a capability arm look more restrictive
+than it is. That is the same direction as ADR 0038's Sighting B and both of its reproductions, and
+it is stated because the project's §6.1 pattern (*every dormant defect failed toward the
+hypothesis*) still does not hold.
+
+**Status: OPEN.** It is **not** claimed resolved, **not** claimed to share a cause with Sightings
+A–C, and **not** attributed to the ADR 0044 repairs — nothing they touch is on the biscuit
+authorizer path, and a pre-repair reproduction check was run against `cdf185d` to test that
+directly rather than argue it. **This must be resolved, or its scope bounded and declared, before
+Part H step 7 runs.** A campaign whose authority sets can be intermittently under-computed does not
+measure what this study says it measures.
+
 ## D-003 — 2026-08-07 — The campaign driver was smoke-tested against the CONFIRMATORY corpus before the seal. Reported, not buried.
 
 **Departure from:** `PROJECT_RULES.md` red line 2 and Part H's ordering — no confirmatory campaign

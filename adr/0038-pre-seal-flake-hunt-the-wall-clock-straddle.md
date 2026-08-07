@@ -181,6 +181,48 @@ nondeterminism, so a slow run is not by itself a threat to them. But an unexplai
 excursion on the campaign machine **must be reported if it occurs during the campaign**, and a
 campaign run exhibiting it must not be quietly accepted as equivalent to one that did not.
 
+## Sighting D — the frozen-authorizer positive arm, full-suite only, CAUSE UNDETERMINED
+
+**Seen 2026-08-07**, during the ADR 0044 repair work, at HEAD `d99cd60`.
+
+`tests/test_frozen_authorizer_semantics.py::test_frozen_gamma_denies_third_party_widening` failed
+its **positive arm** — *"a genuinely granted element still authorizes on the same token"* —
+with `assert False is True`. The negative arm (the third-party widening fact is denied) passed;
+what failed is a **legitimate authorization being refused**.
+
+| condition | runs | failures |
+|---|--:|--:|
+| full suite, no added contention | 6 | **1** |
+| full suite, no added contention (earlier, same HEAD) | 6 | 0 |
+| the file alone, no contention | 8 | 0 |
+| the file alone, **16 busy-loop workers** | 6 | 0 |
+
+**A proposed mechanism was tested and REFUTED.** `authorize_candidate` catches
+`AuthorizationError` and returns it as a **deny**, and `biscuit-rust`'s authorizer carries an
+internal evaluation time limit — so "under load the limit trips and a timeout is recorded as a
+refusal" is a mechanism that would fit the full-suite-only pattern exactly. It does not survive
+its own test: **16-way CPU contention on the file alone reproduced nothing (0/6)**. The
+hypothesis is recorded as falsified rather than deleted, because the next person to see this will
+think of it too.
+
+**Cause: UNDETERMINED.** What is known: it needs the full suite (never reproduced in isolation
+under any condition tried), and the suite runs under `pytest-randomly`, so test ORDER differs per
+run — which is consistent with a cross-test state dependency and inconsistent with pure load.
+That is a direction, not a finding, and it is not claimed as one.
+
+**Why this one matters more than a flaky test usually would.** Gate **G-2** is one of the three
+construct-validity life-or-death gates (red line 3), and this is a G-2 semantics test. The path it
+exercises is the one `Allowed(P_i; Γ, κ, Ω)` runs **once per candidate element** to compute every
+`C_i`. If a legitimate authorization can intermittently return a denial, an authority set could be
+computed **smaller than it is**, and the campaign's amplification measurement is a function of
+exactly those sets. **The direction is AGAINST this work's hypothesis** (a capability arm looking
+more restrictive than it is), which is the same direction as Sightings B and the two ADR 0038
+reproductions — the §6.1 pattern still does not hold.
+
+**Not claimed:** that this is the same cause as Sightings A, B or C; that it is caused by the ADR
+0044 repairs (nothing they touch is on the biscuit authorizer path, and a pre-repair reproduction
+check was run — see below); or that it is resolved.
+
 ## Status
 
 accepted — 2026-08-02 (the pre-seal flake hunt; reproduction and root cause, fix referred)
