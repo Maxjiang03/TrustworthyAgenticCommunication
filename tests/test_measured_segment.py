@@ -114,9 +114,24 @@ class TestEachSpanBracketsOneCall:
         assert "presentations" not in rendered
         # Negative arm: the append DOES exist in the enclosing function, so its
         # absence above is placement rather than the call having been deleted.
-        assert "presentations.append(dict(presentation))" in RUNNER_SOURCE.read_text(
-            encoding="utf-8"
+        # Matched structurally rather than by source text -- the recorded value
+        # changed once already (ADR 0044 records the observation AFTER fault
+        # injection, not `arm.present`'s stale return), and a literal pin turns
+        # every such repair into a spurious failure of a placement test.
+        tree = ast.parse(RUNNER_SOURCE.read_text(encoding="utf-8"))
+        hook = next(
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.FunctionDef) and node.name == "observed_present"
         )
+        appends = [
+            node
+            for node in ast.walk(hook)
+            if isinstance(node, ast.Call)
+            and getattr(node.func, "attr", None) == "append"
+            and getattr(getattr(node.func, "value", None), "id", None) == "presentations"
+        ]
+        assert len(appends) == 1, "the in-process hook records the presentation exactly once"
 
     def test_the_scan_can_see_a_widened_span(self):
         """Negative arm for the whole approach: a two-statement body is caught."""

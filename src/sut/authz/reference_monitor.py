@@ -208,12 +208,28 @@ class ContextApprovalMonitor:
     def _unb64u(text: str) -> bytes:
         return urlsafe_b64decode(text + "=" * (-len(text) % 4))
 
+    @staticmethod
+    def _raw_signature(signature) -> bytes:
+        """The 64 raw Ed25519 bytes, whichever carrier they arrived in.
+
+        A signature is 64 raw bytes; its base64url text is 86 characters, so
+        the carrier is decided by length rather than by `isinstance`. The
+        oracle's own verifier carried the `isinstance` form and it was wrong
+        there (ADR 0044) -- the two implementations are deliberately
+        independent, so this one is repaired on its own terms rather than by
+        importing the fix.
+        """
+        if isinstance(signature, bytes) and len(signature) == 64:
+            return signature
+        if isinstance(signature, (bytes, bytearray)):
+            signature = bytes(signature).decode("ascii")
+        return ContextApprovalMonitor._unb64u(str(signature))
+
     def _verify_signature(self, tag: bytes, payload: dict, signature, public_wire: str) -> bool:
         try:
             key = Ed25519PublicKey.from_public_bytes(self._unb64u(public_wire))
-            raw = signature if isinstance(signature, bytes) else self._unb64u(str(signature))
-            key.verify(raw, lc.signing_input(tag, payload))
-        except (InvalidSignature, ValueError, TypeError):
+            key.verify(self._raw_signature(signature), lc.signing_input(tag, payload))
+        except (InvalidSignature, ValueError, TypeError, UnicodeDecodeError):
             return False
         return True
 

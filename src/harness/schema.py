@@ -47,7 +47,12 @@ class LabelAssertion(BaseModel):
     issuer_kid: str
     iat: int
     exp: int
-    signature: bytes
+    # base64url TEXT, as ADR 0030 mints it and as every verifier reads it.
+    # NOT `bytes`: pydantic coerces a str into `bytes` by UTF-8 ENCODING it, so
+    # this field typed as `bytes` silently turned the 86-character signature
+    # text into 86 ASCII bytes, and the oracle then handed those to Ed25519 as
+    # if they were the raw 64-byte signature. It could never verify (ADR 0044).
+    signature: str
 
 
 class DeclassificationArtifact(BaseModel):
@@ -68,7 +73,8 @@ class DeclassificationArtifact(BaseModel):
     nbf: int
     exp: int
     jti: str
-    signature: bytes
+    # base64url TEXT -- see `LabelAssertion.signature` above (ADR 0044).
+    signature: str
 
 
 # --- What the harness OBSERVES at the boundary (no SUT verdict, no SUT digest) ---

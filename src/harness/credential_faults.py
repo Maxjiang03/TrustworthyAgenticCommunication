@@ -37,6 +37,7 @@ carries rather than enumerating the two mechanisms that happen to be interesting
 
 import dataclasses
 import json
+from collections.abc import Mapping
 from typing import Any
 
 from joserfc.jwk import OKPKey
@@ -319,6 +320,53 @@ def _restage_dpop_proof(arm: Any, fault: str, seed: bytes, now: int) -> bool:
         )
     )
     return True
+
+
+def observed_presentation(arm: Any, presentation: Mapping[str, Any]) -> "dict[str, Any]":
+    """What the attacker actually put on the wire, as the harness OBSERVES it.
+
+    `apply_to_presentation` corrupts what the arm STAGED, and the boundary reads
+    the staged material -- so the attack reaches the resource server correctly.
+    But `arm.present(...)` had already RETURNED its mapping by then, and that
+    return value is what the harness recorded. The observation therefore carried
+    the **pre-attack** credential, and `§F.1`'s bundle was built from it.
+
+    That is not a cosmetic mismatch. `credential_result` re-verifies
+    `evidence.oauth.raw_at`; given the honest token it returns
+    `principal_verified=True`, and `realized_harm_F2` -- `(not ok) and effects`
+    -- can then never be True for an arm that admitted a corrupted credential
+    and produced an effect. The oracle's independence rests on the observation
+    being the raw material the boundary saw; a stale observation quietly
+    exonerates exactly the family it is meant to convict (ADR 0044).
+
+    Only fields an injector can touch are refreshed, and each is taken from the
+    same attribute the injector wrote, so this cannot drift from the injection
+    it mirrors: the access token, the re-minted INV, `B1`'s api-key reference,
+    and the re-minted DPoP proof. Everything else crosses unchanged.
+    """
+    observed = dict(presentation)
+    staged = getattr(arm, "_staged", None)
+    if staged is not None:
+        if "access_token" in observed and hasattr(staged, "access_token"):
+            # `unauthenticated_caller` stages "" -- recorded as an empty token
+            # rather than dropped, because presenting nothing IS what happened.
+            observed["access_token"] = getattr(staged, "access_token") or ""
+        if "invocation_assertion" in observed:
+            restaged_inv = getattr(staged, "invocation_assertion", None)
+            if restaged_inv:
+                observed["invocation_assertion"] = restaged_inv
+    if "dpop_proof" in observed:
+        restaged_proof = getattr(arm, "staged_proof", None)
+        if restaged_proof is not None:
+            observed["dpop_proof"] = restaged_proof
+    if "api_key_id" in observed:
+        presented = getattr(arm, "_presented", None)
+        if presented is None:
+            # `B1` under `unauthenticated_caller` presents nothing at all.
+            observed.pop("api_key_id")
+        elif isinstance(presented, tuple) and len(presented) == 2:
+            observed["api_key_id"] = presented[0]
+    return observed
 
 
 __all__ = [

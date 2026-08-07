@@ -45,7 +45,7 @@ from src.harness.effect_ledger import LedgerWriter, install_ingress_recorder, re
 from src.harness.effectors import LedgerEffector
 from src.harness.mediation.boundary import install_boundary
 from src.harness.oracle import commitment
-from src.harness.policy import frozen_policy, label_artifacts
+from src.harness.policy import frozen_policy, label_artifacts, label_directory
 from src.harness.schema import (
     ApiKeyEvidence,
     CapabilityEvidence,
@@ -76,6 +76,44 @@ class FrozenConfigurationMismatch(RunnerError):
 def mint_correlation_id() -> str:
     """The unforgeable 128-bit correlation id (SS F.1). Harness-minted only."""
     return secrets.token_hex(16)
+
+
+def frozen_label_order() -> tuple[str, ...]:
+    """Row 4's total order over the label vocabulary, from the frozen policy.
+
+    The order decides which label GOVERNS an effect that touched several, so it
+    is read from `H(Lambda)`'s own document rather than restated here: a second
+    copy of a frozen value is exactly what `frozen_parameters.py` exists to
+    prevent.
+    """
+    return frozen_policy.build(frozen_policy.load_document()).order
+
+
+def ingestion_directory(visible: Mapping[str, Any]) -> label_directory.LabelDirectory:
+    """The ingestion-time label directory for one scenario.
+
+    §A.6 puts labelling at **ingestion, by a trusted source**, before task-time
+    issuance -- so the label of a value is a fact about the VALUE, never about
+    the request that moved it. The instrument plays that ingestion source: it
+    knows what it labelled, and the ledger resolves by recomputing
+    `payload_digest` over the value the tool actually acted on.
+
+    This existed as a class with no constructor call anywhere in `src/`. Both
+    ledger sinks therefore fell back to `label_directory.EMPTY`, every
+    `EffectEvent` carried `data_labels_touched = []`, and `realized_harm_F4` --
+    which iterates that list -- was structurally always `False`. A sensitive
+    egress that really executed scored as no harm (ADR 0044).
+
+    A scenario that labels nothing yields an empty directory, which is a real
+    state and not a defect: row 4 has an unlabelled rule and most scenarios
+    carry no labelled value at all.
+    """
+    return label_directory.LabelDirectory.from_values(
+        {
+            entry["value_id"]: (entry["value"], entry["label"])
+            for entry in visible.get("labelled_values", []) or []
+        }
+    )
 
 
 def verify_frozen_configuration() -> None:
@@ -604,6 +642,12 @@ class GoldenThreadRunner:
         sealed_intent: dict[str, IntendedInvocation] = {}
         presentations: list[Mapping[str, Any]] = []
 
+        # The ingestion plane for this scenario, built ONCE and shared by both
+        # ledger sinks so the effect record and the ingress record cannot
+        # disagree about what a value was labelled.
+        ingestion_labels = ingestion_directory(visible)
+        label_order = frozen_label_order()
+
         ledger_path: str | None = None
         writer: LedgerWriter | None = None
         if ledger_backed:
@@ -618,6 +662,14 @@ class GoldenThreadRunner:
                 audience=audience,
                 principal=visible["specialist"],
                 correlation_provider=lambda: correlation_id,
+                # The ingestion plane, WITHOUT which every effect records
+                # `data_labels_touched = []` and `realized_harm_F4` is
+                # structurally always False (ADR 0044). Resolved over the value
+                # the tool actually acted on, never over the labels the request
+                # carried -- stripping a label must not make an exfiltration
+                # look harmless.
+                labels=ingestion_labels,
+                label_order=label_order,
             )
         else:
             # Not a writer of any kind: the tool executes and records NOTHING.
@@ -632,6 +684,8 @@ class GoldenThreadRunner:
                 audience=audience,
                 correlation_provider=lambda: correlation_id,
                 writer=writer,
+                labels=ingestion_labels,
+                label_order=label_order,
             )
 
         # In separated mode the arm's decision arrives over the pipe with the
@@ -706,8 +760,13 @@ class GoldenThreadRunner:
                 wrong_audience_token=wrong_audience_token,
             )
             # Instrument bookkeeping, deliberately OUTSIDE the span (ADR 0026
-            # excludes it by name).
-            presentations.append(dict(presentation))
+            # excludes it by name). Recorded AFTER the injector runs, from the
+            # material the arm actually staged: `arm.present(...)` returned
+            # before the attacker acted, so recording its return value gave the
+            # oracle the PRE-ATTACK credential to re-verify -- and
+            # `realized_harm_F2` could then never be True for an arm that
+            # admitted a corrupted one (ADR 0044).
+            presentations.append(credential_faults.observed_presentation(arm, presentation))
             return presentation
 
         arm_proxy = _PresentObserver(arm, observed_present, observed_delegate)

@@ -121,12 +121,29 @@ def _unb64u(text: str) -> bytes:
     return urlsafe_b64decode(text + "=" * (-len(text) % 4))
 
 
+def _raw_signature(signature: Any) -> bytes:
+    """The 64 raw Ed25519 bytes, whichever carrier they arrived in.
+
+    An Ed25519 signature is exactly 64 bytes; its base64url text is 86
+    characters. Those two are never the same length, so the carrier can be
+    decided by measurement instead of by `isinstance` -- which is what went
+    wrong: base64url TEXT that had been UTF-8 encoded somewhere upstream is
+    `bytes`, and taking the `bytes` branch fed 86 ASCII characters to a
+    verifier expecting 64 raw ones. It could never verify, and the failure was
+    indistinguishable from a forged signature (ADR 0044).
+    """
+    if isinstance(signature, bytes) and len(signature) == 64:
+        return signature
+    if isinstance(signature, (bytes, bytearray)):
+        signature = bytes(signature).decode("ascii")
+    return _unb64u(str(signature))
+
+
 def _verify(tag: bytes, payload: dict, signature: Any, public_wire: str) -> bool:
     try:
         key = Ed25519PublicKey.from_public_bytes(_unb64u(public_wire))
-        raw = signature if isinstance(signature, bytes) else _unb64u(str(signature))
-        key.verify(raw, lc.signing_input(tag, payload))
-    except (InvalidSignature, ValueError, TypeError):
+        key.verify(_raw_signature(signature), lc.signing_input(tag, payload))
+    except (InvalidSignature, ValueError, TypeError, UnicodeDecodeError):
         return False
     return True
 
