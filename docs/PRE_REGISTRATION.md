@@ -417,6 +417,62 @@ exactly why it is declared here rather than noted in passing. What is not known,
 plainly: three runs on one machine cannot distinguish machine-state variation from genuine
 drift, and no cause is claimed.
 
+**AMENDED 2026-08-07 — partially superseded, on the DRIFT READING ONLY. Nothing above this line
+is changed, and nothing above it is deleted; the original wording stands as written so that a
+reader can see what was claimed before the seventh run and what is claimed after it.**
+
+**Why this amendment is legitimate, stated so no reader has to wonder.** The paragraph above is a
+**disclosure**. It is not a hypothesis, not a decision rule, not a gate criterion, and it bears on
+no research question: RQ1–RQ4 do not reference it, no predicate in §4 or §5 consumes it, and G-3's
+criterion is the ADR 0025 threshold `median ≤ 5 ms`, which is untouched and which every run has
+passed. **A hypothesis may not be amended after seeing the data — that is what pre-registration
+exists to prevent, and no hypothesis is amended here.** A disclosure that has become false is a
+different object: correcting it is obligatory and leaving it standing is the worse failure. The
+original text is preserved above rather than edited so that the correction cannot be mistaken for
+a quiet rewrite.
+
+**What became false.** Two claims above, both about the *shape* of the record rather than about
+any measured quantity: that the medians are **monotone downward**, and that the drift's direction
+**favours the lightweight framing**. G-3 has now been measured **seven** times on the locked row 9
+platform, and the seventh (2.9684 ms, 2026-08-07, at `8ac7b21`; `smoke/g3/REPORT.md`) is the first
+to land **above** the adjudicated value. The seven medians in order are **2.8264** (adjudicated,
+2026-08-02) → **2.6928** (confirmation, 2026-08-03, `7b59e19`) → **2.6856** (`396c2b6`) →
+**2.7363** (`aeee0ea`) → **2.6772** (`9db1404`) → **2.7145** (`6dc66eb`) → **2.9684** (`8ac7b21`):
+five below the record, then one above it, up and down three times. The sequence is not monotone and
+its direction does not favour this work. Every *number* above — 2.8264, 2.6928, 2.6856, the two U
+values, the two p values, 0.1408 ms, 0.70%, 0.49, 1.77× — remains correct as a statement about the
+runs it names.
+
+**The corrected claim.** Seven runs on one locked platform, medians **2.6772–2.9684 ms**, a span of
+**0.2912 ms — 1.46% of row 1's 20 ms equivalence margin**. Among the 21 pairwise comparisons of
+four batch medians each, **13 separate completely (U = 16, exact two-sided p = 0.0286, the extremes
+attainable at n = 4 vs 4) and 8 do not.** Some pairs separate and some do not, with no pattern that
+tracks the code or the date.
+
+**That instability across seven runs is itself the evidence** that these separations measure
+**run-to-run variation and not drift.** The decisive case is internal: **9 of the 15 comparisons
+that do not involve the adjudicated run separate completely — that is, seal-time re-runs separate
+from each other.** And `src/sut/baselines/b3.py`, which owns the `decide` call that is the *only*
+thing G-3 times, carries the **byte-identical git blob `03ec47be`** at all five seal-time re-run
+commits (`396c2b6`, `aeee0ea`, `9db1404`, `6dc66eb`, `8ac7b21`), as do `base.py` and — across
+re-runs 1–3 — `src/sut/capability/authority.py`. Re-runs 1, 2 and 3 therefore executed **byte-
+identical timed code on the same machine**, and two of those three pairs *separate completely* at
+U = 16, p = 0.0286. **A statistic that reports "complete separation" between two runs of literally
+the same code is measuring the machine, not the mechanism.** At n = 4 vs 4 the test has only
+70 labelings and its extremes are reached whenever four tightly-clustered batch medians happen to
+sit above or below four others; the seventh run makes that visible where three runs could not.
+
+**What is retained, unchanged.** The adjudicated **2.8264 ms** sits **inside** the observed range
+and **remains the record and the conservative figure**: every claim reported against row 2's
+threshold or row 7's denominators continues to use it. The gate verdict is untouched — all seven
+medians pass `≤ 5 ms`, the worst at 1.68× headroom. `frozen_parameters` is unchanged, ADR 0025 is
+unchanged, and the 20 ms equivalence margin is unchanged.
+
+**What is still not known, stated plainly and now with more force than before:** seven runs on one
+machine cannot distinguish machine-state variation from genuine drift, **no cause is claimed**, and
+no run was repeated to obtain a better number. The seventh run was taken once, recorded once, and
+is the reason this paragraph exists.
+
 ## 7. The sealing and temporal-anchor procedure
 
 **What step 3 seals (Part H).** The v0.5 candidate: the design document, the implementation

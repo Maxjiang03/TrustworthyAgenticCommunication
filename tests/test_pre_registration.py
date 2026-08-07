@@ -302,6 +302,91 @@ def _sealtime_batches() -> "tuple[list[float], list[float]]":
     raise AssertionError("no two-column per-batch-medians row in smoke/g3/REPORT.md")
 
 
+G3_REPORT = REPO_ROOT / "smoke" / "g3" / "REPORT.md"
+GATE_RERUN_REPORT = REPO_ROOT / "tools" / "gate_rerun" / "REPORT.md"
+
+
+def _cells(line: str) -> "list[str]":
+    """A markdown row's cells, bold markers and units stripped."""
+    return [
+        cell.strip().replace("**", "").replace(" ms", "") for cell in line.strip("| \t").split("|")
+    ]
+
+
+def _four(cell: str) -> "list[float] | None":
+    """The cell as exactly four batch medians, or None if it is not that."""
+    parts = [part.strip() for part in cell.split(",")]
+    if len(parts) != 4:
+        return None
+    try:
+        return [float(part) for part in parts]
+    except ValueError:
+        return None
+
+
+def _g3_runs() -> "list[tuple[str, float, list[float], Path]]":
+    """Every G-3 run on the row 9 platform: (label, median, four batch medians, owning report).
+
+    Parsed by SECTION from the reports that own the numbers, never typed here.
+    `smoke/g3/REPORT.md` owns the adjudicated run and every seal-time re-run;
+    `tools/gate_rerun/REPORT.md` owns the confirmation run. Where a section
+    carries a two-column comparison table the LAST column is that section's own
+    run and the first repeats the adjudicated four, which
+    `test_the_seven_medians_and_twenty_eight_batch_medians_trace_to_their_reports`
+    cross-checks.
+
+    Fail-closed: a section that does not yield exactly one median and exactly
+    four batch medians raises, so a report edit that breaks the shape is a test
+    failure rather than a silently shorter list.
+    """
+    report = G3_REPORT.read_text(encoding="utf-8")
+    sections: "list[list[str]]" = [[]]
+    for line in report.splitlines():
+        if re.match(r"^#{2,3} .*Seal-time re-run", line):
+            sections.append([])
+        sections[-1].append(line)
+
+    runs: "list[tuple[str, float, list[float], Path]]" = []
+    for index, lines in enumerate(sections):
+        median: "float | None" = None
+        batches: "list[float] | None" = None
+        for line in lines:
+            if not line.startswith("|"):
+                continue
+            cells = _cells(line)
+            label = cells[0].lower()
+            if label == "median" and median is None:  # `_cells` has stripped the bold markers
+                for cell in reversed(cells[1:]):
+                    value = re.match(r"^([0-9]+\.[0-9]{4})\b", cell)
+                    if value:
+                        median = float(value.group(1))
+                        break
+            if label in ("per-batch medians", "batch medians") and batches is None:
+                for cell in reversed(cells[1:]):
+                    found = _four(cell)
+                    if found:
+                        batches = found
+                        break
+        name = "adjudicated" if index == 0 else f"seal-time re-run {index}"
+        assert median is not None, f"{name}: no median row found in smoke/g3/REPORT.md"
+        assert batches is not None, f"{name}: no four-batch-median row found in smoke/g3/REPORT.md"
+        runs.append((name, median, batches, G3_REPORT))
+
+    adjudicated, confirmation = _rerun_batches()
+    assert len(confirmation) == 4, "tools/gate_rerun/REPORT.md did not yield four batch medians"
+    rerun_text = GATE_RERUN_REPORT.read_text(encoding="utf-8")
+    confirmation_median: "float | None" = None
+    for line in rerun_text.splitlines():
+        if line.startswith("| median |"):
+            confirmation_median = float(_cells(line)[2])
+            break
+    assert confirmation_median is not None, "no median row in tools/gate_rerun/REPORT.md"
+    # Chronological: the confirmation run sits between the adjudication and the
+    # seal-time re-runs, and the document lists the medians in that order.
+    runs.insert(1, ("confirmation", confirmation_median, confirmation, GATE_RERUN_REPORT))
+    return runs
+
+
 def _exact_mann_whitney(a: "list[float]", b: "list[float]") -> "tuple[int, float]":
     """U = #{a_i > b_j}, and the exact two-sided p over all C(8,4) labelings."""
     u = sum(1 for x in a for y in b if x > y)
@@ -388,6 +473,148 @@ class TestTheG3Figures:
         text = _pr()
         for figure in ("0.1408", "0.70%", "0.49", "0.2898"):
             assert figure in text, figure
+
+
+def _pairwise(a: "list[float]", b: "list[float]") -> "tuple[int, float]":
+    """(U, exact two-sided p) under the convention the record publishes: U is
+    the LARGER of the two directional counts, which is why the document can
+    call U = 16 *"the largest value attainable at n = 4 vs 4"*. The p value is
+    the same either way -- the two-sided tail is symmetric in the statistic."""
+    forward, p = _exact_mann_whitney(a, b)
+    return max(forward, 16 - forward), p
+
+
+class TestTheAmendedG3Declaration:
+    """The 2026-08-07 amendment: seven runs, every median and every batch
+    median owned by a report, and every one of the 21 pairwise comparisons
+    RECOMPUTED here rather than read back from the document."""
+
+    def test_the_seven_medians_and_twenty_eight_batch_medians_trace_to_their_reports(self):
+        runs = _g3_runs()
+        assert len(runs) == 7, [run[0] for run in runs]
+        text = _pr()
+        seen: "list[float]" = []
+        for name, median, batches, owner in runs:
+            source = owner.read_text(encoding="utf-8")
+            assert f"{median:.4f}" in source, f"{name}: median not in {owner.name}"
+            assert f"{median:.4f}" in text, f"{name}: median not in the pre-registration"
+            assert len(batches) == 4, name
+            for value in batches:
+                assert f"{value:.4f}" in source, f"{name}: batch median {value} not in {owner.name}"
+            seen.append(median)
+        assert len(seen) == 7
+        # 7 runs x 4 batches: the twenty-eight the amendment rests on.
+        assert sum(len(run[2]) for run in runs) == 28
+
+        # The two reports must agree on the adjudicated four, which both carry.
+        adjudicated_from_rerun, _ = _rerun_batches()
+        assert runs[0][2] == adjudicated_from_rerun
+
+    def test_the_span_and_its_margin_fraction_are_derived_from_the_seven_medians(self):
+        from src.harness import frozen_parameters as fp
+
+        medians = [run[1] for run in _g3_runs()]
+        low, high = min(medians), max(medians)
+        span = high - low
+        text = _pr()
+        assert f"{low:.4f}" == "2.6772" and f"{high:.4f}" == "2.9684"
+        assert f"{span:.4f}" == "0.2912"
+        assert round(span / fp.equivalence_margin_ms() * 100, 2) == 1.46
+        assert f"{low:.4f}–{high:.4f} ms" in text, "the span is not stated as a range"
+        assert "0.2912" in text and "1.46%" in text
+        # The adjudicated figure is INSIDE the scatter -- the amendment's claim
+        # that it is retained as the conservative record depends on this.
+        assert low < 2.8264 < high
+        assert max(medians) / fp.g3_threshold_ms() < 1.0, "a median exceeded the 5 ms threshold"
+
+    def test_every_pairwise_mann_whitney_recomputes_from_the_parsed_tables(self):
+        """All 21 pairs, recomputed from the batch tables. The counts the
+        amendment states -- 13 separating, 8 not, and 9 of the 15 that exclude
+        the adjudicated run -- are DERIVED here and then required of the text."""
+        runs = _g3_runs()
+        separating = notseparating = 0
+        separating_without_adjudicated = 0
+        pairs_without_adjudicated = 0
+        for (name_a, _, a, _), (name_b, _, b, _) in combinations(runs, 2):
+            u, p = _pairwise(a, b)
+            disjoint = max(a) < min(b) or max(b) < min(a)
+            # Complete separation is exactly the extreme statistic, both ways.
+            assert disjoint == (u == 16), f"{name_a} vs {name_b}: U={u} but disjoint={disjoint}"
+            if disjoint:
+                assert round(p, 4) == 0.0286, f"{name_a} vs {name_b}"
+            separating += disjoint
+            notseparating += not disjoint
+            if "adjudicated" not in (name_a, name_b):
+                pairs_without_adjudicated += 1
+                separating_without_adjudicated += disjoint
+        assert separating + notseparating == 21
+        assert (separating, notseparating) == (13, 8)
+        assert (separating_without_adjudicated, pairs_without_adjudicated) == (9, 15)
+        text = _pr()
+        assert f"{separating} separate completely" in text
+        assert f"{notseparating} do not" in text
+        assert f"{separating_without_adjudicated} of the {pairs_without_adjudicated}" in text
+
+    def test_the_seventh_run_is_the_first_above_the_adjudicated_median(self):
+        """The amendment's whole reading rests on this: five re-runs below the
+        record, then one above it, which is scatter and not drift."""
+        runs = _g3_runs()
+        adjudicated = runs[0][1]
+        later = [median for _, median, _, _ in runs[1:]]
+        assert len(later) == 6
+        assert all(median < adjudicated for median in later[:5]), later
+        assert later[5] > adjudicated
+        assert "first" in _pr_flat() and "monotone" in _pr_flat()
+
+    def test_the_timed_code_is_byte_identical_across_the_five_sealtime_reruns(self):
+        """`b3.py` owns the `decide` call that is the only thing G-3 times. The
+        amendment claims complete separation occurs between runs of IDENTICAL
+        code; that claim is checked here against git, not asserted."""
+        text = _pr()
+        commits = re.findall(r"`([0-9a-f]{7})`", text)
+        sealtime = ["396c2b6", "aeee0ea", "9db1404", "6dc66eb", "8ac7b21"]
+        for commit in sealtime:
+            assert commit in commits, f"{commit} is not cited in the pre-registration"
+        blobs = {
+            subprocess.run(
+                ["git", "rev-parse", f"{commit}:src/sut/baselines/b3.py"],
+                cwd=str(REPO_ROOT),
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            for commit in sealtime
+        }
+        assert len(blobs) == 1, f"b3.py is not identical across the five re-runs: {blobs}"
+        assert blobs.pop().startswith("03ec47be")
+        assert "03ec47be" in text
+
+    def test_the_amendment_preserves_the_original_and_names_why_it_is_allowed(self):
+        """A disclosure may be corrected; a hypothesis may not. The document has
+        to say so itself, and it has to still contain the superseded wording."""
+        text, flat = _pr(), _pr_flat()
+        # The original wording survives verbatim.
+        for original in (
+            "the three medians are **monotone downward**",
+            "The drift's direction **favours the\nlightweight framing**",
+        ):
+            assert original.replace("\n", " ") in flat, original
+        assert "AMENDED 2026-08-07" in text
+        assert "partially superseded" in flat
+        assert "Nothing above this line" in text
+        for clause in (
+            "is a **disclosure**",
+            "not a hypothesis",
+            "not a decision rule",
+            "not a gate criterion",
+            "bears on\nno research question",
+            "A hypothesis may not be amended after seeing the data",
+            "leaving it standing is the worse failure",
+        ):
+            assert clause.replace("\n", " ") in flat, clause
+        # The gate criterion and the record are untouched by the amendment.
+        assert "no cause is claimed" in flat
+        assert "remains the record and the conservative figure" in flat
 
 
 class TestRowSevenSourcing:
