@@ -88,6 +88,17 @@ EXCLUDED_EXACT = {
     "Makefile": "developer convenience targets; not apparatus",
     ".editorconfig": "repository hygiene",
     ".gitignore": "repository hygiene",
+    ".dockerignore": (
+        "build-context hygiene; it keeps the host's virtualenv and the results tree out of the "
+        "image, so the container builds the environment `uv sync` produced rather than a "
+        "Windows one copied over it (ADR 0044). Not apparatus: nothing it excludes is an input "
+        "to a measurement"
+    ),
+    "DEVIATIONS.md": (
+        "the deviations log (§J.4 item 13). Deliberately EXCLUDED: it must be appendable after "
+        "the seal without forcing a reseal, which is the entire point of keeping one. It records "
+        "departures from the sealed design; it is not part of it"
+    ),
     ".pre-commit-config.yaml": "repository hygiene (lint hooks)",
     ".python-version": "developer convenience; the adjudicative interpreter "
     "version is recorded in the row 9 platform record",
