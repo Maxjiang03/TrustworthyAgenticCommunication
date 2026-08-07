@@ -229,10 +229,30 @@ def prior_gates() -> dict[str, int]:
     outcomes: dict[str, int] = {}
     for gate in PRIOR_GATES:
         spike = REPO_ROOT / "smoke" / gate / "spike.py"
+        # `encoding=` is explicit, and its absence lost this limb's evidence.
+        # `text=True` alone decodes with the PARENT's locale codepage; under
+        # the cp936 console the platform reader assumes, a child printing
+        # `Omega`, `Gamma` or a comparison sign in UTF-8 raised
+        # UnicodeDecodeError inside `subprocess`'s reader thread. The VERDICT
+        # was unaffected -- it is `returncode` -- but every subgate's output
+        # was discarded, so a FAILING subgate would have reported its failure
+        # to nobody. `errors="replace"` because losing a glyph is better than
+        # losing the diagnosis (ADR 0044's audit named this defect class).
         result = subprocess.run(
-            [sys.executable, str(spike)], cwd=str(REPO_ROOT), capture_output=True, text=True
+            [sys.executable, str(spike)],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
         )
         outcomes[gate] = result.returncode
+        if result.returncode != 0:
+            # A failing subgate must say why, in this limb's own output.
+            tail = "\n".join((result.stdout or "").strip().splitlines()[-15:])
+            print(f"    {gate} FAILED (rc={result.returncode}); last lines of its output:")
+            for line in tail.splitlines():
+                print(f"      {line}")
     return outcomes
 
 

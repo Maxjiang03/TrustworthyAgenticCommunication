@@ -233,3 +233,54 @@ rather than this work's own hypothesis. The monotone-downward pattern still does
 five values run 2.8264 → 2.6928 → 2.6856 → 2.7363 → 2.6772, up once and down again. **Five runs
 on one machine cannot distinguish machine-state variation from genuine drift, and no cause is
 claimed.** Run once; not re-run for a better number.
+
+### Seal-time re-run 4 — 2026-08-07, at the v0.7 sealing candidate `6dc66eb`
+
+Re-run for the **v0.7** reseal (ADR 0044/0046), first and alone on an idle machine under the cp936
+console codepage, before G-10 heated it. Not a re-adjudication: G-3's verdict is the 2026-08-02
+adjudication, and this is the confirmation Part H requires on the commit being sealed.
+
+| | |
+|---|---|
+| **median** | **2.7145 ms** — **PASS (≤ 5 ms)** |
+| p95 / IQR | 3.3476 / 0.1337 ms |
+| batch medians | 2.7290, 2.7134, 2.7111, 2.7107 ms |
+| last-vs-first drift | −0.7% |
+| headroom to the bar | 2.2855 ms |
+| G-3.H1 / G-3.H2 | PASS (P-cores from `GetSystemCpuSetInformation`) / PASS (on AC) |
+
+**The six medians: 2.8264 (adjudicated, the record) → 2.6928 → 2.6856 → 2.7363 → 2.6772 → 2.7145.**
+
+**The separation finding, recomputed with this run included, is UNCHANGED.** Recomputed exactly
+over the recorded batch tables (all C(8,4) = 70 labelings), against the adjudicated batches
+2.9190 / 2.8259 / 2.8213 / 2.7511:
+
+| run | U | exact two-sided p | batch range | separates? |
+|---|---:|---:|---|---|
+| confirmation 2026-08-03 (2.6928) | 12 | 0.3429 | 2.6574–3.0324 (overlaps) | **no** |
+| seal-time re-run 1 (2.6856) | 16 | 0.0286 | 2.6750–2.6920 (disjoint) | yes, completely |
+| seal-time re-run 2 (2.7363) | 16 | 0.0286 | 2.7306–2.7458 (disjoint) | yes, completely |
+| seal-time re-run 3 (2.6772) | 16 | 0.0286 | 2.6664–2.6971 (disjoint) | yes, completely |
+| **seal-time re-run 4 (2.7145)** | **16** | **0.0286** | **2.7107–2.7290 (disjoint)** | **yes, completely** |
+
+Same declaration, same outcome: the confirmation run does not separate from the adjudicated one,
+every seal-time run does, completely. U = 16 and p = 0.0286 remain the **extremes** available at
+n = 4 against 4, so this run — like the three before it — **cannot strengthen or weaken the
+declaration, only fail to contradict it**, which it does not. `docs/PRE_REGISTRATION.md` is not
+edited.
+
+What the sixth run adds: the difference from the adjudicated median is **+0.1119 ms (3.96%)** —
+**0.56% of the 20 ms equivalence margin** and **0.39 of the adjudicated IQR (0.2898 ms)**. It sits
+**below** the record like every re-run, so **2.8264 ms remains the conservative figure** and the
+drift continues to run against this work's own hypothesis rather than toward it. The six values are
+2.8264 → 2.6928 → 2.6856 → 2.7363 → 2.6772 → 2.7145: no monotone trend, up and down twice. **Six
+runs on one machine still cannot distinguish machine-state variation from genuine drift, and no
+cause is claimed.** Run once; not re-run for a better number.
+
+**One thing this run measured that the previous four did not.** ADR 0046 replaced the authorizer's
+inherited 1 ms wall-clock Datalog budget with an explicit 1 s one, and `decide` is what G-3 times.
+The median moved by less than the spread between the existing re-runs (2.6772 … 2.7363 already
+spans 0.0591 ms; this run's 2.7145 sits inside that band), so the change is **not visible in the
+boundary-verification cost** — which is what one would expect from raising a limit that was never
+reached on the happy path, and is recorded because "we changed the authorizer and the timing gate
+is unchanged" is a claim that should rest on a measurement rather than on an argument.
