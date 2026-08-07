@@ -31,7 +31,7 @@ should expect from the sealed record.
 
 **Not a departure from the plan; a departure from what was REPORTED.** The step 7 completion report
 (D-005) described the security half and said nothing about RQ4 having no data. This entry and
-**ADR 000B** record that, in the terms this project uses for it: *an absence that reads as
+**ADR 0047** record that, in the terms this project uses for it: *an absence that reads as
 coverage*.
 
 **What ran.** `python -m src.harness.latency_collector`, once, on the **PILOT** corpus, at working

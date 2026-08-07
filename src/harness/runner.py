@@ -214,7 +214,7 @@ class TimingSeams:
         locked row 9 platform"*. **That premise is no longer true** — G-3 was
         adjudicated on the row 9 platform on 2026-08-02 and re-measured six
         times since, the last at the v0.7 sealing candidate — so the ban is
-        lifted for the pass RQ4 needs (ADR 000B).
+        lifted for the pass RQ4 needs (ADR 0047).
 
         What replaces it: **G-3 remains the sole owner of the
         boundary-verification cost FIGURE** (`smoke/g3/REPORT.md`, and no

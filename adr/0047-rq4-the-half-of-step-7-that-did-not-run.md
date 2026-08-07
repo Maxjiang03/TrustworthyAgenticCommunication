@@ -1,6 +1,4 @@
-# 000B — RQ4, the half of step 7 that did not run
-
-*Unnumbered: ADR numbers are the Commander's. The placeholder letter is `000B`.*
+# 0047 — RQ4, the half of step 7 that did not run
 
 ## Context
 
@@ -99,7 +97,7 @@ artifact still carries span **names** only, for the same reason it always did.
 
 ## Status
 
-proposed — 2026-08-07. **Unnumbered by instruction.** This task does not reseal; task B2 does.
+proposed — 2026-08-07. Numbered **0047** by the Commander at task B2's PHASE 0 (0046 was the previous number issued; the repository showed no gap in 0001–0046). Written unnumbered under the placeholder `000` + `B` because ADR numbers are the Commander's, and renamed in its own commit so that the seal is not also a rename. B1 did not reseal; task B2 does.
 `seal/` is untouched.
 
 ## Consequences

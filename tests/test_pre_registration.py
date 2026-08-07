@@ -540,7 +540,7 @@ class TestSealGuards:
         placeholder letters are spelled joined so this guard is not itself a
         surviving occurrence."""
         text = _pr()
-        for placeholder in ("000" + "X", "000" + "Y", "000" + "Z"):
+        for placeholder in ("000" + "X", "000" + "Y", "000" + "Z", "000" + "B"):
             assert placeholder not in text
         # EVERY ADR the document cites must resolve to exactly one numbered
         # file whose title carries that number. This replaced a guard that
@@ -569,7 +569,10 @@ class TestSealGuards:
         line that is a STATEMENT ABOUT the numbering — an ADR recording which
         placeholder its number replaced — which must say so on the same line.
         A bare citation cannot pass that."""
-        placeholders = ["000" + letter for letter in ("X", "Y", "Z")]
+        # `B` joins X/Y/Z: ADR 0047 was written unnumbered under `000` + `B`
+        # and numbered at task B2's PHASE 0. A guard that knew only the older
+        # letters would not have noticed a stray citation of the newer one.
+        placeholders = ["000" + letter for letter in ("X", "Y", "Z", "B")]
         this_file = Path(__file__).resolve()
         offenders = []
         for name in _git("ls-files").split():

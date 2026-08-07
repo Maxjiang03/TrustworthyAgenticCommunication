@@ -639,7 +639,7 @@ class CellVerdict:
     # NOT RUN on a locked row 9 platform."* **That premise is false as of
     # 2026-08-02**: G-3 was adjudicated on the row 9 platform and has been
     # re-measured six times since, the last at the v0.7 sealing candidate. The
-    # ban on producing a latency number is therefore **LIFTED** (ADR 000B).
+    # ban on producing a latency number is therefore **LIFTED** (ADR 0047).
     #
     # What replaces it, and why this field is unchanged anyway:
     #   * durations are produced by `TimingSeams.durations_ms()` and persisted

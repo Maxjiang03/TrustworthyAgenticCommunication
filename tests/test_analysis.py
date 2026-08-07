@@ -3,7 +3,7 @@
 Part H step 3 seals the analysis code, so it must exist and be testable before
 the seal — and it must be testable **without a measurement**.
 
-*Correction (ADR 000B).* This read: *"because G-3 has not run and
+*Correction (ADR 0047).* This read: *"because G-3 has not run and
 `frozen_parameters` row 9 (the sealed measurement platform) is not locked. A
 real timing fed in here would break EXP6 forbidden action 1."* **Both premises
 are obsolete**: row 9 was locked on 2026-08-02, G-3 was adjudicated on it and

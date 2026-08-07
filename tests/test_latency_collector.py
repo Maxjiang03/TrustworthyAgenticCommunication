@@ -2,7 +2,7 @@
 
 `analysis/latency.py` was sealed before this collector existed, so it is the
 specification and the collector is the new thing. A collector whose output
-needed the analysis layer edited to read it has failed. ADR 000B.
+needed the analysis layer edited to read it has failed. ADR 0047.
 
 Two properties are asserted here that a weaker acceptance standard would have
 let through:

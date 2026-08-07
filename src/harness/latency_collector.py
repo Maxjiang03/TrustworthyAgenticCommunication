@@ -4,7 +4,7 @@ Part H step 7 ran its **security half only**. RQ4 had no data and neither did
 `frozen_parameters` row 1's `lightweight_claim`, whose decision rule is the 95%
 bootstrap CI upper bound on `median(B3) − median(B0)` against the 20 ms margin —
 without samples there is no interval, so that claim could neither hold nor be
-retracted. This is the other half. ADR 000B.
+retracted. This is the other half. ADR 0047.
 
 **Measured on the PILOT corpus, and that is what the sealed specification
 says.** Frozen row 1, `docs/PRE_REGISTRATION.md` §6, ADR 0026, the design
