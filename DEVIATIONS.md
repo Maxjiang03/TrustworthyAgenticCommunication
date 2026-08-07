@@ -27,6 +27,47 @@ should expect from the sealed record.
 
 ---
 
+## D-006 — 2026-08-07 — RQ4's latency pass. The half of step 7 that had not run.
+
+**Not a departure from the plan; a departure from what was REPORTED.** The step 7 completion report
+(D-005) described the security half and said nothing about RQ4 having no data. This entry and
+**ADR 000B** record that, in the terms this project uses for it: *an absence that reads as
+coverage*.
+
+**What ran.** `python -m src.harness.latency_collector`, once, on the **PILOT** corpus, at working
+tree `dc1ef22` plus the collector. 9 arms × 2 scenarios × 2 phases × 3 batches × 75 repetitions =
+**40,500 span rows, 225 repetitions per configuration**, 274.7 s. `analysis/latency.py` was **not
+modified** — a test pins its blob hash against the v0.7 manifest.
+
+**Why the pilot corpus, stated here as well as in the ADR because the results chapter must carry
+it plainly:** every sealed artifact that names the refusal-path cell names the **pilot** id
+`gt-f1-chain-tamper` — frozen row 1, §6, ADR 0026, the design document §J.3 item 12, and
+`analysis/latency.py` — and none names the confirmatory one. Measuring on the corpus the
+specification names is following the pre-registration. Had the pass run on the confirmatory corpus,
+the sealed by-name refusal would have sat **inert** and the refusal path would have been silently
+pooled into the benign estimand.
+
+**Artifact, BOTH hashes** — the fourth appearance of the CRLF/LF split, handled **in advance** this
+time rather than after a reader would have recomputed a different value:
+
+| artifact | committed blob (SHA-256) — **what a clone reproduces** | on disk after checkout |
+|---|---|---|
+| `results/raw/latency-pilot.json` | `6d93e713b533c24a9136f8e5e7a1c7f69bd543e410a284a7470a6ac09ec442f5` | `2a51e5e4d41b38793fdc6d9b54561320e8dba109f215798c227d65c5ca92f73f` |
+
+The on-disk file carries 405,044 CR bytes; the committed blob carries none, and the two differ by
+the line-ending conversion alone.
+
+**No exclusion rule was applied, and that is a decision rather than an omission.** ADR 0038's
+Sighting C has never been observed as a per-operation stall, so a threshold now would be invented
+for an effect not shown to exist, and a threshold set after seeing the data is what pre-registration
+forbids. Raw per-repetition values with per-repetition wall-clock stamps are persisted precisely so
+a stall is locatable in time rather than absorbed into a summary. **No per-operation stall was
+observed during this pass** — had one been, it would have changed the Commander's decision and this
+entry would say so.
+
+**No verdict field reaches the latency artifact**, asserted by test over the field list the
+collector names. The security half's "once" stays consumed and unre-run.
+
 ## D-005 — 2026-08-07 — Part H step 7 executed. One run, no abort, no re-run.
 
 **Not a departure.** Recorded here because §J.4 item 13 asks for abort and re-run events, and the

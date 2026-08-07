@@ -1,10 +1,18 @@
 """The analysis code, on **synthetic inputs only** (EXP6 STEP 9–10).
 
 Part H step 3 seals the analysis code, so it must exist and be testable before
-the seal — and it must be testable **without a measurement**, because G-3 has
-not run and `frozen_parameters` row 9 (the sealed measurement platform) is not
-locked. A real timing fed in here would break EXP6 forbidden action 1 *and*
-produce a number ADR 0025 says cannot count.
+the seal — and it must be testable **without a measurement**.
+
+*Correction (ADR 000B).* This read: *"because G-3 has not run and
+`frozen_parameters` row 9 (the sealed measurement platform) is not locked. A
+real timing fed in here would break EXP6 forbidden action 1."* **Both premises
+are obsolete**: row 9 was locked on 2026-08-02, G-3 was adjudicated on it and
+re-measured six times, and the ban on producing a latency number is lifted.
+What is unchanged is why THIS file constructs its values: an analysis test must
+be able to fail without a measurement run, and a real timing here would make
+these tests depend on the machine. Real timings live in
+`results/raw/latency-pilot.json` and are exercised by
+`tests/test_latency_collector.py`.
 
 So every value below is **constructed**, and the answers are constructed with
 them. `test_no_module_in_analysis_can_measure_anything` asserts the package has

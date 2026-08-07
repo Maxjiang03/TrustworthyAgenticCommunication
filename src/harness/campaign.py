@@ -630,11 +630,28 @@ class CellVerdict:
     # -- diagnosis ONLY. Never read by any field above. ---------------------- #
     reason_code: str = ""
     # WHICH seams captured a span, never the durations. `TimingSeams.recorded()`
-    # returns names for exactly this reason, and the campaign keeps the rule:
-    # EXP6 forbidden action 1 forbids *producing* a latency number, not merely
-    # reporting one, and G-3 has not run on a locked row 9 platform. So the
-    # campaign carries the evidence that the segment was instrumented and
-    # correlated, and no duration reaches this artifact.
+    # returns names for exactly this reason, and THIS artifact keeps the rule.
+    #
+    # The rule's ORIGINAL reason is obsolete and is corrected here rather than
+    # deleted, because a rule that vanishes without a record cannot be told
+    # from one nobody ever considered. It read: *"EXP6 forbidden action 1
+    # forbids producing a latency number, not merely reporting one, and G-3 has
+    # NOT RUN on a locked row 9 platform."* **That premise is false as of
+    # 2026-08-02**: G-3 was adjudicated on the row 9 platform and has been
+    # re-measured six times since, the last at the v0.7 sealing candidate. The
+    # ban on producing a latency number is therefore **LIFTED** (ADR 000B).
+    #
+    # What replaces it, and why this field is unchanged anyway:
+    #   * durations are produced by `TimingSeams.durations_ms()` and persisted
+    #     by `src/harness/latency_collector.py` into `results/raw/`, which is
+    #     where RQ4's per-component series belong;
+    #   * `smoke/g3/REPORT.md` remains the SOLE owner of the
+    #     boundary-verification cost figure, and no timing figure is published
+    #     outside it;
+    #   * the SECURITY artifact still carries names only. Part H step 7's
+    #     security half ran once and its "once" is consumed; a security record
+    #     that also carried timings would be a second measurement wearing the
+    #     first one's artifact.
     timing_seams: tuple[str, ...] = ()
 
     @property

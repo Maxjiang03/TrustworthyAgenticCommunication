@@ -39,6 +39,10 @@ results/**
 !results/raw/campaign-confirmatory.json
 !results/tables/results-confirmatory.json
 !results/tables/results-confirmatory.md
+# RQ4's latency pass, 2026-08-07 (ADR 000B). Raw per-repetition values, so a
+# Sighting C stall is locatable rather than absorbed into a summary; admitted
+# deliberately for the same reason as the campaign trace above.
+!results/raw/latency-pilot.json
 smoke/g10/_ledger_tmp/
 
 # Working-tree copies of task specifications the Commander issues at the

@@ -197,8 +197,35 @@ class TimingSeams:
         self.spans[name] = (start_ns, end_ns)
 
     def recorded(self) -> tuple[str, ...]:
-        """Which seams captured a span. Deliberately returns NAMES, not values."""
+        """Which seams captured a span. Deliberately returns NAMES, not values.
+
+        Kept as it was. The campaign record still carries names only: a
+        security artifact has no business carrying durations, and `durations_ms`
+        below is for the latency pass, which is a separate measurement with a
+        separate artifact.
+        """
         return tuple(sorted(self.spans))
+
+    def durations_ms(self) -> dict[str, float]:
+        """The span VALUES, in milliseconds. **For the latency pass only.**
+
+        This did not exist because EXP6 forbidden action 1 forbade *producing*
+        a latency number, on the stated premise that *"G-3 has not run on a
+        locked row 9 platform"*. **That premise is no longer true** — G-3 was
+        adjudicated on the row 9 platform on 2026-08-02 and re-measured six
+        times since, the last at the v0.7 sealing candidate — so the ban is
+        lifted for the pass RQ4 needs (ADR 000B).
+
+        What replaces it: **G-3 remains the sole owner of the
+        boundary-verification cost FIGURE** (`smoke/g3/REPORT.md`, and no
+        timing figure is published outside it), while this method feeds the
+        per-component series §E.5 and RQ4 ask for, into `results/raw/` where
+        the analysis layer reads them. The two are different quantities and
+        neither replaces the other.
+        """
+        return {
+            name: (end - start) / 1_000_000 for name, (start, end) in sorted(self.spans.items())
+        }
 
 
 @dataclass
