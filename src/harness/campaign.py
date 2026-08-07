@@ -50,6 +50,7 @@ from src.harness import (
     sealed_truth,
 )
 from src.harness.authorizer import frozen_config
+from src.harness.authorizer.allowed import AuthorizerExhausted as HarnessAuthorizerExhausted
 from src.harness.oracle import predicates as P
 from src.harness.oracle.artifacts import OracleConfig
 from src.harness.policy import frozen_policy, label_artifacts
@@ -57,6 +58,7 @@ from src.harness.runner import GoldenThreadRunner, RunnerError
 from src.harness.verifier import registry as reg
 from src.harness.verifier.credential_principal import CredentialResult, credential_result
 from src.harness.verifier.matched_authority import TokenVerifierConfig
+from src.sut.capability.authority import AuthorizerExhausted as SutAuthorizerExhausted
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PILOT_CORPUS = REPO_ROOT / "fixtures" / "pilot" / "golden_thread"
@@ -932,6 +934,17 @@ def run_campaign(
                 )
             except RunnerError as exc:
                 unscorable.append((scenario_id, arm_name, f"the run did not complete: {exc}"))
+                continue
+            except (SutAuthorizerExhausted, HarnessAuthorizerExhausted) as exc:
+                # The authorizer ran out of its evaluation budget, so it never
+                # answered whether the token authorizes the request. That is
+                # NOT a verdict: recording it as a block would put a `B` in the
+                # matrix that reads as the arm refusing when the instrument
+                # merely failed to finish -- and `Allowed()` runs the authorizer
+                # once per element of `Ω`, so a breach can silently shrink an
+                # authority set. UNSCORABLE, with the cause named, exactly as
+                # the wall-clock straddle is (ADR 0046).
+                unscorable.append((scenario_id, arm_name, f"the authorizer did not finish: {exc}"))
                 continue
             # The RUNNER's own epoch, not the campaign's copy of it. Everything
             # judged after the run reads it, so there is no second value that

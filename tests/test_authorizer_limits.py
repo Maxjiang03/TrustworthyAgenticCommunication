@@ -181,3 +181,65 @@ class TestTheBudgetIsGenerousEnoughToBeMeaningful:
         make one side's authority set depend on a limit the other does not
         share -- an apparatus difference reported as a mechanism difference."""
         assert ev.AUTHORIZER_MAX_TIME == sut_authority.AUTHORIZER_MAX_TIME
+
+
+class TestAnExhaustedAuthorizerIsUnscorableNotAVerdict:
+    """The second half of the repair, and the half that protects the matrix.
+
+    Raising is not enough on its own: the mediation boundary converts ANY arm
+    exception into a denial (fail closed, and correct for a genuine arm
+    failure), so an exhausted authorizer would have re-entered the matrix as a
+    `B` -- reading as the arm refusing when the instrument merely failed to
+    finish. It now propagates through the boundary and the campaign records the
+    cell UNSCORABLE with its cause, exactly as the wall-clock straddle is.
+    """
+
+    def test_the_boundary_re_raises_rather_than_recording_a_denial(self):
+        import ast
+
+        source = (REPO_ROOT / "src" / "harness" / "runner.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        handlers = [
+            handler
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Try)
+            for handler in node.handlers
+            if "AuthorizerExhausted" in ast.dump(handler)
+        ]
+        assert handlers, "the boundary does not mention AuthorizerExhausted at all"
+        for handler in handlers:
+            assert any(isinstance(stmt, ast.Raise) for stmt in handler.body), (
+                "the boundary swallows an exhausted authorizer into a verdict"
+            )
+
+    def test_the_campaign_records_it_unscorable(self):
+        import ast
+
+        source = (REPO_ROOT / "src" / "harness" / "campaign.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        handlers = [
+            handler
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Try)
+            for handler in node.handlers
+            if "AuthorizerExhausted" in ast.dump(handler)
+        ]
+        assert handlers, "the campaign has no handler for an exhausted authorizer"
+        for handler in handlers:
+            rendered = ast.dump(handler)
+            assert "unscorable" in rendered, "an exhausted authorizer must not be scored"
+
+    def test_both_exhaustion_types_are_known_to_the_boundary(self):
+        """Two independent implementations (D13/D21) means two exception types,
+        and missing either would leave that side silently scored."""
+        from src.harness import campaign as C
+        from src.harness import runner as R
+
+        for module in (R, C):
+            names = {
+                "SutAuthorizerExhausted": getattr(module, "SutAuthorizerExhausted", None),
+                "HarnessAuthorizerExhausted": getattr(module, "HarnessAuthorizerExhausted", None),
+            }
+            assert all(value is not None for value in names.values()), (module.__name__, names)
+        assert R.SutAuthorizerExhausted is sut_authority.AuthorizerExhausted
+        assert R.HarnessAuthorizerExhausted is ev.AuthorizerExhausted

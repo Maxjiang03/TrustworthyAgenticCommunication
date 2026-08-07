@@ -41,6 +41,7 @@ from mcp.shared.memory import create_connected_server_and_client_session
 
 from src.harness import as_process, credential_faults, frozen_parameters, key_material, sealed_truth
 from src.harness.authorizer import frozen_config
+from src.harness.authorizer.allowed import AuthorizerExhausted as HarnessAuthorizerExhausted
 from src.harness.effect_ledger import LedgerWriter, install_ingress_recorder, read_ledger
 from src.harness.effectors import LedgerEffector
 from src.harness.mediation.boundary import install_boundary
@@ -59,6 +60,7 @@ from src.harness.sut_process import SutProcess
 from src.harness.verifier import registry as registry_mod
 from src.sut.agents.specialist import Specialist
 from src.sut.agents.supervisor import Supervisor
+from src.sut.capability.authority import AuthorizerExhausted as SutAuthorizerExhausted
 from src.sut.protocol.a2a import InProcessDelegationTransport
 from src.sut.protocol.mcp_tools import build_server
 
@@ -722,6 +724,17 @@ class GoldenThreadRunner:
             verification_start = time.perf_counter_ns()
             try:
                 return arm.decide(tool, arguments)
+            except (SutAuthorizerExhausted, HarnessAuthorizerExhausted):
+                # NOT a denial, and the one exception to the rule below. The
+                # authorizer ran out of its evaluation budget, so it never
+                # answered whether the token authorizes the request -- and
+                # `Allowed()` runs it once per element of `Ω`. Recording a
+                # refusal here would put a `B` in the matrix that reads as the
+                # arm blocking when the instrument merely failed to finish, in
+                # the direction that flatters a capability arm. It propagates,
+                # and the campaign records the cell UNSCORABLE with its cause
+                # (ADR 0046).
+                raise
             except Exception as exc:  # noqa: BLE001 -- any arm failure is a denial
                 return False, f"arm_error:{type(exc).__name__}"
             finally:
