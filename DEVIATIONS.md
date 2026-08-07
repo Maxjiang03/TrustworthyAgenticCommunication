@@ -51,6 +51,27 @@ superseded and no sealing commit made. `docs/PRE_REGISTRATION.md` is untouched.
 **Not re-run for a better number.** One run was taken. The rule binds hardest when the number is
 unwelcome.
 
+**RESOLVED 2026-08-07 by the Commander's decision: the declaration was AMENDED, and the seal then
+completed as v0.8.** Re-measurement after seeing an unwelcome number was explicitly **refused** as
+result-driven measurement; retracting the disclosure entirely was refused as going too far. What
+was amended is a **disclosure**, by dated addition with the original wording preserved verbatim —
+no hypothesis, decision rule or gate criterion was touched, and the adjudicated 2.8264 ms is
+unchanged. The corrected reading is that the scatter across seven runs is **itself** the evidence
+that the pairwise separations measured run-to-run variation rather than drift.
+
+**An eighth median followed, under a revised stopping condition** (stop only if it falls outside
+2.6772–2.9684 ms or fails the 5 ms threshold): **2.7527 ms**, inside the band, PASS, with the IQR
+back to 0.1161 ms from re-run 5's 0.4413 ms. The record now contains its own sharpest illustration
+— re-run 2 (2.7363 ms) and re-run 6 (2.7527 ms) differ by **0.0164 ms** and still "separate
+completely" at U = 16, p = 0.0286, with `b3.py` byte-identical at both commits.
+
+**One transient consequence, recorded because D-002 exists.** The v0.8 sealing commit `52692d4`
+relocated `seal/manifest_v0.7.json` into `seal/superseded/`, and one test pinned
+`analysis/latency.py` against that path, so the suite was **red at that single commit**. The
+**sealed tree is green**: the manifest's implementation commit is `ffa216e`, where the file had not
+yet moved and the suite passed 1605. Fixed in the following commit by pinning against *every*
+manifest that covers the file rather than one named path — which is also the stronger claim.
+
 ## D-007 — 2026-08-07 — The sealed platform reader crashes under a PowerShell parent process. **FIXED at task B2 STEP 2 (ADR `000C`).**
 
 **A latent defect in a COVERED file**, `src/harness/measurement_platform.py`, found while reading

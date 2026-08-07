@@ -228,20 +228,42 @@ class TestTheSealedAnalysisConsumesItUnchangedAndDecides:
         # Both arms contributed the plan's kept sample count.
         assert decision.treatment.n >= 200 and decision.control.n >= 200
 
-    def test_analysis_latency_is_unmodified_since_the_v07_seal(self):
-        """The collector fits the analysis layer, not the reverse."""
+    def test_analysis_latency_is_unmodified_since_it_was_first_sealed(self):
+        """The collector fits the analysis layer, not the reverse.
+
+        Checked against EVERY manifest that covers the file -- the current seal
+        and every superseded one under seal/superseded/ -- rather than against
+        one named manifest. Two reasons, both learned at the v0.8 seal: naming
+        `seal/manifest_v0.7.json` broke this test the moment v0.7 was relocated
+        into seal/superseded/, and pinning to a single manifest would let a
+        future reseal quietly relax the pin by restating a new hash. Agreement
+        across all of them is the actual claim -- that this file has not moved
+        since it was first sealed.
+        """
         import hashlib
         import json as _json
         import subprocess
 
-        manifest = _json.loads(
-            (REPO_ROOT / "seal" / "manifest_v0.7.json").read_text(encoding="utf-8")
-        )
         blob = subprocess.run(
             ["git", "cat-file", "blob", "HEAD:analysis/latency.py"],
             cwd=str(REPO_ROOT),
             capture_output=True,
+            check=True,
         ).stdout
-        assert hashlib.sha256(blob).hexdigest() == manifest["covered"]["analysis/latency.py"], (
-            "analysis/latency.py changed; it is the sealed specification and forbidden action 3"
-        )
+        actual = hashlib.sha256(blob).hexdigest()
+
+        seal = REPO_ROOT / "seal"
+        current = sorted(seal.glob("manifest_v*.json"))
+        assert len(current) == 1, f"expected exactly one current seal manifest, found {current}"
+        checked = []
+        for path in current + sorted((seal / "superseded").glob("manifest_v*.json")):
+            manifest = _json.loads(path.read_text(encoding="utf-8"))
+            expected = manifest["covered"].get("analysis/latency.py")
+            if expected is None:  # a manifest predating the file
+                continue
+            assert actual == expected, (
+                f"analysis/latency.py changed; it is the sealed specification and forbidden "
+                f"action 3. {path.name} pins {expected}, the tree has {actual}"
+            )
+            checked.append(path.name)
+        assert len(checked) >= 2, f"only {checked} pinned the file; expected the seal and a prior"
