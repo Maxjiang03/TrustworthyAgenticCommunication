@@ -102,7 +102,14 @@ def mint_phase1_tokens(document: dict, config: ASConfig, signing_key) -> dict[st
                 signing_key=signing_key,
                 subject=spec["subject"],
                 client_id=client_id,
-                audience=spec["audience"],
+                # An additional grant may name a DIFFERENT resource server.
+                # F3's `audience-mismatch` subcase needs a token that is
+                # genuinely valid -- correctly signed, unexpired, properly
+                # scoped -- and simply minted for another RS; anything less is
+                # a malformed token, which is a different attack. Defaults to
+                # this client's own audience, so every existing grant is
+                # unchanged (ADR 0044).
+                audience=extra.get("audience", spec["audience"]),
                 scope=extra.get("scope", spec["scope"]),
                 authorization_details=extra["authorization_details"],
                 lifetime_seconds=extra.get("lifetime_seconds", spec.get("lifetime_seconds")),

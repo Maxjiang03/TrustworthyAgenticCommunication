@@ -53,6 +53,46 @@ frozen row; they restore the oracle to what §Part I and ADR 0030 already specif
 found after the run, Part H's no-result-driven-tuning rule would have forbidden the fix and the
 affected families would have been reported as invalid.
 
+## D-003 — 2026-08-07 — The campaign driver was smoke-tested against the CONFIRMATORY corpus before the seal. Reported, not buried.
+
+**Departure from:** `PROJECT_RULES.md` red line 2 and Part H's ordering — no confirmatory campaign
+before the seal. Every one of the fifteen gates was adjudicated on the **pilot** corpus precisely so
+that the confirmatory corpus stayed untouched until step 7.
+
+**What happened.** While building `src/harness/campaign_driver.py` (ADR 0045) I ran it once with
+`--run-mode confirmatory`, writing to a scratch path outside the repository, to verify that the new
+entry point executed end to end. It did: it reported **143 cells, 10 unscorable, 3 passes**. That
+was the wrong corpus to smoke-test on, and the pilot corpus — which is what the gates used and what
+the driver supports with `--run-mode pilot` — was the correct one. The same smoke test was then
+re-run on the pilot corpus and reports the identical structural counts.
+
+**What was and was not observed, stated precisely because the distinction is the whole point.**
+The only output read was the three aggregate counts above, which are structural (how many cells the
+matrix has, how many the sealed records mark `NA`, how many passes the corpus's two chains require)
+and contain **no verdict for any cell**. The result file was **deleted without being opened**;
+its SHA-256 was `0d417fa643ca31fa59b9aebb28aa635492d27bb99e2eaa88fa495084607ea2df` and its size
+246,863 bytes, recorded here so the claim is checkable rather than asserted. The effect-ledger tree
+the run produced was deleted with it. No `A`/`B` cell value, no per-family rate, no
+`admission_breach`, `false_block` or `realized_harm` value was read by me or written into any
+document, commit, or test.
+
+**Why this is a deviation to report rather than an incident that invalidates anything.** Part H's
+"once" governs the **frozen** campaign — the one executed against sealed artifacts after step 6.
+This ran against an **unsealed working tree**, mid-repair, on code that is not the v0.7 candidate's
+final state, so it is not the "once" and the "once" remains unspent. Nor is it result-driven
+tuning: no apparatus decision in this branch was made after, or because of, anything this run
+produced. The repairs it followed were all specified in ADR 0044 and 0045 **before** it ran.
+
+**What guards against it recurring.** The driver refuses to overwrite an existing
+`results/raw/campaign-<mode>.json`, so a second run is a visible decision rather than a default.
+That guard did not apply here because the smoke run wrote outside `results/` entirely, which is
+itself worth recording: the write-once protection lives in the driver, and a `--out` override
+bypasses it by design (a scratch smoke test must not be able to claim the real path).
+
+**The honest residue.** A reader is entitled to know that the confirmatory corpus has been executed
+once by the apparatus before sealing, even though no verdict was inspected, and that is why this
+entry exists rather than a quieter one.
+
 ## D-002 — 2026-08-07 — CI was red from `ca360ae` to `cdf185d`, across two sealing commits
 
 **Departure from:** design §J.2 item 7 (CI runs the gates on every push, as regression protection).

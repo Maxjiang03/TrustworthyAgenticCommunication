@@ -106,6 +106,9 @@ def golden_thread_as_document(
     task_grant: "list[list[str]] | None" = None,
     task_grant_client: str = "agent-supervisor",
     broad_grant_name: str = "broad",
+    default_lifetime_seconds: int | None = None,
+    wrong_audience: str | None = None,
+    wrong_audience_grant_name: str = "wrong-audience",
 ) -> dict[str, Any]:
     """The AS config document for the golden-thread pilot (runner-assembled).
 
@@ -158,6 +161,26 @@ def golden_thread_as_document(
         # it would change the `may_act` relation as a side effect and confound
         # the arms in a second respect.
         additional[task_grant_client] = {broad_grant_name: {"authorization_details": rar}}
+    if wrong_audience is not None:
+        # §E.4's `F3 audience-mismatch` needs a token that is genuinely valid
+        # and simply minted for ANOTHER resource server -- the captured-token
+        # attack §D.2 describes. Built with that RS's own RAR objects so it is
+        # well-formed for the audience it names, which is what makes the
+        # boundary's refusal attributable to the AUDIENCE check rather than to
+        # a malformed grant. Nothing else in the run may present it: it exists
+        # only as `wrong_audience_token` for the injector (ADR 0044).
+        if wrong_audience == audience:
+            raise ASProcessError(
+                f"wrong_audience {wrong_audience!r} is the run's own resource server; a token "
+                "minted for the correct audience would score as the arm admitting an attack "
+                "that was never staged"
+            )
+        for client in (task_grant_client, "agent-specialist"):
+            if client in grants:
+                additional.setdefault(client, {})[wrong_audience_grant_name] = {
+                    "authorization_details": rar_objects(omega_elements, wrong_audience),
+                    "audience": wrong_audience,
+                }
     registry = {}
     for actor, principal in actors.items():
         label = registry_document["principals"][principal]["key_reference"]
@@ -171,8 +194,20 @@ def golden_thread_as_document(
         "token_endpoint": f"{issuer}/token",
         "rar_type": RAR_TYPE,
         "omega": omega_elements,
-        "resource_servers": [audience],
+        "resource_servers": (
+            [audience] if wrong_audience is None else sorted({audience, wrong_audience})
+        ),
         "clients": sorted(actors),
+        **(
+            {}
+            if default_lifetime_seconds is None
+            # The AS defaults to 300 s and mints the Phase-1 tokens ONCE at
+            # start-up, so a campaign pass longer than that would have its tail
+            # recorded `unscorable` by `clock_refusal` -- fail-closed and
+            # visible, but an apparatus limit reported as a measurement gap.
+            # ADR 0045 fixes the campaign's value; nothing else changes.
+            else {"default_lifetime_seconds": int(default_lifetime_seconds)}
+        ),
         "registry": registry,
         "delegation_policy": {"supervisor": "specialist", "specialist": "worker"},
         "phase1": {
