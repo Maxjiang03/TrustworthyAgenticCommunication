@@ -15,6 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          # FULL history, not the default depth-1 shallow clone. Several tests
+          # in tests/test_pre_registration.py verify that a commit cited in a
+          # document actually landed the record it is cited for -- they run
+          # `git log -- <path>` and `git merge-base --is-ancestor`, which a
+          # shallow clone cannot answer. Under depth-1 they failed with
+          # "fatal: Not a valid object name", which is why CI was red from
+          # ca360ae onward: a provenance check reporting the clone's shape
+          # rather than the repository's history.
+          fetch-depth: 0
 
       - uses: astral-sh/setup-uv@v6
         with:

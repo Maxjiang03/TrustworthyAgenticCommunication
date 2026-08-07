@@ -31,3 +31,16 @@ results/**
 !results/**/
 !results/**/.gitkeep
 smoke/g10/_ledger_tmp/
+
+# Working-tree copies of task specifications the Commander issues at the
+# repository root. Every one of them is already archived byte-for-byte under
+# docs/tasks/archive/ or docs/workplan/archive/, so these are redundant
+# copies, NOT the record -- deleting them is not this repository's call
+# (HANDOFF.md §2), but leaving them untracked is not free either:
+# src/harness/campaign.py stamps `git_dirty: true` on every run record from
+# `git status --porcelain`, so an untracked leftover would mark the one
+# confirmatory campaign's provenance dirty for a reason unrelated to the
+# experiment. Ignored, so the tree is clean and the files stay.
+/*_TASK.md
+/TASK_*.md
+/HANDOFF.md
