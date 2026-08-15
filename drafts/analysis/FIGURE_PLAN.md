@@ -368,6 +368,124 @@ diff them against each script's `RENDER` stdout; then re-read every PNG for word
 rules (F3 2/5, F4 qualification, banned stem, "80 of 90" unqualified). Report as its
 own artefact. Until it reports, no figure enters mproj.tex.
 
+### 0.9 RED STATE RESOLVED — `CLAIMS_LEDGER.md` EXISTS, and D1 rested on a false premise
+
+Phase 0 reported `CLAIMS_LEDGER.md` ABSENT and the Commander ruled **D1** on that
+premise: "option (a): PRE_REGISTRATION.md + DEVIATIONS.md are the claims record.
+Do not author a ledger now." **The premise was wrong.** The file exists:
+
+- Path: `Glasgow_MSc_Project___Yixian_2026/CLAIMS_LEDGER.md` [M — 95 lines]
+- Last modified 2026-08-09 12:32 [M — filesystem stat]
+- **Not under version control**: that directory is not a git work tree [M —
+  `git rev-parse` returns "not a git repository"]. It is therefore unhashed,
+  unanchored, and outside every seal.
+
+Why Phase 0 missed it: the search was run inside the `Prototype` repository. The
+ledger lives in the *dissertation* directory, a sibling. The search was not wrong
+about the repo; its scope was wrong about the project. **Standing correction: a
+"does not exist" finding must name the scope it was established over.**
+
+The ledger is not decorative. It has five parts — A must be stated, B may be
+stated, C must not be stated, D phrase-level substitutions, E open items — and it
+opens: "This file fixes the boundary of what the dissertation may assert."
+
+#### What it CLOSES
+
+- **Open item O2** — "The campaign scored 143 cells, of which 80 are reported as
+  agreeing. The remaining cells must be accounted for. Determine and state
+  precisely which subset of scored cells carries a sealed prediction, and what
+  the others are, **before quoting any agreement figure**." This is exactly the
+  D5 denominator bridge and the R2 partition rule, already built and printed by
+  TAB-2: 153 → 143 (+10 unscorable) → 90 entries → 80/0, plus the 9+36+8 split.
+  **O2 is discharged by work already committed.**
+- **Open item O3** — "The equivalence margin's external justification. Confirm
+  the recorded source." `docs/frozen_parameters.md` row 1 records it: 20 ms is 1%
+  of `T_full` (row 7) and the per-step operating point published runtime
+  agent-guard work treats as deployable. Row 7 in turn records dated retrievable
+  sources (Artificial Analysis, both URLs retrieved 2026-08-06). **The source is
+  recorded**; row 7 own text still marks the seal-time snapshot as owed, so O3
+  closes as *recorded, snapshot outstanding* — not as unanchored.
+
+#### What it BINDS that this plan did not carry
+
+| Ledger item | Bears on | Status in this plan before today |
+|---|---|---|
+| A2 — the corpus was built to match the matrix structurally, so agreement tests the implementation on new instances; "Results, **before any agreement figure**" | §N.2 prose, ahead of FIG-1/TAB-2 | **absent** — must be added |
+| A7 — roughly twenty-three ms of every measurement is fixed testbed machinery, present even in the unprotected baseline; "**before any latency figure**" | §N.5/§N.6 prose | **absent** — must be added |
+| C1 — never state absolute end-to-end latency for an arm; say the added latency relative to the unprotected baseline | FIG-5, TAB-8 (unbuilt) | **CONTRADICTED**: §C specified plotting absolute per-arm per-span medians including `end_to_end` |
+| C10 — never imply a network hop; state the substrate wherever a latency figure appears | FIG-4/5/6 (unbuilt) | **absent** — the plan carries pilot-corpus and unpinned-CPU lines but no in-process-substrate line |
+| C3 — not "the campaign confirmed the predictions"; say the implementation reproduced the sealed predictions on new instances | FIG-1/TAB-2 caption and on-figure text | to be checked against the rendered strings |
+| C2, C5 | ADR 0037, ADR 0041 | already honoured |
+| A3, A4, A5, A10 | F3 2/5, F4 qualification, pilot disclosure, the false-block result | already honoured — A10 independently states the D4 reading, that the monitor-off refusals are a result and not an excuse |
+
+**C1 is the sharp one.** FIG-5 and TAB-8 as specified in §C would render absolute
+per-arm `end_to_end` medians, which Part C forbids outright and Part D restates as
+a phrase substitution. Those two artefacts need re-specification before they are
+built, independently of the latency re-run question.
+
+#### Two further items surfaced, not decided
+
+- **B4 records the cost inversion as a permitted claim**, with magnitudes
+  ("roughly twenty-eight times more at the boundary", "roughly nine milliseconds
+  sooner end to end"). Phase 0 reported cost inversion "absent from the repo
+  entirely" — true of the `Prototype` repo, false of the project. **But those
+  magnitudes have no committed analysis behind them**: until 2026-08-15 no
+  latency analysis had ever been run. D3 BINDING clause forbids importing any
+  latency number from prior sessions into plan, caption, placeholder or example,
+  so this plan does not adopt them; they are reported as an unsourced-magnitude
+  question for the Commander.
+- **C9 cites "ADR 0049"**, which does not exist — the highest ADR in the repo is
+  0048 (this plan own presentation-layer ruling) [M — `adr/` listing]. Forward
+  reference, or an ADR owed.
+
+### 0.10 The placement defect — C2 ceiling was assumed, and 13 of 17 artefacts do not fit
+
+C2 ruled that artefact size is fixed at authoring time and never resolved by
+scaling. The constant enforcing it, `MAX_WIDTH_IN = 9.7`, was a **guess** carrying
+the comment "A4 landscape gives ~9.7 in of usable text width". It was never read
+off the document. There was no height check at all.
+
+Read from the document (fixed in commit `849224a`):
+
+- `mproj.cls:41-47` — `geometry` with a4paper, left/right 3.18 cm, top/bottom
+  2.54 cm, bindingoffset 0.2 in
+- `mproj.log:618-619` — the compiler own record, `\textwidth=402.095pt`,
+  `\textheight=700.50723pt` (TeX pt, 1 in = 72.27 pt)
+- The two agree: **the text block is 5.564 × 9.693 in** [M].
+
+So the guess was right by coincidence in one dimension (9.7 against a true 9.693
+landscape width) and had no counterpart in the other, where the true ceiling is
+**5.564 in**, not the ~6.5 in previously assumed in conversation.
+
+Measured verdict, `tools/figures/acceptance_check.py` [M]:
+
+- **13 of 17 rendered artefacts are UNPLACEABLE in either orientation.**
+- Placeable: `tab2_agreement_ladder`, `tab3_unscorable_cells`,
+  `tab9_instance_micro_A_p4`, `tab9_instance_micro_B_p4` — all landscape.
+- **No artefact fits portrait**, and none can: portrait usable width is 5.564 in
+  and the narrowest built artefact is 7.64 in. Landscape is therefore *forced*
+  for every matrix artefact — not a preference, arithmetic.
+- With landscape forced, **the binding constraint is height, 5.564 in.** Every
+  overflow is a height overflow once the width is brought under 9.693 in.
+
+Two artefacts are already at the width ceiling and fail on height alone
+(`tab5_hypotheses` 9.58 × 7.33, `tab10_clustered_by_template` 8.99 × 7.31 — each
+about 1.75 in too tall). FIG-1 is the hard case at 9.60 × 11.41: its 21 display
+rows at 0.30 in pitch consume 6.3 in of grid before any header, and its bottom
+carries the totals strip, the disclosure block and the full legend as wrapped
+prose. §D of this plan already designates TAB-1/§N.1 as the *one normative
+legend* referenced by all matrix artefacts, so FIG-1 carrying its own copy is
+both the largest block of reclaimable height and a departure from §D.
+
+**Re-authoring classes** (no artefact is scaled; each is re-authored to fit):
+
+1. *Trim to the landscape height* — `tab5`, `tab10`: about 1.75 in each.
+2. *Move prose off the figure into the caption or §N.1* — FIG-1, TAB-0, TAB-1,
+   FIG-3: the legend/disclosure/totals blocks are text, not encoding.
+3. *Re-paginate* — `tab9_*` p1–p3 and any residue: `ROWS_PER_PAGE` is currently
+   45 against a 5.564 in page, which at 0.30 in pitch admits roughly 14 rows plus
+   header. The row count per page is a layout constant, not a result.
+
 ## A. Results-chapter outline
 
 Confirmatory/decision-bearing content is §N.2–§N.5; descriptive content is §N.6.
