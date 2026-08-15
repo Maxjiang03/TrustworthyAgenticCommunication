@@ -75,6 +75,64 @@ and the output artefact path. The pre-commitment text above is not edited.
 
 ---
 
+### CLOSED — the run, the verdict as returned, and one finding
+
+**Run commit:** `677e7c7` (tree clean at run time). **Output artefact:**
+`results/tables/results-latency-pilot.json`, admitted to version control by a
+deliberate `.gitignore` exception, the mechanism that file's rule requires.
+**Invocation:** `tools/run_row1_decision.py`, ADR 0048's third named exception
+(sealed-decision invocation), committed before the verdict existed.
+
+**VERDICT AS RETURNED: `stands`.**
+
+| field | value as emitted |
+|---|---|
+| verdict | `stands` |
+| point_estimate_ms | 6.4503 |
+| 95% bootstrap CI | [6.3931, 6.473405] |
+| margin_ms | 20.0 |
+| confidence | 0.95 |
+| resamples | 10000 |
+| seed | 4815162342 |
+| treatment `B3` | n=225, median 6.4518, p95 7.2079, IQR 3.2979 |
+| control `B0` | n=225, median 0.0015, p95 0.00198, IQR 0.0003 |
+
+The decision rule is the CI **upper bound** against the margin: 6.473405 < 20,
+so the pre-registered "lightweight" claim stands. Nothing above is recomputed;
+every value is the sealed `Decision` object's own field.
+
+**FINDING, recorded because it was found after the verdict and clause 4 forbids
+changing it now.** The run did NOT apply the pre-registered warm-up discard.
+Evidence: the descriptives report `n=225` per arm, which is the plan block's
+`recorded_per_configuration`, not its `kept_after_warmup_per_configuration` of
+210; and `discard_warmup` is called at `analysis/latency.py:503` inside
+`span_descriptives` ONLY — it appears nowhere in the row-1 chain
+(`lightweight_claim` → `benign_series` → `_segment_values`), so the sealed layer
+does not apply it on this path and the composition root did not either. The
+collector records the intent explicitly: `warmup_discarded_by:
+"analysis.latency.discard_warmup (the sealed layer decides)"`
+(`src/harness/latency_collector.py:222`) with `warmup_per_batch: 5`, 3 batches.
+
+This is an omission in the invocation, not a departure chosen after seeing the
+result: the pre-registration asks for warm-up to be discarded (§E.5) and this
+run did not do it. Under clause 4 no correction is applied here, and under
+clause 2 any corrected re-run must be recorded in this entry with its reason,
+with the FIRST run's verdict — `stands` — remaining the reported one. The
+decision whether to re-run is the Commander's.
+
+Direction of the omission, stated so it is not mistaken for a hidden
+convenience: the discarded repetitions are the first of each batch, the ones
+most likely to be slow, so removing them would if anything reduce the treatment
+median and move the interval further below the margin. That is a structural
+expectation, NOT a result, and it is not reported as one.
+
+**Disclosures that travel with this verdict** (pre-committed above, repeated
+because they are not optional): PILOT corpus, not confirmatory; no CPU affinity
+pinning on this pass; the G-3 5 ms threshold is out of scope and appears on no
+artefact here; ADR 0041 bars any per-mechanism cost for the exchange.
+
+---
+
 ## D-008 — 2026-08-07 — The seventh G-3 median changed an auxiliary finding, and the v0.8 seal STOPPED on it
 
 **Environment drift observed on the row 9 platform**, which is what this file exists to carry.

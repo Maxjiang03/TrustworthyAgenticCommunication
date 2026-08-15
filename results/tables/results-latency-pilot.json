@@ -1,0 +1,64 @@
+{
+  "_what": "The pre-registered frozen row 1 equivalence decision, run ONCE over results/raw/latency-pilot.json by the composition root named in DEVIATIONS D-009. The verdict is as returned by the sealed analysis/latency.py lightweight_claim; nothing here is recomputed.",
+  "corpus_root": "fixtures/pilot/golden_thread",
+  "run_mode": "pilot",
+  "corpus": "PILOT (fixtures/pilot/golden_thread) -- NOT the confirmatory corpus (D-006, ADR 0047)",
+  "cpu_pinning": "none; pinning exists only in smoke/g3/spike.py (D-009 disclosure)",
+  "estimand": "median(B3) - median(B0) over presentation + boundary_verification, warm",
+  "decision_rule": "the claim stands iff the 95% bootstrap CI UPPER BOUND < margin_ms",
+  "inputs": {
+    "margin_ms": 20,
+    "seed": 4815162342,
+    "resamples": 10000,
+    "samples_loaded": 40500,
+    "samples_excluded_refusal_path": 20250,
+    "samples_into_decision": 20250,
+    "plan": {
+      "batches": 3,
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 4815162342,
+      "exclusion_rule": "NONE. No outlier or stall rule is applied. Sighting C has never been observed as a per-operation stall, so a threshold now would be invented for an effect not shown to exist, and a threshold set after seeing data is what pre-registration forbids. Raw values are reported, not discarded.",
+      "kept_after_warmup_per_configuration": 210,
+      "ledger_backed": false,
+      "ledger_note": "the effect ledger is instrument, not mechanism, and ADR 0026 excludes every ledger append from the measured segment by name; `end_to_end` here therefore carries no ledger write",
+      "order": "arms shuffled within each batch from ORDER_SEED + batch",
+      "order_seed": 20260807,
+      "phase_definition": {
+        "cold": "the first invocation of a freshly provisioned arm instance",
+        "warm": "a subsequent invocation of that same instance"
+      },
+      "phases": [
+        "cold",
+        "warm"
+      ],
+      "recorded_per_configuration": 225,
+      "repetitions_per_batch": 75,
+      "source": "docs/PRE_REGISTRATION.md §6, implemented as written and not amended",
+      "warmup_discarded_by": "analysis.latency.discard_warmup (the sealed layer decides)",
+      "warmup_per_batch": 5
+    }
+  },
+  "decision": {
+    "verdict": "stands",
+    "point_estimate_ms": 6.4503,
+    "ci": {
+      "low": 6.3931,
+      "high": 6.473405
+    },
+    "margin_ms": 20.0,
+    "confidence": 0.95,
+    "resamples": 10000,
+    "treatment": {
+      "n": 225,
+      "median": 6.4518,
+      "p95": 7.2079,
+      "iqr": 3.2979000000000007
+    },
+    "control": {
+      "n": 225,
+      "median": 0.0015,
+      "p95": 0.0019799999999999983,
+      "iqr": 0.00030000000000000014
+    }
+  }
+}
