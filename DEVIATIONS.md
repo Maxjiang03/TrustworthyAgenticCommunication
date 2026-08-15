@@ -27,6 +27,54 @@ should expect from the sealed record.
 
 ---
 
+## D-009 — Pre-commitment: reporting the row-1 lightweight claim verdict
+
+**Status:** OPEN — written BEFORE the analysis is run.
+**Date:** 2026-08-15
+**Authority:** Commander ruling D3(i); frozen_parameters row 1; ADR 0047; D-006.
+
+**Context.** `results/raw/latency-pilot.json` has existed since the RQ4 pass but
+`analysis/latency.py` has never been executed over it. No latency analysis,
+table, figure, or verdict has been committed. Running the sealed
+`lightweight_claim` function therefore decides the pre-registered row-1
+equivalence claim for the first time, and the decision is final.
+
+**Pre-commitment.** The verdict returned by the sealed `Decision` object will be
+reported exactly as returned, whether it is `stands` or `retracted`. Specifically:
+
+1. The verdict, point estimate, 95% bootstrap CI, margin, confidence level,
+   resample count, and seed are reported as emitted. No value is recomputed,
+   re-run, re-seeded, or re-derived outside the sealed layer.
+2. The analysis is run ONCE. If it is re-run for any reason, every run and its
+   reason is recorded in this entry, and the first run's verdict remains the
+   reported one.
+3. A `retracted` verdict is reported in the body of the results chapter with the
+   same prominence as `stands`, not relegated to an appendix or a footnote.
+4. No parameter, corpus, warm-up count, phase selection, span definition, or
+   filter is changed after the verdict is seen. Any such change invalidates the
+   run and is recorded here as a deviation.
+5. The decision rule is unchanged: it turns on whether the 95% bootstrap CI
+   UPPER BOUND of the median difference falls below the 20 ms margin, not on the
+   point estimate.
+
+**Disclosures that travel with the verdict regardless of its direction.**
+- The data are from the PILOT corpus, not the confirmatory corpus (D-006 /
+  ADR 0047). The security results are confirmatory-corpus; the two are never
+  presented as one evidence base.
+- Neither the campaign nor the RQ4 latency pass applied CPU affinity pinning
+  (pinning exists only in `smoke/g3/spike.py`), so bimodality from core
+  migration cannot be excluded.
+- The G-3 gate's 5 ms threshold is out of scope here: it governs an isolated,
+  pinned microbenchmark. It appears on no campaign or pilot-latency artefact.
+- ADR 0041 restricts per-mechanism attribution; no per-mechanism cost is stated
+  for the online exchange or across the exchange partition.
+
+**On exit.** When the run completes, this entry is updated in the same commit as
+the committed output with: the verdict as returned, the commit hash of the run,
+and the output artefact path. The pre-commitment text above is not edited.
+
+---
+
 ## D-008 — 2026-08-07 — The seventh G-3 median changed an auxiliary finding, and the v0.8 seal STOPPED on it
 
 **Environment drift observed on the row 9 platform**, which is what this file exists to carry.
