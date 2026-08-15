@@ -29,7 +29,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from analysis.latency import Sample, lightweight_claim  # noqa: E402
+from analysis.latency import REFUSAL_PATH_SCENARIO, Sample, lightweight_claim  # noqa: E402
 from src.harness import frozen_parameters  # noqa: E402
 
 RAW = REPO_ROOT / "results" / "raw" / "latency-pilot.json"
@@ -52,11 +52,19 @@ def main() -> int:
     print(f"INPUT margin_ms   [M frozen_parameters row 1] = {margin_ms}")
     print(f"INPUT seed        [M latency-pilot.json plan] = {seed}")
     print(f"INPUT resamples   [M latency-pilot.json plan] = {resamples}")
-    print(f"INPUT corpus_root [M latency-pilot.json plan] = {plan.get('corpus_root')}")
-    print(f"INPUT run_mode    [M latency-pilot.json plan] = {plan.get('run_mode')}")
+    print(f"INPUT corpus_root [M latency-pilot.json top level] = {record.get('corpus_root')}")
+    print(f"INPUT run_mode    [M latency-pilot.json top level] = {record.get('run_mode')}")
 
-    samples = [Sample(**{k: rec[k] for k in SAMPLE_FIELDS}) for rec in record["samples"]]
-    print(f"INPUT samples_loaded [M len(samples[])] = {len(samples)}")
+    all_samples = [Sample(**{k: rec[k] for k in SAMPLE_FIELDS}) for rec in record["samples"]]
+    print(f"INPUT samples_loaded [M len(samples[])] = {len(all_samples)}")
+    # ADR 0026's exclusion, applied with the SEALED constant, not a local rule:
+    # `benign_series` refuses rather than filters, so the refusal-path cell is
+    # separated here and reported as its own count. Nothing else is dropped.
+    samples = [s for s in all_samples if s.scenario_id != REFUSAL_PATH_SCENARIO]
+    excluded = len(all_samples) - len(samples)
+    print(f"INPUT refusal_path_scenario [M sealed constant] = {REFUSAL_PATH_SCENARIO}")
+    print(f"INPUT samples_excluded_refusal_path [D] = {excluded}")
+    print(f"INPUT samples_into_decision [D] = {len(samples)}")
 
     decision = lightweight_claim(samples, margin_ms=margin_ms, seed=seed, resamples=resamples)
 
@@ -77,6 +85,8 @@ def main() -> int:
             "DEVIATIONS D-009. The verdict is as returned by the sealed "
             "analysis/latency.py lightweight_claim; nothing here is recomputed."
         ),
+        "corpus_root": record.get("corpus_root"),
+        "run_mode": record.get("run_mode"),
         "corpus": (
             "PILOT (fixtures/pilot/golden_thread) -- NOT the confirmatory corpus (D-006, ADR 0047)"
         ),
@@ -87,7 +97,9 @@ def main() -> int:
             "margin_ms": margin_ms,
             "seed": seed,
             "resamples": resamples,
-            "samples_loaded": len(samples),
+            "samples_loaded": len(all_samples),
+            "samples_excluded_refusal_path": excluded,
+            "samples_into_decision": len(samples),
             "plan": plan,
         },
         "decision": {
