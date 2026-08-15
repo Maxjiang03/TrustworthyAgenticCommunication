@@ -5,10 +5,12 @@
       also reports whether the greyscale image still has the distinct tone
       levels the encoding relies on (a diagnostic, not a pass/fail oracle:
       the human check is the acceptance step);
-  (c) PDF vector + type check -- every PDF's page size in inches, whether it
-      contains vector text/path operators, and the SMALLEST font size any
-      text object was set in (from the matplotlib rcParams the build uses and
-      the fontsize arguments each script passes; asserted >= 8 pt).
+  (c) PDF vector, placement, and type check -- every PDF's page size in inches,
+      whether that size fits the dissertation's MEASURED text block in either
+      orientation (C2: re-author, never scale), whether it contains vector
+      text/path operators, and the SMALLEST font size any text object was set
+      in (from the matplotlib rcParams the build uses and the fontsize
+      arguments each script passes; asserted >= 8 pt).
 
 Read-only over results/figures/; writes only the .grey.png companions.
 """
@@ -21,10 +23,28 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 FIGS = HERE.parents[1] / "results" / "figures"
 MIN_PT = 8
-# C2 (Commander ruling): the width is fixed at authoring time. A4 landscape
-# gives ~9.7 in of usable text width; anything wider would have to be scaled
-# and would take 8 pt type below 8 pt. Enforced, never resolved by scaling.
-MAX_WIDTH_IN = 9.7
+
+# C2 (Commander ruling): the size is fixed at AUTHORING time and is never
+# resolved by scaling, because \includegraphics scaling takes 8 pt type below
+# 8 pt. The ceiling below is therefore load-bearing, so it is MEASURED from the
+# dissertation document rather than assumed.
+#
+# Source 1 (the specification) -- Glasgow_MSc_Project___Yixian_2026/mproj.cls:41-47
+#   \usepackage[a4paper, bindingoffset=0.2in, left=3.18cm, right=3.18cm,
+#               top=2.54cm, bottom=2.54cm, footskip=.25in]{geometry}
+#   width  = 21.0cm - 3.18 - 3.18 = 14.64cm = 5.764in, less 0.2in binding offset
+#   height = 29.7cm - 2.54 - 2.54 = 24.62cm = 9.693in
+# Source 2 (the compiler's own record, which settles it) -- mproj.log:618-619
+#   \textwidth=402.095pt   \textheight=700.50723pt   (TeX pt; 1 in = 72.27 pt)
+# The two sources agree, so the text block is known exactly and not estimated.
+TEX_PT_PER_IN = 72.27
+TEXT_W_IN = 402.095 / TEX_PT_PER_IN  # 5.564
+TEXT_H_IN = 700.50723 / TEX_PT_PER_IN  # 9.693
+
+# An artefact is placeable iff it fits the text block in ONE of two orientations.
+PORTRAIT = (TEXT_W_IN, TEXT_H_IN)
+LANDSCAPE = (TEXT_H_IN, TEXT_W_IN)  # rotated 90 deg, e.g. \begin{sidewaysfigure}
+TOL_IN = 1e-6
 
 
 def greyscale(png_path):
@@ -62,6 +82,28 @@ def pdf_info(pdf_path):
     return w_in, h_in, has_text, has_path
 
 
+def placement(w, h):
+    """Which orientation, if any, holds this artefact AT ITS AUTHORED SIZE.
+
+    Returns (orientation_name, None) when it is placeable, or (None, (nearest,
+    over_w, over_h)) when it is not -- the overflow is reported so re-authoring
+    has a numeric target instead of a guess.
+    """
+    if w is None:
+        return None, None
+    for name, (mw, mh) in (("portrait", PORTRAIT), ("landscape", LANDSCAPE)):
+        if w <= mw + TOL_IN and h <= mh + TOL_IN:
+            return name, None
+    best = None
+    for name, (mw, mh) in (("portrait", PORTRAIT), ("landscape", LANDSCAPE)):
+        over_w = max(0.0, w - mw)
+        over_h = max(0.0, h - mh)
+        score = over_w + over_h
+        if best is None or score < best[0]:
+            best = (score, name, over_w, over_h)
+    return None, best[1:]
+
+
 def min_fontsize_in_scripts():
     """Smallest fontsize any presentation script sets (rcParams + literals)."""
     smallest = 10**9
@@ -91,17 +133,35 @@ def main():
             f"GREY {png.name} -> {out.name} | distinct grey levels={levels} "
             f"| dark={dark} mid={mid} light={light}"
         )
-    print("=== (c) PDF vector + page-size check ===")
-    for pdf in sorted(FIGS.glob("*.pdf")):
+    print("=== (c) PDF vector + placement check ===")
+    print(
+        f"TEXT BLOCK [M mproj.cls:41-47, confirmed by mproj.log:618-619] "
+        f"portrait {PORTRAIT[0]:.3f} x {PORTRAIT[1]:.3f} in | "
+        f"landscape {LANDSCAPE[0]:.3f} x {LANDSCAPE[1]:.3f} in"
+    )
+    pdfs = sorted(FIGS.glob("*.pdf"))
+    unplaceable = []
+    for pdf in pdfs:
         w, h, txt, path = pdf_info(pdf)
-        fits = w is not None and w <= MAX_WIDTH_IN + 1e-6
-        flag = "OK" if (txt and path and fits) else ("TOO WIDE" if not fits else "CHECK")
+        orient, over = placement(w, h)
+        if orient:
+            verdict = f"fits {orient}"
+        else:
+            near, over_w, over_h = over
+            verdict = (
+                f"UNPLACEABLE (nearest {near}: over by {over_w:.2f} in wide, {over_h:.2f} in tall)"
+            )
+            unplaceable.append(pdf.stem)
+        flag = "OK" if (txt and path and orient) else "FAIL"
         print(
             f"PDF {pdf.name} | {w:.2f} x {h:.2f} in | vector text={txt} vector paths={path} "
-            f"| width<={MAX_WIDTH_IN}in={fits} | {flag}"
+            f"| {verdict} | {flag}"
         )
-        if not (txt and path and fits):
+        if not (txt and path and orient):
             ok = False
+    print(f"PLACEMENT unplaceable = {len(unplaceable)} of {len(pdfs)}")
+    for stem in unplaceable:
+        print(f"PLACEMENT unplaceable | {stem}")
     smallest, where = min_fontsize_in_scripts()
     print(f"MIN_FONT smallest literal fontsize set by any script = {smallest} pt ({where})")
     if smallest < MIN_PT:
