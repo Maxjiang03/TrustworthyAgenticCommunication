@@ -165,7 +165,47 @@ the disagreement is presented as the finding it would be** — not resolved in
 favour of either, and not relegated to a footnote. No third run is taken to break
 a tie.
 
-*Run 2 result — recorded on exit.*
+*Run 2 result — recorded on exit.* Executed at clean-tree commit `c6d9253`,
+artefact `results/tables/results-latency-pilot-run2.json`.
+
+| | run 1 | run 2 (warm-up discarded) |
+|---|---|---|
+| n per arm | 225 (`recorded_per_configuration`) | **210** (`kept_after_warmup_per_configuration`) |
+| verdict | `stands` | **`stands`** |
+| point estimate | 6.4503 ms | 6.44175 ms |
+| 95% bootstrap CI | [6.3931, 6.473405] | [6.37215, 6.46405] |
+| treatment `B3` | median 6.4518, p95 7.2079, IQR 3.2979 | median 6.44325, p95 7.37380, IQR 3.30197 |
+| control `B0` | median 0.0015, p95 0.00198, IQR 0.0003 | median 0.0015, p95 0.00195, IQR 0.0003 |
+
+Margin, seed, resample count, confidence level, corpus, phase, span definition
+and refusal-path exclusion are identical across both runs; the ONLY difference
+is the warm-up discard. Its arithmetic closes exactly: 54 groups
+(9 arms × 1 benign scenario × 2 phases × 3 batches) × 5 repetitions × 5 spans =
+1350 samples dropped, 20250 − 1350 = 18900 into the decision, and 3 × (75 − 5) =
+**210** per arm per phase, which is the plan block's own
+`kept_after_warmup_per_configuration`.
+
+**The two runs agree on the verdict.** The correction moved the point estimate
+down by 0.0086 ms and the CI upper bound down by 0.0094 ms — the direction
+recorded above as a structural expectation before run 2 was authorised, and it
+is now an observed result rather than an expectation. Both intervals sit roughly
+three times below the 20 ms margin, so the decision was never close to its
+threshold and the omission could not have flipped it.
+
+`p95` rose slightly on the treatment arm (7.2079 → 7.3738 ms) while the median
+fell. Removing fifteen values per arm moves the p95 order statistic's index, so
+this is an artifact of a smaller n rather than a finding; it bears on no
+decision, and no claim is made from it.
+
+**Clause 2 is honoured as written: the FIRST run's verdict remains the reported
+one.** It is `stands`, and run 2 is `stands` also, so the reported verdict is
+unaffected by which run is cited. Run 1's artefact is unmodified. Where the
+results chapter needs the descriptives behind the decision, run 2's are the ones
+that follow the pre-registered sampling protocol, and any artefact quoting them
+must say so — a table showing n=210 beside a verdict attributed to run 1 would
+be describing two different runs as one.
+
+**No further run.** The claim is decided, twice, in agreement.
 
 
 ---

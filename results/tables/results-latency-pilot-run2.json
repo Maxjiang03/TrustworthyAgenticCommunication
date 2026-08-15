@@ -1,0 +1,72 @@
+{
+  "_what": "The pre-registered frozen row 1 equivalence decision, run ONCE over results/raw/latency-pilot.json by the composition root named in DEVIATIONS D-009. The verdict is as returned by the sealed analysis/latency.py lightweight_claim; nothing here is recomputed.",
+  "corpus_root": "fixtures/pilot/golden_thread",
+  "run_mode": "pilot",
+  "corpus": "PILOT (fixtures/pilot/golden_thread) -- NOT the confirmatory corpus (D-006, ADR 0047)",
+  "cpu_pinning": "none; pinning exists only in smoke/g3/spike.py (D-009 disclosure)",
+  "estimand": "median(B3) - median(B0) over presentation + boundary_verification, warm",
+  "decision_rule": "the claim stands iff the 95% bootstrap CI UPPER BOUND < margin_ms",
+  "run": {
+    "index": 2,
+    "reason": "run 1 omitted the pre-registered warm-up discard (frozen_parameters row 1 Sampling: 'warm-up discarded'); D-009 second run, Commander-authorised 2026-08-15",
+    "warmup_discard_applied": true,
+    "note": "Run 1 did NOT apply the pre-registered warm-up discard and reported n=225, the plan block's `recorded_per_configuration`. Every run from 2 onward applies analysis.latency.discard_warmup with per_batch read from the plan block, giving the plan block's `kept_after_warmup_per_configuration`. D-009 clause 2 keeps the FIRST run's verdict as the reported one; runs are recorded alongside one another, never in place of one another. Read this artefact with DEVIATIONS D-009."
+  },
+  "inputs": {
+    "margin_ms": 20,
+    "seed": 4815162342,
+    "resamples": 10000,
+    "samples_loaded": 40500,
+    "samples_excluded_refusal_path": 20250,
+    "samples_discarded_warmup": 1350,
+    "warmup_per_batch": 5,
+    "samples_into_decision": 18900,
+    "plan": {
+      "batches": 3,
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 4815162342,
+      "exclusion_rule": "NONE. No outlier or stall rule is applied. Sighting C has never been observed as a per-operation stall, so a threshold now would be invented for an effect not shown to exist, and a threshold set after seeing data is what pre-registration forbids. Raw values are reported, not discarded.",
+      "kept_after_warmup_per_configuration": 210,
+      "ledger_backed": false,
+      "ledger_note": "the effect ledger is instrument, not mechanism, and ADR 0026 excludes every ledger append from the measured segment by name; `end_to_end` here therefore carries no ledger write",
+      "order": "arms shuffled within each batch from ORDER_SEED + batch",
+      "order_seed": 20260807,
+      "phase_definition": {
+        "cold": "the first invocation of a freshly provisioned arm instance",
+        "warm": "a subsequent invocation of that same instance"
+      },
+      "phases": [
+        "cold",
+        "warm"
+      ],
+      "recorded_per_configuration": 225,
+      "repetitions_per_batch": 75,
+      "source": "docs/PRE_REGISTRATION.md §6, implemented as written and not amended",
+      "warmup_discarded_by": "analysis.latency.discard_warmup (the sealed layer decides)",
+      "warmup_per_batch": 5
+    }
+  },
+  "decision": {
+    "verdict": "stands",
+    "point_estimate_ms": 6.44175,
+    "ci": {
+      "low": 6.3721499999999995,
+      "high": 6.46405
+    },
+    "margin_ms": 20.0,
+    "confidence": 0.95,
+    "resamples": 10000,
+    "treatment": {
+      "n": 210,
+      "median": 6.44325,
+      "p95": 7.3738049999999955,
+      "iqr": 3.3019749999999997
+    },
+    "control": {
+      "n": 210,
+      "median": 0.0015,
+      "p95": 0.0019549999999999984,
+      "iqr": 0.00030000000000000014
+    }
+  }
+}
