@@ -24,26 +24,13 @@ HERE = Path(__file__).resolve().parent
 FIGS = HERE.parents[1] / "results" / "figures"
 MIN_PT = 8
 
-# C2 (Commander ruling): the size is fixed at AUTHORING time and is never
-# resolved by scaling, because \includegraphics scaling takes 8 pt type below
-# 8 pt. The ceiling below is therefore load-bearing, so it is MEASURED from the
-# dissertation document rather than assumed.
-#
-# Source 1 (the specification) -- Glasgow_MSc_Project___Yixian_2026/mproj.cls:41-47
-#   \usepackage[a4paper, bindingoffset=0.2in, left=3.18cm, right=3.18cm,
-#               top=2.54cm, bottom=2.54cm, footskip=.25in]{geometry}
-#   width  = 21.0cm - 3.18 - 3.18 = 14.64cm = 5.764in, less 0.2in binding offset
-#   height = 29.7cm - 2.54 - 2.54 = 24.62cm = 9.693in
-# Source 2 (the compiler's own record, which settles it) -- mproj.log:618-619
-#   \textwidth=402.095pt   \textheight=700.50723pt   (TeX pt; 1 in = 72.27 pt)
-# The two sources agree, so the text block is known exactly and not estimated.
-TEX_PT_PER_IN = 72.27
-TEXT_W_IN = 402.095 / TEX_PT_PER_IN  # 5.564
-TEXT_H_IN = 700.50723 / TEX_PT_PER_IN  # 9.693
+# The text block is defined ONCE, in _common.py, measured from mproj.cls:41-47
+# and confirmed by the compiler's own record at mproj.log:618-619. It is
+# imported rather than restated: a load-bearing constant written down twice is
+# the defect this check exists to catch.
+sys.path.insert(0, str(HERE))
+from _common import LANDSCAPE, PORTRAIT  # noqa: E402
 
-# An artefact is placeable iff it fits the text block in ONE of two orientations.
-PORTRAIT = (TEXT_W_IN, TEXT_H_IN)
-LANDSCAPE = (TEXT_H_IN, TEXT_W_IN)  # rotated 90 deg, e.g. \begin{sidewaysfigure}
 TOL_IN = 1e-6
 
 

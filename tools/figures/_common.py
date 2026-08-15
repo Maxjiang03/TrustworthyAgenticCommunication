@@ -60,6 +60,25 @@ VERMILLION = "#D55E00"  # RESERVED: the (unused) disagreement chevron
 FONT_MIN_PT = 8  # minimum effective size everywhere (FIGURE_PLAN.md §D)
 
 # ---------------------------------------------------------------------------
+# C2 (Commander ruling): artefact size is fixed at AUTHORING time and is never
+# resolved by scaling, because scaling an 8 pt figure takes its type below 8 pt.
+# The ceiling enforcing that is load-bearing, so it is MEASURED, not assumed:
+#   mproj.cls:41-47    geometry -- a4paper, left/right 3.18cm, top/bottom
+#                      2.54cm, bindingoffset 0.2in
+#   mproj.log:618-619  the compiler's own record --
+#                      \textwidth=402.095pt  \textheight=700.50723pt
+#                      (TeX pt; 1 in = 72.27 pt)
+# The two sources agree: the text block is 5.564 x 9.693 in. Portrait is
+# unusable for every matrix artefact here (5.564 in of width), so landscape is
+# forced by arithmetic and HEIGHT is the binding constraint.
+# ---------------------------------------------------------------------------
+TEX_PT_PER_IN = 72.27
+TEXT_W_IN = 402.095 / TEX_PT_PER_IN  # 5.564
+TEXT_H_IN = 700.50723 / TEX_PT_PER_IN  # 9.693
+PORTRAIT = (TEXT_W_IN, TEXT_H_IN)
+LANDSCAPE = (TEXT_H_IN, TEXT_W_IN)  # rotated 90 deg, e.g. \begin{sidewaysfigure}
+
+# ---------------------------------------------------------------------------
 # R2 -- the partition rule, hard-coded, printed verbatim by every user of it.
 # It uses only existing cell fields plus the sealed per-cell expected values,
 # and it determines NO number's inclusion or exclusion: every group is printed
@@ -195,10 +214,38 @@ def mpl_setup():
 
 
 def save(fig, stem, artefact):
+    """Write PDF + PNG AT THE AUTHORED SIZE, reporting any content overflow.
+
+    C2 requires the authored size to be the delivered size. `bbox_inches="tight"`
+    breaks that: it grows the page to whatever the drawn content happened to
+    need, which makes `figsize` a suggestion rather than a commitment and hides
+    an artefact that does not fit the text block until somebody measures the
+    PDF. (It is how FIG-1 came to be authored at 8.80 x 9.45 in and delivered at
+    9.60 x 11.41 in.) So the canvas is saved exactly as authored and the overflow
+    is PRINTED rather than absorbed -- a figure that overruns its canvas is a
+    layout defect to fix, not a page size to accept.
+    """
     FIGURES_OUT.mkdir(parents=True, exist_ok=True)
     pdf = FIGURES_OUT / f"{stem}.pdf"
     png = FIGURES_OUT / f"{stem}.png"
-    fig.savefig(pdf, bbox_inches="tight", metadata={"CreationDate": None})
-    fig.savefig(png, bbox_inches="tight")
+
+    aw, ah = (float(v) for v in fig.get_size_inches())
+    fig.canvas.draw()
+    tb = fig.get_tightbbox(fig.canvas.get_renderer())
+    over_w = max(0.0, tb.width - aw)
+    over_h = max(0.0, tb.height - ah)
+    fits = [
+        name
+        for name, (mw, mh) in (("portrait", PORTRAIT), ("landscape", LANDSCAPE))
+        if aw <= mw + 1e-6 and ah <= mh + 1e-6
+    ]
+    print_render(artefact, "canvas.authored_in", f"{aw:.3f} x {ah:.3f}")
+    print_render(artefact, "canvas.content_overflow_in", f"{over_w:.3f} w, {over_h:.3f} h")
+    print_render(artefact, "canvas.placeable", fits[0] if fits else "NO -- exceeds the text block")
+    if over_w > 0.01 or over_h > 0.01:
+        print_render(artefact, "canvas.CLIPPED", "drawn content exceeds the authored canvas")
+
+    fig.savefig(pdf, metadata={"CreationDate": None})
+    fig.savefig(png)
     print(f"WROTE {artefact} | {pdf}")
     print(f"WROTE {artefact} | {png}")

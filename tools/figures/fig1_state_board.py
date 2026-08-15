@@ -160,7 +160,13 @@ def main():
     mpl_setup()
     ncol = len(ARM_ORDER)
     cw, rh = 0.50, 0.30  # inches per cell
-    left, top, right, bottom = 2.45, 1.20, 1.85, 1.95
+    # The LEFT gutter carries the E.4 row labels, the longest of which
+    # ("F4 sensitive egress, no declassification [monitor on]") runs past a
+    # 2.45 in gutter and was drawn off the canvas -- the content overran by
+    # 0.609 in on the left and 0.197 in below. Both were invisible for as long
+    # as save() used bbox_inches="tight" and silently grew the page to cover
+    # them. Widened to hold what is actually drawn.
+    left, top, right, bottom = 3.10, 1.32, 1.85, 2.30
     fig_w = left + ncol * cw + right
     n_layout = len(laid_out)
     fig_h = top + n_layout * rh + bottom
@@ -400,7 +406,10 @@ def main():
         )
     for arm in ARM_ORDER:
         print_render(ARTEFACT, f"per_arm_scored.{arm}", per_arm_scored[arm])
-    yb = cy(n_layout - 1) - 0.22
+    # The per-arm strip hangs just under the grid. It must clear the bottom text
+    # blocks, which stack upward from the canvas floor -- both edges are printed
+    # below so a future collision shows up in stdout instead of only in the ink.
+    yb = cy(n_layout - 1) - 0.10
     for j, arm in enumerate(ARM_ORDER):
         ax.text(
             cx(j) + cw / 2,
@@ -457,32 +466,37 @@ def main():
     )
     import textwrap
 
-    wrap_chars = 138  # ~8.8 in at 8 pt DejaVu Sans
-    ax.text(
-        0.08,
-        1.38,
-        "\n".join(textwrap.wrap(totals, wrap_chars)),
-        fontsize=FONT_MIN_PT,
-        color=INK,
-        va="top",
-    )
-    ax.text(
-        0.08,
-        1.02,
-        "\n".join(textwrap.wrap(disclosure, wrap_chars)),
-        fontsize=FONT_MIN_PT,
-        color=BLUE,
-        va="top",
-    )
-    ax.text(0.08, 0.70, "▲", fontsize=FONT_MIN_PT, color=VERMILLION, va="top")
-    ax.text(
-        0.26,
-        0.70,
-        "\n".join(textwrap.wrap(legend, wrap_chars - 3)),
-        fontsize=FONT_MIN_PT,
-        color=INK,
-        va="top",
-    )
+    # The three bottom blocks used to sit at hand-tuned y constants, so the
+    # legend ran off the bottom of the canvas whenever its wrapped line count
+    # grew -- and bbox_inches="tight" hid that by enlarging the page. Stack them
+    # UPWARD from the canvas floor instead, driven by the line counts actually
+    # produced, and print the gutter the text needs so a mismatch against the
+    # authored `bottom` is visible rather than silent.
+    wrap_chars = 138  # ~7.7 in at 8 pt DejaVu Sans; canvas holds 9.3 in
+    line_h = FONT_MIN_PT * 1.26 / 72.0  # 8 pt on ~10 pt leading, in inches
+    pad = 0.10
+    blocks = [  # bottom-most first
+        (0.26, textwrap.wrap(legend, wrap_chars - 3), INK, "▲"),
+        (0.08, textwrap.wrap(disclosure, wrap_chars), BLUE, None),
+        (0.08, textwrap.wrap(totals, wrap_chars), INK, None),
+    ]
+    y = pad
+    for x, lines, colour, bullet in blocks:
+        y += line_h * len(lines)
+        if bullet:
+            ax.text(0.08, y, bullet, fontsize=FONT_MIN_PT, color=VERMILLION, va="top")
+        ax.text(x, y, "\n".join(lines), fontsize=FONT_MIN_PT, color=colour, va="top")
+        y += pad
+    print_render(ARTEFACT, "layout.bottom_gutter_required_in", f"{y:.3f}")
+    print_render(ARTEFACT, "layout.bottom_gutter_authored_in", f"{bottom:.3f}")
+    strip_floor = yb - line_h
+    print_render(ARTEFACT, "layout.per_arm_strip_floor_in", f"{strip_floor:.3f}")
+    print_render(ARTEFACT, "layout.bottom_text_ceiling_in", f"{y - pad:.3f}")
+    if strip_floor < y - pad:
+        raise PresentationError(
+            f"the per-arm strip (floor {strip_floor:.3f} in) overlaps the bottom "
+            f"text blocks (ceiling {y - pad:.3f} in); increase `bottom`"
+        )
 
     save(fig, "fig1_state_board", ARTEFACT)
 
