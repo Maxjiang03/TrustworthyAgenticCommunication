@@ -55,6 +55,33 @@ printed to stdout with its row identifier at every build (`RENDER FIG-1 |
 margin.<row> = ...`) so the annotation is verifiable from output, not from
 description.
 
+[DESIGN] **Third named exception — sealed-decision invocation.** A script that
+INVOKES a sealed decision function may also live outside the seal, under
+`tools/`, provided every one of these holds: (i) it implements no selection,
+exclusion, binning, or statistical logic — all of it stays inside the sealed
+module; (ii) every parameter is READ from a frozen source, never hard-coded or
+chosen (for the row-1 decision: `margin_ms` from
+`src/harness/frozen_parameters.py` `equivalence_margin_ms()`, which parses the
+sealed `docs/frozen_parameters.md` row 1; `seed` and `resamples` from the
+`plan` block of `results/raw/latency-pilot.json`); (iii) it prints every input
+and every emitted field to stdout; (iv) it refuses to overwrite an existing
+result, so a second run is a recorded decision and never a default; and (v) a
+pre-commitment entry in `DEVIATIONS.md` is committed BEFORE the run, so git
+history — not a date inside a file — establishes that the reporting commitment
+predates the verdict.
+
+Rationale, recorded rather than assumed: the integrity control §J.3 item 12
+seeks ("results cannot be massaged post hoc") is delivered here by the sealed
+decision logic plus the git-provable pre-commitment, not by hashing the
+invocation. Sealing the invocation instead would place, in a v0.9 manifest,
+code written AFTER the security results already existed — the very shape the
+seal exists to exclude. A further structural fact: `analysis/` may import
+nothing from `src/` (the no-measurement guarantee, `analysis/latency.py:370`),
+while the frozen margin accessor lives in `src/harness/`, so a runner inside
+`analysis/` could only hard-code the margin or duplicate its parser. The first
+instance of this class is `tools/run_row1_decision.py`, governed by
+`DEVIATIONS.md` D-009. (Commander ruling, 2026-08-15.)
+
 [DESIGN] **The one non-JSON datum.** `campaign-confirmatory.json` carries no run
 timestamp. TAB-0 prints the run date `2026-08-07` from the claims record
 (`DEVIATIONS.md` D-005) and labels that provenance on the artefact and in its
