@@ -131,6 +131,43 @@ because they are not optional): PILOT corpus, not confirmatory; no CPU affinity
 pinning on this pass; the G-3 5 ms threshold is out of scope and appears on no
 artefact here; ADR 0041 bars any per-mechanism cost for the exchange.
 
+**SECOND RUN — authorised by the Commander 2026-08-15, and recorded HERE BEFORE
+IT RUNS, as clause 2 requires.**
+
+*Reason.* Run 1 did not apply the pre-registered warm-up discard. The evidence is
+closed above and is not a matter of interpretation: `docs/frozen_parameters.md`
+row 1 states the sampling protocol as *"warm-up discarded"*; the plan block names
+the mechanism (`warmup_discarded_by: analysis.latency.discard_warmup`) and its
+parameter (`warmup_per_batch: 5`); and the arithmetic closes — 3 batches × 5 = 15,
+225 − 15 = 210 = `kept_after_warmup_per_configuration`. Run 1 reported n=225.
+The omission is in the composition root, not in the sealed layer.
+
+*What changes, exactly.* One call is added to `tools/run_row1_decision.py`:
+
+    samples = discard_warmup(samples, per_batch=plan["warmup_per_batch"])
+
+`discard_warmup` is the sealed function the plan block names. `per_batch` is READ
+from the frozen plan block, not chosen here. **Nothing else changes** — not the
+corpus, the margin, the seed, the resample count, the phase selection, the span
+definition, the refusal-path filter, or the decision rule.
+
+*What does not change.* Clause 2 governs: **the first run's verdict, `stands`,
+remains the reported one.** Run 2 is recorded alongside it, never in place of it.
+Run 1's artefact `results/tables/results-latency-pilot.json` is not overwritten,
+not edited and not deleted; run 2 writes to a distinct path so both records
+survive independently.
+
+*Pre-commitment for run 2, written before its verdict is seen.* Run 2's verdict
+is reported exactly as the sealed `Decision` object returns it, whether `stands`
+or `retracted`. **If run 2 returns `retracted` while run 1 returned `stands`,
+both are reported in the body of the results chapter with equal prominence, and
+the disagreement is presented as the finding it would be** — not resolved in
+favour of either, and not relegated to a footnote. No third run is taken to break
+a tie.
+
+*Run 2 result — recorded on exit.*
+
+
 ---
 
 ## D-008 — 2026-08-07 — The seventh G-3 median changed an auxiliary finding, and the v0.8 seal STOPPED on it
