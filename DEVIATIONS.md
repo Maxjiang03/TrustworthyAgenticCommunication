@@ -27,6 +27,70 @@ should expect from the sealed record.
 
 ---
 
+## D-011 — Pre-commitment: the F3 `expired_token` extension
+
+**Status:** OPEN — committed BEFORE any fixture, any code, and any run.
+**Date:** 2026-08-16.
+**Authority:** Commander ruling of 2026-08-16 (A + C; B declined for this
+dissertation).
+
+**Precedent this follows, verified from git rather than recalled.** D-009's
+pre-commitment was committed at `6da1570`, 2026-08-15 22:43:49, containing
+`DEVIATIONS.md` alone, 48 insertions, no verdict and no number — the three
+occurrences of `stands`/`retracted` in it are the pre-commitment naming both
+outcomes symmetrically. The runner did not exist until `05ff409` at 22:52:20,
+and the verdict landed at `2284837`, 22:55:36. The commitment therefore could not
+have been shaped by anything the code or the data revealed. This entry is
+committed on the same terms.
+
+**Scope: ONE subcase.** The ruling approved two. Pre-build verification
+established that `first_use_body_mutation` cannot be built as a credential fault
+(see D-010), so it stays with gate G-14 C2, alongside
+`dpop-captured-proof-replay` with G-14 C1. `expired_token` was the only one of
+the three with no carrier at all, and it is the one that is buildable.
+
+**Pre-commitment.**
+
+1. The extension is a **separate, once-only campaign**.
+   `results/raw/campaign-confirmatory.json` is not re-run, not overwritten and
+   not superseded. Its cells and its agreement remain the primary result, and the
+   extension is **never summed with it** in any artefact.
+2. The `F3 expired token` §E.4 row — `A A B B B B B B B` — is **frozen** and is
+   not edited. An instance is added; the prediction is not. If the measured
+   outcome contradicts the frozen prediction, that disagreement is **reported as
+   the finding it is**, and the matrix is not amended to match it.
+3. The extension row is reported at a **distinct evidence class** in every
+   artefact and in prose, and never inside a primary-campaign count. The fact
+   that it was **instantiated after the primary results were known** travels with
+   every extension number.
+4. Whatever the extension measures is reported as returned, including a result
+   that weakens this study's own position.
+5. The two subcases NOT built are stated in the form the ruling fixes:
+   instantiation was **evaluated and judged infeasible**, on evidence, **after
+   the primary results were known** — not left to be inferred from a coverage
+   fraction, and not written so it reads as a pre-registration decision. `B3⁺`'s
+   dependence on G-14 C1 is restated in the same place.
+6. F3 coverage becomes **3 of 5** subcases once the extension runs, and that
+   fraction replaces 2/5 on F3-bearing artefacts that include the extension. The
+   **primary campaign's own F3 coverage remains 2 of 5** and is never restated as
+   3 of 5: the third instance is not one of its cells.
+7. **The bias-guard status of the extension instance is disclosed, whichever
+   corpus placement is chosen.** The structural-matching test
+   (`tests/test_confirmatory_corpus.py`) pairs the pilot and confirmatory corpora
+   only. An extension instance placed in a third corpus root is therefore outside
+   that guard: no matched pilot sibling, no identical-subcase-set assertion, no
+   paired `relation`/`is_benign` check. The guard exists because instances
+   authored after watching a corpus behave are where an author would, without
+   meaning to, pick easier or harder cases — and this instance is authored after
+   the **primary results** are known, which is a stronger version of exactly that
+   hazard. Its absence is stated wherever the extension result is stated.
+
+**On exit.** When the extension runs, this entry is updated in the same commit as
+the committed output with the outcome as returned, the commit hash of the run,
+and the artefact path. The pre-commitment text above is not edited.
+
+---
+
 ## D-010 — A detailed, sourced, wrong report would have been executed; the scoped-negative rule is what stopped it
 
 **Status:** CLOSED on the day it opened.
