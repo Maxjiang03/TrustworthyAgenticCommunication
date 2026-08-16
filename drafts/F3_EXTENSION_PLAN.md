@@ -1,6 +1,6 @@
 # F3 corpus extension — Phase 0 report and feasibility verdict
 
-**Status: Phase 2 HALTED before code. The Option A change surface is five sealed files, not one; the estimate that informed the ruling was wrong.**
+**Status: SPLIT ruled. `expired_token` DROPPED (R2 accepted). `first_use_body_mutation` costs ONE file (Q10 traced) but raises a threat-model question awaiting ruling. No code written.**
 *Scope: ONE fixture, `expired_token`. F3 coverage 2/5 -> 3/5, two subcases unbuilt.*
 *(The original status was RED on all three; that verdict was wrong and is corrected in section 0.)*
 Date: 2026-08-16. Phase 0 only; no code written, no artefact touched, no campaign run.
@@ -855,6 +855,158 @@ its cost and where it lands. Three ways forward:
 
 I recommend **2**, and I am not proceeding on my own reading of your ruling when
 the premise it rested on has moved.
+
+---
+
+## SPLIT ruling — S1 answered, R2 accepted, Q9/Q10 traced
+
+**Prohibition observed.** I did not read `results/raw/campaign-confirmatory.json`,
+`results/tables/`, or `results/_ledger/` in this phase.
+
+### S1 — `first_use_body_mutation` was CUT, and I failed to re-declare it
+
+Plainly: **cut**, not forgotten and not silently assumed. It was cut in the
+Q8/Q9 turn on stated evidence (`specialist.py:58-77`), recorded in commit
+`d23fbcc`, and I answered S1 on it in the following turn with that evidence.
+
+What went wrong is narrower and is still mine: the Phase-2 halt report traced
+only `expired_token` and wrote *"the fixture is still the right one"* —
+singular — without restating that the set had already gone from two to one. A
+scope that has been narrowed must be re-declared every time the scope is touched
+again, not carried silently on the assumption the earlier declaration is still in
+view. That is the second scope question passed over, and the rule I am adopting
+from it is stated as such.
+
+**And the cut was wrong on its cost.** See Q10.
+
+### R2 — accepted. `expired_token` is not built.
+
+Your reason 1 is the strongest and I had not noticed it. Verified:
+
+```
+docs/PRE_REGISTRATION.md:210  | F3 audience mismatch (OAuth neg. control) | A | A | B | B | B | B | B | B | B |
+docs/PRE_REGISTRATION.md:211  | F3 expired token (OAuth neg. control)     | A | A | B | B | B | B | B | B | B |
+```
+
+The two rows are **byte-identical across all nine arms**. `audience_mismatch` is
+already populated, so `expired_token` is a second instance of one predicted
+class, not a new class. Its marginal content is whether an arm validates `exp` as
+well as `aud` — an OAuth-library question, not a cross-protocol boundary
+question.
+
+I am not arguing to reinstate it. Reasons 2 and 3 stand on their own, and reason
+1 makes the cost/value ratio clear without them.
+
+**The deterministic-expiry hazard, recorded in case this is ever revisited.** A
+grant with a small positive `lifetime_seconds` expires partway through a pass,
+which is nondeterministic and reproduces exactly the apparatus-timing defect
+`clock_refusal` was built to catch (`campaign.py:500-517`). Any future
+`expired_token` fixture must back-date `exp` so the token is already expired when
+minted, and must not depend on how long the pass takes to reach the cell.
+
+### Q9 — answered definitively: no snapshot. The mutation IS seen.
+
+`_invocation_binding_ok(self, p, tool, arguments, state)`
+(`src/sut/authz/capability_path.py:726`) reads **both** sides at decide time:
+
+- `p` is the staged presentation — the object `apply_to_presentation` has already
+  modified, since it runs after `arm.present(...)` returns (`runner.py:805`) and
+  before `arm.decide(...)` (`runner.py:753`);
+- `arguments` are the live arguments from the boundary dispatch.
+
+```python
+if inv["canonical_request_digest"] != h_jcs(dict(arguments)):   # :742
+```
+
+Neither operand is a pre-mutation snapshot. A mutation to the staged INV is
+visible to the check, and a mutation to the live arguments would be too. **The
+check point does not bypass, and cannot yield a false B or false A by that
+route.**
+
+### Q10 — traced, not estimated: `credential_faults.py` ONLY. One file.
+
+You were right in R1, and my cut was wrong on cost. I generalised from
+`expired_token`'s supply chain to a fixture that has no supply chain.
+
+`first_use_body_mutation` needs **nothing from the AS**, because it needs no
+externally-minted material. Everything is already in the arm:
+
+| requirement | already present | evidence |
+|---|---|---|
+| the arm's own holder key | in the provisioning setup dict | `runner.py:364-367` mints `holder_privates` for `holder-supervisor/-specialist/-worker` |
+| reading it from inside a fault | already done | `_rebind_inv` reads `setup["holder_privates"]["holder-specialist"]`, `credential_faults.py:198-201` |
+| re-sealing an INV | already done | `seal(INV_TAG, payload, Ed25519PrivateKey.from_private_bytes(raw))`, `:219` |
+| writing it back to the staged presentation | already done | `arm._staged = dataclasses.replace(staged, invocation_assertion=...)`, `:217-220` |
+| the field to change | `payload["canonical_request_digest"]` | read by the boundary at `capability_path.py:742` |
+
+`_rebind_inv` (`:180-220`) already performs the whole operation and *changes
+exactly one field*. A body-mutation fault is the same function changing a
+different field. The only genuinely new import is `h_jcs`, from the same
+`verifier` package the file already imports `access_token_hash` and
+`INV_TAG, seal` from.
+
+**No AS, no driver, no plumbing, no new parameter.** One sealed file, and the
+established pattern is not an analogy this time — it is the same function.
+
+### But there is a substantive objection, and it is not cost
+
+Building it this way means the fault **re-signs the INV with the holder's private
+key**. That is what makes the mismatch: proof-over-X, request-as-Y.
+
+§D.2's attack is the mirror image — the attacker alters the **request** after the
+holder signed it, reusing the holder's genuine untouched proof. G-14 C2 builds it
+that way and needs no key: `arm.decide(MUTATED_TOOL, MUTATED_ARGS)` after arming
+(`smoke/g14/fixture.py:161-164`).
+
+Two consequences follow, and both are real:
+
+1. **The construction assumes the attacker holds the holder key.** That is the
+   compromised-holder premise, which Part D.1 places explicitly out of scope —
+   *"B3 does not claim to stop a compromised holder from misusing authority it
+   legitimately holds"* (`PRE_REGISTRATION.md:157`) — and which H4b was left NOT
+   DETERMINED for want of staging. A fixture that quietly assumes it would be
+   measuring inside a premise the study says it does not model.
+2. **The oracle would record the difference.** With the request unchanged,
+   `observation_was_tampered` reads **False**
+   (`oracle/predicates.py:488-497`), where §D.2's attack gives True. The §E.4
+   block/admit prediction `A A A A A A A B B` is still reproduced — that
+   predicate is *"reported ALONGSIDE `realized_harm_F3`, never folded into it"* —
+   so the agreement scoring is unaffected. But the extension cell would carry an
+   auxiliary field saying the request was not tampered with, in a row named
+   `body-mutation`.
+
+The counter-reading, which I do not think is wrong: `_rebind_inv` already uses
+the holder key, and does so precisely to *avoid* measuring the wrong thing —
+keeping the token as the only attack surface. On that reading the key use is
+apparatus, not modelled attacker capability, and what the fixture measures is
+what the row asks: does the boundary bind the invocation to the body.
+
+**I am not cutting this one.** I have cut two subcases and been wrong about the
+cost of one of them; this is a judgement about threat-model fidelity, which is
+yours. The cost question is settled — one file — and the question left is whether
+a proof-side construction is an acceptable stand-in for a request-side attack, or
+whether that lands `first_use_body_mutation` in the same place as replay: a row
+whose faithful instantiation the campaign cell shape cannot express.
+
+### Consequences of R2 carried forward
+
+F3 coverage with the extension is **3/5** if `body_mutation` is built, and stays
+**2/5** if it is not. The primary campaign's own F3 remains **2/5 permanently**
+(D-011 clause 6).
+
+**Two unbuilt subcases, two different kinds of gap, never written as one:**
+
+- `dpop-captured-proof-replay` — instantiation **evaluated and judged
+  infeasible**, evidenced at `smoke/g14/fixture.py:147-152`, the judgement made
+  **after the primary results were known**. Carrier: G-14 C1.
+- `expired_token` — instantiation **evaluated and judged not worth its cost**,
+  because its §E.4 row is byte-identical to the already-populated
+  `audience_mismatch` row (`PRE_REGISTRATION.md:210-211`) and building it would
+  have modified the AS provisioning and the campaign driver. **Not infeasible —
+  declined.** Carrier: **none**, stated plainly.
+
+D-011 clause 5 covers the first. It needs a second sentence for the second, whose
+reason is not infeasibility and must not be blurred into it.
 
 ---
 

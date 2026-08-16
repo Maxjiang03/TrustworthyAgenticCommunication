@@ -112,15 +112,27 @@ the three with no carrier at all, and it is the one that is buildable.
    every extension number.
 4. Whatever the extension measures is reported as returned, including a result
    that weakens this study's own position.
-5. The two subcases NOT built are stated in the form the ruling fixes:
-   instantiation was **evaluated and judged infeasible**, on evidence, **after
-   the primary results were known** — not left to be inferred from a coverage
-   fraction, and not written so it reads as a pre-registration decision. `B3⁺`'s
-   dependence on G-14 C1 is restated in the same place.
-6. F3 coverage becomes **3 of 5** subcases once the extension runs, and that
-   fraction replaces 2/5 on F3-bearing artefacts that include the extension. The
-   **primary campaign's own F3 coverage remains 2 of 5** and is never restated as
-   3 of 5: the third instance is not one of its cells.
+5. The subcases NOT built are stated in the form the ruling fixes, and the two
+   kinds of gap are **never written as one** (Commander ruling, 2026-08-16):
+   - `dpop-captured-proof-replay` — instantiation was **evaluated and judged
+     INFEASIBLE**, on evidence, **after the primary results were known**: it
+     requires a single cell to make two boundary decisions, and this study's
+     measurement unit is one cell, one decision. Carrier: gate G-14 C1, and
+     `B3⁺`'s dependence on it is restated in the same place.
+   - `expired_token` — instantiation was **evaluated and judged NOT WORTH ITS
+     COST**, also after the primary results were known. **This is not
+     infeasibility and is not written as such.** Its §E.4 row is byte-identical
+     across all nine arms to the already-populated `F3 audience mismatch` row
+     (`docs/PRE_REGISTRATION.md:210-211`), so it is a second instance of one
+     predicted class rather than a new class; and building it would have
+     required modifying the AS provisioning and the campaign driver, the code
+     that produced the primary campaign. Carrier: **none**, stated plainly.
+   Neither is written so it reads as a pre-registration decision.
+6. F3 coverage becomes **3 of 5** subcases **if and only if** an extension
+   instance is actually built and run, and that fraction then replaces 2/5 on
+   F3-bearing artefacts that include the extension. If none is built it stays
+   2/5. The **primary campaign's own F3 coverage remains 2 of 5 permanently** and
+   is never restated as 3 of 5: an extension instance is not one of its cells.
 7. **The bias-guard status of the extension instance is disclosed, whichever
    corpus placement is chosen.** The structural-matching test
    (`tests/test_confirmatory_corpus.py`) pairs the pilot and confirmatory corpora
