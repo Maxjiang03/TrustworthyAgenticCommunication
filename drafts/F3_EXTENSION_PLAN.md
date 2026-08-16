@@ -484,6 +484,70 @@ ruling.
 
 ---
 
+---
+
+## §C — the Q1 collision is NOT forced, and the way out is cleaner than either option offered
+
+The earlier report presented one path: add the new subcase to **both** corpora,
+and change the four hardcoded `13` constants in the file the prohibition names.
+That framing was incomplete.
+
+`tests/test_confirmatory_corpus.py` hardcodes exactly two directories —
+`PILOT_DIR` and `CONFIRMATORY_DIR` (`:39-40`) — and every assertion in the file
+reads only those two through `_sealed(directory)`. Nothing globs `fixtures/`
+broadly. **An extension corpus at a third root is invisible to it.** All four
+`13` constants stay true, the structural-match assertions still compare 13
+against 13, and both existing corpora stay byte-identical — including the pilot
+corpus that fifteen gates were adjudicated against.
+
+The run path supports it with **no sealed-code edit at all** [M]:
+
+| need | provided by |
+|---|---|
+| a third corpus directory | `run_campaign(corpus_root=...)` — `campaign.py:820` |
+| only the new scenario runs | `run_campaign(scenarios=...)` — `campaign.py:810` |
+| a distinct output path | `out=` — `campaign_driver.py:201,291` |
+| once-only on that path | `refuse_if_written(destination)` — `campaign_driver.py:202`, re-checked `:281` |
+| the mode is accepted | `check_run_mode` refuses only a corpus under `fixtures/pilot/` — `campaign.py:245` |
+
+An unsealed composition root under `tools/`, on the ADR 0048 third-exception
+pattern already used by `tools/run_row1_decision.py`, can pass all four. The only
+covered change left is the new fixture files themselves, which land under
+`fixtures/` and are picked up by the catch-all coverage rule
+(`build_manifest.py:60-61`) — so v0.9 adds entries and **modifies no existing
+covered file**.
+
+**The cost, stated rather than buried.** The structural-matching test is the
+**bias guard**, and its own docstring says why: *"Instances authored after
+watching the pilot behave are exactly where an author would — without meaning to
+— pick easier or harder cases."* A third-root instance sits outside it: no
+matched pilot sibling, no identical-subcase-set assertion, no paired
+`relation`/`is_benign` check. And this instance is authored after the **primary
+results** are known, which is a stronger form of the same hazard than the one the
+guard was built for.
+
+So the choice is not "edit the test or not". It is:
+
+- **Path 1 — third corpus root.** No test edit, no prohibition collision, both
+  existing corpora byte-identical, no sealed file modified. The instance is
+  outside the bias guard, and that absence must travel with every extension
+  number. Committed as D-011 clause 7.
+- **Path 2 — add to both corpora.** The bias guard applies in full. Four
+  constants in the named file change, and both corpora — including the one the
+  gate record describes — stop being byte-identical to what was adjudicated.
+
+**I would put Path 1 to you.** The guard it forgoes cannot actually protect this
+instance: a matched sibling authored in the same session, after the same results,
+by the same author, satisfies the assertion without supplying the independence
+the assertion is a proxy for. Path 2 would buy the appearance of the guard and
+not the guard. Path 1 forgoes it openly and discloses it, which is the honest
+version of the same position — and it leaves the primary campaign's corpus, and
+the fifteen gate adjudications that describe it, untouched.
+
+This is a ruling I am not making. Both paths are live until you rule.
+
+---
+
 ## 3. Sections B, C, D — not written, and why
 
 The task's §B (fixture specifications), §C (extension execution design) and §D
