@@ -1,6 +1,6 @@
 # F3 corpus extension — Phase 0 report and feasibility verdict
 
-**Status: PATH 1 ruled. S1 resolved, P1a delivered, P1b judged, P1c specified. Phase 2 authorised.**
+**Status: Phase 2 HALTED before code. The Option A change surface is five sealed files, not one; the estimate that informed the ruling was wrong.**
 *Scope: ONE fixture, `expired_token`. F3 coverage 2/5 -> 3/5, two subcases unbuilt.*
 *(The original status was RED on all three; that verdict was wrong and is corrected in section 0.)*
 Date: 2026-08-16. Phase 0 only; no code written, no artefact touched, no campaign run.
@@ -765,6 +765,96 @@ v0.7-era gate record describes.
   `seal_version` field, and it is write-once and committed, so it is **not
   retro-stamped**. The mapping is stated in the artefacts and derivable from the
   commit each run was executed at; it is not read back out of the primary JSON.
+
+---
+
+---
+
+## Phase 2 — HALTED before any code. The change surface is five sealed files, not one.
+
+**Prohibition observed.** In this phase I did not read
+`results/raw/campaign-confirmatory.json`, `results/tables/`, or
+`results/_ledger/`.
+
+I told you Option A was *"new entries in `FAULTS` plus their `_restage_*`
+implementations in ONE sealed file, following a pattern that file already
+implements five times."* That is wrong. I had traced the fault **seam** and not
+the **token supply chain** behind it.
+
+### Why one file cannot do it
+
+`expired_token` must present a token that is **validly signed and simply
+expired**. A locally forged one fails at the signature and scores as
+`invalid_credential`, which is a different attack. So the token must come from
+the AS — and the harness is barred from importing it: `runner.py:490` records the
+constraint keeping *"the harness from importing `src/sut/oauth_as/`"*. The AS
+signing key is seed-derived (`src/sut/oauth_as/keys.py:75-77`) but lives on the
+far side of that boundary.
+
+The established route is the one `audience_mismatch` uses: the AS mints an
+**additional named grant** and the driver hands the resulting token to the
+injector. That route is five files wide.
+
+| # | file | change | sealed? |
+|---|---|---|---|
+| 1 | `src/harness/as_process.py` | add an `expired` additional grant (`:152`, `:180`, `:213-219`) | **yes** — `src/` |
+| 2 | `src/harness/campaign_driver.py` | fetch `agent-supervisor:expired`, pass it down (cf. `:234-240`, `:263`) | **yes** |
+| 3 | `src/harness/campaign.py` | plumb the parameter through `run_campaign` (cf. `:822`, `:949`) | **yes** |
+| 4 | `src/harness/runner.py` | plumb to `apply_to_presentation` (cf. `:595`, `:810`) | **yes** |
+| 5 | `src/harness/credential_faults.py` | `FAULTS` entry + `_restage_token` branch + parameter | **yes** |
+
+One thing goes the easy way: `src/sut/oauth_as/__main__.py:115` already passes
+`lifetime_seconds=extra.get("lifetime_seconds", spec.get("lifetime_seconds"))`
+per additional grant, so the AS needs no change — the expiry is document data.
+
+### Why this bears on your ruling rather than just on effort
+
+You declined B because it *"re-founds the bookkeeping that already produced
+80/0"*, and accepted A because *"A leaves all of that untouched."* On the
+corrected surface, **A does not leave all of it untouched**: files 1 and 2 are
+the AS provisioning and the campaign driver — the code that produced the primary
+campaign.
+
+The honest counter-argument, which I believe is correct but have **not**
+demonstrated: every change is **purely additive**. A new additional grant is
+minted only if the driver requests it; a new `FAULTS` entry fires only for a
+scenario that declares it, and every existing scenario declares `none` or one of
+the five. The primary campaign committed JSON is write-once and unchanged either
+way, and it remains regenerable by checking out `17e11c9`, where seal v0.7 still
+describes the code exactly.
+
+That argument should be **demonstrated, not asserted** — the cheapest
+demonstration is that the full suite passes unchanged and that a re-run of the
+existing scenarios at the new code produces byte-identical cells. I have not run
+either, and on a third consecutive wrong estimate I am not asking you to take my
+word for the fourth.
+
+### A second hazard, in the fixture itself
+
+The expired token must be **deterministically** expired, not short-lived. A grant
+with a small positive `lifetime_seconds` expires at some point during the pass,
+which is nondeterministic and reproduces precisely the apparatus-timing defect
+`clock_refusal` was built to catch (`campaign.py:500-517`). The fixture must
+back-date `exp` so the token is already expired when minted, and the run must not
+depend on how long the pass takes to reach the cell.
+
+### What I need from you
+
+The scope is unchanged and the fixture is still the right one. What changed is
+its cost and where it lands. Three ways forward:
+
+1. **Proceed as specified**, with the additive-only property demonstrated before
+   the reseal — full suite green, plus byte-identical re-run of the existing
+   scenarios at the new code.
+2. **Proceed, and treat files 1-2 as the finding** — record in DEVIATIONS that
+   the extension modified the primary campaign provisioning and driver, with the
+   demonstration attached, so a reader is told rather than left to discover it
+   from a manifest diff.
+3. **Reconsider A** now that its surface is known, and leave `expired_token` with
+   the disclosure it already has: no carrier, stated plainly.
+
+I recommend **2**, and I am not proceeding on my own reading of your ruling when
+the premise it rested on has moved.
 
 ---
 
