@@ -27,6 +27,49 @@ should expect from the sealed record.
 
 ---
 
+## D-010 — A detailed, sourced, wrong report would have been executed; the scoped-negative rule is what stopped it
+
+**Status:** CLOSED on the day it opened.
+**Date:** 2026-08-16.
+**Authority:** Commander ruling of 2026-08-16.
+
+**What happened.** The F3 extension feasibility report concluded that all three
+unpopulated F3 subcases were impossible as campaign cells, and recommended
+extending a gate instead. Two of those three findings were wrong.
+
+`src/harness/credential_faults.py` — *"The attacker between the arm and the
+resource server"* — is exactly the signed-versus-presented seam the report said
+did not exist. Its `apply_to_presentation` corrupts what the arm staged, runs at
+`runner.py:805`, and is already scenario-selectable through a `credential_fault`
+field read at `campaign.py:901`. Five faults already use it. Separately, the
+report claimed `clock_refusal` would make an expired-token fixture unscorable;
+that guard inspects the **provisioning** setup dict, while a restaged token lives
+on `arm._staged`. Two different objects.
+
+**The failure mode, which is the point of this entry.** A report can be
+detailed, sourced to file:line, internally consistent, and wrong — and in that
+combination it does not look like a report that needs checking. It would have
+been executed. What stopped it was not review and not a second opinion: it was
+the rule, adopted after the CLAIMS_LEDGER incident, that a negative conclusion
+must state the scope over which it was established. That rule looked like
+formalism when it was adopted.
+
+It is now the only thing that has worked, and it worked **twice**. The same
+declared residual that caught the error above also caught a second one: the
+corrected report then claimed `first_use_body_mutation` was buildable as a
+credential fault, and the pre-build verification the Commander demanded
+(Q8/Q9) found that a credential fault can move only the signed side of the
+boundary, never the presented side — so that construction would have produced a
+strong arm blocking a request the independent oracle certifies as untampered.
+
+**Standing rule, restated because it earned it.** A "does not exist" or "cannot
+be done" conclusion must name the scope over which it was established. A negative
+without a stated scope is not a finding; it is an assumption wearing one.
+
+**Nothing was built on either wrong finding, so nothing needs unwinding.**
+
+---
+
 ## D-009 — Pre-commitment: reporting the row-1 lightweight claim verdict
 
 **Status:** OPEN — written BEFORE the analysis is run.
