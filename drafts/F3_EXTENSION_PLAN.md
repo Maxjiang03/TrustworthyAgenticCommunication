@@ -1,6 +1,6 @@
 # F3 corpus extension — Phase 0 report and feasibility verdict
 
-**Status: AMBER. Two subcases feasible, one not. Phase 1 B/C/D awaiting your ruling.**
+**Status: ONE subcase buildable (`expired_token`). Ruling A+C received; Q8/Q9 narrowed A to one of its two members.**
 *(The original status was RED on all three; that verdict was wrong and is corrected in section 0.)*
 Date: 2026-08-16. Phase 0 only; no code written, no artefact touched, no campaign run.
 
@@ -326,11 +326,21 @@ brackets exactly one `arm.decide`. I would not bundle it with Option A; it is a
 different decision with a different risk profile, and it should be ruled on
 separately rather than carried along.
 
-**Option C — leave the replay row to G-14 C1, as now.** The pre-registration
-already states plainly that `B3+` ladder position rests on gate evidence and
-that a reader may weigh gate evidence differently. Option A would close the two
-subcases that currently have carriers, and leave the one that already has the
-most explicit disclosure exactly where it is.
+**Option C — APPROVED, with the wording the ruling requires.** C is no longer
+"this row was not instantiated". The sentence the results chapter carries is:
+
+> Instantiation of `dpop-captured-proof-replay` as a campaign cell was
+> **evaluated and judged infeasible**, because it requires a single cell to make
+> **two boundary decisions** — verified at `smoke/g14/fixture.py:147-152`, where
+> the gate arms the arm once and then calls `arm.decide(TOOL, ARGS)` twice at
+> the same injected instant — and this study's measurement unit is one cell, one
+> decision. **This judgement was made after the primary results were known**, and
+> is therefore not a pre-registration decision. The row's evidence remains gate
+> G-14 C1.
+
+Both halves are load-bearing: *verified rather than assumed*, and *after the
+primary results were known*. Neither may be dropped when the sentence is
+compressed for the page.
 
 **What I would put to you:** Option A **plus** Option C — instantiate the two
 that are cheap and honest, and leave the replay row to the gate that was built
@@ -341,6 +351,138 @@ limitation is already pre-registered in the strongest terms in the document.
 I am not confident enough in Option B cost to recommend for or against it
 without reading `src/sut/` and the `Specialist` drive loop, which I have not
 done.
+
+## §B — Pre-build verification: Q8, Q9, and a second correction
+
+**Prohibition 3 observed.** In answering these I did not read
+`results/raw/campaign-confirmatory.json`, `results/tables/`, or
+`results/_ledger/`. Everything below is from `src/`, `tests/`, `smoke/` and the
+frozen documents. The prior-session disclosure in §0 still stands and is not
+re-litigated here.
+
+### Q8 — does `clock_refusal` still catch a Phase-1 token expiring mid-pass?
+
+**Yes, and the enumeration that makes it work is pinned by a test.** Evidence,
+not inference:
+
+1. The Phase-1 access token **is in the provisioning setup dict**:
+   `"access_token": access_token` at `src/harness/runner.py:368` (the `b3_setup`
+   shape) and `:523` (the `b2_setup` shape). Its origin is the AS —
+   `tests/test_credential_enumeration.py:107,112,117` builds these setups from
+   `live_as.phase1_tokens[...]`, which is exactly the credential the guard was
+   written for.
+2. `clock_refusal` reads that dict: it is called with `credentials=setup`
+   (`src/harness/campaign.py:933`), and `credential_windows` finds time-bound
+   credentials in it by shape (`campaign.py:451-462`).
+3. **The set is test-pinned.** `test_the_time_bound_set_is_exactly_this`
+   (`tests/test_credential_enumeration.py:142-148`) asserts the discovered
+   time-bound set equals `EXPECTED[arm_shape]`, where B2 and B2-DPoP are
+   `("access_token", "as_tls_cert_pem")` and B3 is `("access_token",)`
+   (`:136-138`). If `access_token` ever left the provisioning dict, that test
+   fails rather than the guard silently going blind.
+4. The new fault writes somewhere else: `_restage_token` mutates
+   `arm._staged.access_token` (`src/harness/credential_faults.py:149-152`), and
+   `apply_to_setup` is an explicit no-op whose docstring is
+   *"**The arm is provisioned legitimately. Nothing is corrupted here.**"*
+   (`credential_faults.py:82-89`).
+
+**Consequence.** The two paths touch disjoint objects. A staged expired token is
+invisible to the guard *because the guard inspects provisioning*, and a Phase-1
+token aging during a pass remains fully visible *because it never leaves
+provisioning*. The fault does not widen the hole the guard closes; it operates
+beside it. The guard's own refusal text names the case it keeps
+(`campaign.py:527-532`): a credential "minted ONCE, before the pass", recording
+"how long the campaign has been running and not what the mechanism did".
+
+`expired_token` is therefore clear to build.
+
+### Q9 — does `invocation_binding_ok` read the mutated tool/args or a snapshot?
+
+**The check point is safe. The seam is on the wrong side of it, and that kills
+the fixture.**
+
+*The check point, first, because it is the part that is fine.*
+`_invocation_binding_ok(self, p, tool, arguments, state)`
+(`src/sut/authz/capability_path.py:726`) re-derives the digest from the **live**
+arguments:
+
+```python
+if inv["canonical_request_digest"] != h_jcs(dict(arguments)):   # :742
+    raise ConjunctFailed("invocation_binding_ok",
+        "INV.canonical_request_digest does not match the concrete arguments")
+...
+    raise ConjunctFailed("invocation_binding_ok",
+        "INV.tool does not bind the invoked tool")                # :756
+```
+
+No snapshot. The comparison is against what `decide` was actually called with,
+so a mutation reaching that call **is** caught. Your stated worry — that INV
+might validate a pre-`apply_to_presentation` snapshot — does not occur.
+
+*Now the part that does not work.* Those `tool` and `arguments` reach the arm
+from the boundary dispatch, not from anything a fault can touch:
+`return arm.decide(tool, arguments)` (`src/harness/runner.py:753`), and the
+observer passes straight through (`:1043-1044`). Meanwhile
+`apply_to_presentation(fault, arm, ...)` receives **only the arm**
+(`credential_faults.py:95-108`) and reaches `arm._staged`.
+
+So a credential fault can move the **signed** side and never the **presented**
+side. §D.2's attack, and G-14 C2's construction, move the presented side:
+`arm.decide(MUTATED_TOOL, MUTATED_ARGS)` after arming with the genuine proof
+(`smoke/g14/fixture.py:161-164`).
+
+**Implementing it credential-side produces exactly the false B you predicted.**
+Re-signing the staged INV over different arguments makes
+`inv["canonical_request_digest"] != h_jcs(dict(arguments))` fail, so B3 blocks —
+but the request that arrived is unchanged, so the oracle's request-tampering
+predicate reads **False**:
+
+```python
+def observation_was_tampered(intent, observation) -> bool:      # predicates.py:488
+    return oracle_request_digest(observation) != _row_value(intent, "intended_request_digest")
+```
+
+The cell would record a strong arm blocking a request the independent oracle
+certifies as untampered. That is not a measurement of invocation binding; it is
+the apparatus disagreeing with itself. The oracle's own docstring frames the
+correct pairing — *"an arm that blocks a tampered request produces this `True`
+with `realized_harm_F3` `False`, and that pairing is the mechanism working"*
+(`predicates.py:492-495`) — and the credential-side construction cannot produce
+that `True`.
+
+### The resulting correction — the second in this thread
+
+`first_use_body_mutation` is **NOT implementable as a credential fault.** My
+corrected verdict was right that the seam exists and is scenario-selectable, and
+wrong that this attack fits through it. The reason is structurally the same one
+that rules out replay: the campaign's cell shape does not expose the side of the
+boundary the attack has to move.
+
+| subcase | status after Q8/Q9 | carrier |
+|---|---|---|
+| `expired_token` | **BUILD** — credential-side attack, seam fits, guard intact | campaign cell (extension) |
+| `first_use_body_mutation` | **NOT BUILDABLE** as a credential fault | G-14 C2, as now |
+| `dpop-captured-proof-replay` | not buildable (two decisions per cell) | G-14 C1, as now |
+
+I am not proposing a way around this. Moving the presented side would mean the
+runner handing `decide` something other than what the dispatch produced, which
+is the same class of change as B — it alters what a cell *is* — and you have
+declined that class for this dissertation.
+
+**What the ruling still buys, and it is the thing that mattered.**
+`expired_token` was the only one of the three with **no carrier at all**. The
+extension closes exactly that gap and leaves the two rows that already have
+G-14 evidence where they are. The outcome is narrower than A as approved, and
+better targeted than A as approved.
+
+**A consequence for Q1 that shrinks with it.** One new subcase, not three: one
+scenario per corpus rather than three, and the four hardcoded `13` constants
+become `14` rather than `16` (`tests/test_confirmatory_corpus.py:83,140,148,192`)
+[D]. The collision with the "do not modify the structural-matching test"
+prohibition is unchanged in kind, only smaller in size, and still needs your
+ruling.
+
+---
 
 ## 3. Sections B, C, D — not written, and why
 
@@ -361,7 +503,7 @@ Option 3, the equivalent sections belong to a gate design, not a corpus plan.
 
 Two are owed, not one: the correction, and whatever is decided.
 
-> ## D-010 — A feasibility finding was reported wrong, and corrected before it was acted on
+> ## D-010 — A detailed, sourced, wrong report would have been executed; the scoped-negative rule is what stopped it
 >
 > **Status:** CLOSED on the same day it opened.
 > **Date:** 2026-08-16.
@@ -379,24 +521,34 @@ Two are owed, not one: the correction, and whatever is decided.
 > expired-token fixture unscorable. It inspects the **provisioning** setup dict;
 > a restaged token lives on `arm._staged`. Two different objects.
 >
-> **Recorded because the failure mode is the point.** The first report was
-> detailed, evidenced, and wrong, and it would have been acted on. What caught it
-> was not review but the residual the report itself declared. A stated scope on a
-> negative finding is not a formality.
+> **The failure mode, which is the point of this entry.** A report can be
+> detailed, sourced to file:line, internally consistent, and wrong — and in that
+> combination it does not look like a report that needs checking. It would have
+> been executed. What stopped it was not review and not a second opinion: it was
+> the rule, adopted after the CLAIMS_LEDGER incident, that a negative conclusion
+> must state the scope over which it was established. That rule looked like
+> formalism when it was adopted. It is the only thing that worked here, twice —
+> the same declared residual also caught the §B error below.
 >
 > No artefact, fixture, or campaign was built on the wrong finding; nothing needs
 > unwinding.
 
-> ## D-011 — Pre-commitment: the F3 extension, if authorised
+> ## D-011 — Pre-commitment: the F3 `expired_token` extension
 >
-> **Status:** OPEN — to be committed BEFORE any code is written.
+> **Status:** OPEN — to be committed BEFORE any code is written, alone, with no
+> result-bearing content, following the D-009 precedent verified from git
+> (`6da1570` 22:43:49, the runner not yet written; verdict at `2284837`
+> 22:55:36, eleven minutes and forty-seven seconds later).
 > **Date:** 2026-08-16.
+> **Scope:** ONE subcase. The ruling approved two; Q8/Q9 established that
+> `first_use_body_mutation` cannot be built as a credential fault, so it stays
+> with G-14 C2 alongside `dpop-captured-proof-replay` with G-14 C1.
 >
 > 1. The extension is a **separate, once-only campaign**.
 >    `results/raw/campaign-confirmatory.json` is not re-run, not overwritten and
 >    not superseded; its cells and its agreement remain the primary result.
-> 2. The three §E.4 rows predictions are **frozen** and are not edited. Instances
->    are added; predictions are not. If a measured outcome contradicts a frozen
+> 2. The `F3 expired token` §E.4 row — `A A B B B B B B B` — is **frozen** and is
+>    not edited. An instance is added; the prediction is not. If a measured outcome contradicts a frozen
 >    prediction, that disagreement is **reported as the finding it is** and the
 >    matrix is not amended to match it.
 > 3. The extension rows are reported at a **distinct evidence class** in every
@@ -405,9 +557,16 @@ Two are owed, not one: the correction, and whatever is decided.
 >    with every extension number.
 > 4. Whatever the extension measures is reported as returned, including a result
 >    that weakens this study own position.
-> 5. If the replay subcase is not built, that is stated, with `B3+` dependence
->    on G-14 C1 restated in the same place — not left to be inferred from a
->    coverage fraction.
+> 5. The two subcases that are NOT built are stated in the results chapter in the
+>    form the ruling fixes: instantiation was **evaluated and judged infeasible**,
+>    on evidence, **after the primary results were known** — not left to be
+>    inferred from a coverage fraction, and not written so it reads as a
+>    pre-registration decision. `B3+` dependence on G-14 C1 is restated in the
+>    same place.
+> 6. F3 coverage becomes **3 of 5** subcases once the extension runs, and that
+>    fraction replaces 2/5 on every F3-bearing artefact. The primary campaign's
+>    own F3 coverage remains **2 of 5** and is never restated as 3 of 5: the
+>    third instance is not one of its cells.
 
 ## 5. Prohibitions observed
 
