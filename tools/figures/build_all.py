@@ -25,6 +25,10 @@ AUTHORISED = (
     "tab5_hypotheses.py",
     "tab9_instance_micro.py",
     "tab10_clustered_by_template.py",
+    # Commander ruling 2026-08-16: the paper's Figure 1, the boundary authority
+    # surface (RQ1/RQ2). Requested directly; added here so one command still
+    # regenerates everything.
+    "fig_authority_surface.py",
 )
 
 
