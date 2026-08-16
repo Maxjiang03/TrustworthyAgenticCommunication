@@ -593,6 +593,95 @@ integration.
 | TAB-9 | RQ2 | — | side | instance-micro 143-cell listing (all cell fields; `reason_code_FOR_DIAGNOSIS_ONLY` printed under that exact header or omitted); caption carries the F3 2/5 fraction and the F4 qualification | campaign JSON `cells[]` | beats a figure — archival evidence, not a visual claim | appendix |
 | TAB-10 | RQ3 | — | side | clustered_by_template 6 × 13; caption carries the F3 2/5 fraction (the JSON block has no coverage field of its own) and the F4 qualification | `results-confirmatory.json` `clustered_by_template` | beats a heatmap — exact counts; digits are legible | appendix |
 
+### B.1 FIG-0 — registration (C7), added 2026-08-16
+
+The authority-surface artefact was built outside the Phase-2 authorised set
+(FIG-1, FIG-3, TAB-0/1/2/3/4/5/9/10) and left unregistered. Reconciled here.
+
+| field | value |
+|---|---|
+| **ID** | **FIG-0** |
+| stem | `fig_authority_surface` |
+| **RQ** | **RQ1** — which authorization properties the specifications guarantee and which they defer. **Not RQ2**: no exercised dimension is present. |
+| **evidence class** | **DERIVED from frozen artefacts.** Ω from the sealed authorizer configuration, `U_task` and `C_n` from the sealed corpus, the per-arm grant from the SS E.1 ladder. Not a campaign measurement. |
+| dish / placement | **MAIN**, opening §N.1 — the specification surface the measured board of §N.2 is then read against |
+| source | `src/harness/authorizer/omega_gamma_v1.json`; `fixtures/confirmatory/sealed/*.json`; `ARM_GRANT` with file:line provenance in the script |
+| size | 9.57 × 5.52 in — fits landscape (ceiling 9.693 × 5.564), vector, 8 pt floor held |
+
+**The index is deliberate.** RQ1 precedes RQ2/RQ3 in the question order, and this
+artefact is what FIG-1 measures against, so it sits before it. `TAB-0` already
+uses a zero index for foundational material in this plan, so the convention is
+not new.
+
+**It does NOT supersede the deferred FIG-2**, and FIG-2 stays deferred (D8).
+They are different artefacts on every axis that matters here:
+
+| | FIG-0 | FIG-2 (deferred) |
+|---|---|---|
+| RQ | RQ1 | RQ2 |
+| evidence class | DERIVED specification surface | MEASURED campaign cells |
+| quantity | what a credential PERMITS vs what the task NEEDS | `admission_breach` and `realized_harm` per family × arm |
+| axes | 9 arms × 7 Ω elements | 9 arms × 5 families |
+
+Reading FIG-0 as covering FIG-2's ground would be the exact error C6 exists to
+prevent: a derived surface standing in for a measurement.
+
+### B.2 FIG-0 — corrections applied 2026-08-16 (C1–C8)
+
+`required` was confirmed against the script before anything was changed:
+`fig_authority_surface.py:239` binds `required, c_n = load_config(...)`, and
+`:118` returns `u_task` from `doc["U_task"]` (`:112`). **`required` is `U_task`.**
+`R` is read only at `:127`, inside `probed_elements`, which feeds the column
+markers and **never reaches `state_of`**. The independent exclusion holds:
+`notes.write|notes/project` carries the open marker in Config I yet counts as
+required, which `R` could not produce.
+
+| | correction |
+|---|---|
+| **C1** | `narrowed` (`U_task \ C_n`) was a hatched cell with a warning-weight orange border, labelled "required, NOT admitted", sitting beside black in the legend — four channels reading as a defect, at the point where `C_n ⊆ U_task` **is** delegation monotonicity. Now a light fill with a thin outline, subordinate to the amplification; relabelled "in the grant, narrowed away by the chain — the intended contraction, not a failure"; legend reordered to read as a ladder. |
+| **C2** | A second count column, `narrowed [D]`, beside `amplified [D]`. Both marked DERIVED in the header. Ω arms +3/0, C₀ arms 0/0, Cₙ arms 0/−2 — as predicted. |
+| **C3** | The markers are per panel and the caption's figure was cross-panel. Now printed and stated separately: **3 open in Config I, 6 in Config II, 2 never requested under EITHER configuration.** |
+| **C4** | B3 and B3⁺ bracketed on-figure with a `‡` leader to: *"B3 and B3⁺ carry identical authority by construction; they differ only in duplicate detection, which is not a property of the authority surface."* Wording differs from FIG-1's, which is about a corpus gap. |
+| **C5** | Every state now carries fill **and** a glyph — `+` above the grant, `·` at it, `−` below it, blank outside. The glyphs *are* the ladder. Greyscale render verified: all four states separate by glyph with colour carrying nothing. |
+| **C6** | RQ and evidence class stated **on the figure**, top line, in blue: *"RQ1 — specification analysis. Evidence class: DERIVED from frozen artefacts. Not a campaign measurement: no exercised dimension is present."* Count columns headed `[D]`. |
+| **C7** | Registered above. |
+| **C8** | 9.57 × 5.52 in against a 9.693 × 5.564 landscape ceiling; vector text and paths; 8 pt minimum effective font; greyscale companion written. Saved at the authored `figsize` — `bbox_inches="tight"` is not used anywhere in the presentation layer since `9fb0de0`. |
+
+Three layout collisions were found by **looking at the render**, not by any
+numeric check, and each is now guarded: panel titles overprinted by the 45°
+headers (titles lifted clear, header reach documented); two legend items
+overprinting the next swatch (per-character width was 0.052 in, an
+underestimate once em-dashes and capitals are in the string — now 0.062 with a
+width guard that raises); and the note band checked against its wrapped line
+count.
+
+### B.3 The exercised dimension — cost reported, nothing built
+
+**Part of the concern is free, and it is the part that matters.** The figure
+currently prints `+3` for the Ω-grant arms in **both** panels, and those two
+numbers are not the same thing. Splitting them needs no ledger — only `R`, which
+the figure already reads for the markers:
+
+| | amplified | of which **probed** by the corpus | **latent** |
+|---|---|---|---|
+| **Config I** | 3 | **1** (`notes.delete\|notes/project`) | 2 |
+| **Config II** | 3 | **0** | **3** |
+
+Config II's amplification is **entirely latent**: not one of the three elements
+it admits beyond the task grant is ever requested under that configuration. As
+printed today the two `+3`s are indistinguishable and will be read as the same
+finding. **Cost: one derived split inside the existing script, no new input, no
+governance question.** Not built — reporting only, as instructed.
+
+**The full exercised dimension is a different proposition.** It would need
+per-invocation effect rows from `results/_ledger/`, which are git-ignored,
+untracked and **outside the seal** by the "apparatus in, results out" rule. An
+artefact built on them would not be reproducible from committed data, and its
+evidence class would become MEASURED — which is FIG-2's territory, not FIG-0's.
+Cost is therefore not primarily code: it is a governance decision about admitting
+an unsealed, uncommitted source into a chapter artefact, plus the re-registration
+that a change of evidence class forces. Reported; nothing read, nothing built.
+
 ## C. Per-artefact specification
 
 ### FIG-1 — the prediction–outcome board (centerpiece)

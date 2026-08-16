@@ -1,28 +1,27 @@
-"""Paper Figure 1 -- the boundary authority surface (RQ1/RQ2).
+"""FIG-0 — the boundary authority surface (RQ1, specification analysis).
 
 Nine ladder arms x the seven elements of the frozen ontology `Omega`, each cell
-in one of four states against the user's task grant `U_task`:
+placed on a THREE-STEP LADDER against the user's task grant `U_task`:
 
-    admitted and required        the arm may do what the task needs
-    ADMITTED, NOT REQUIRED       the amplification -- TV23 itself
-    required, NOT admitted       withheld though the task needs it
-    neither                      correctly withheld
+    +   admitted, ABOVE the grant   the amplification -- TV23 itself
+    .   admitted, AT the grant      the arm may do what the task needs
+    -   in the grant, NARROWED AWAY the intended contraction, NOT a failure
+    (blank) outside the grant and not admitted
 
-WHAT THIS FIGURE IS, STATED PRECISELY. It is the authority SURFACE, derived
-from frozen artefacts -- not a campaign measurement. Every input is sealed and
-read-only:
+`required` is `U_task`, NOT the concrete request `R`. `R` appears only as the
+filled/open probe marker on the column headers; it never enters the cell state.
+That is deliberate: the surface is about what an arm's credential PERMITS
+against what the task NEEDS, and `R` is one request drawn from that space.
+
+WHAT THIS FIGURE IS. The authority SURFACE, derived from frozen artefacts. It
+addresses RQ1 (which authorization properties the specifications guarantee and
+which they defer), NOT RQ2 (measured excess): no exercised dimension is present,
+so nothing here is a campaign measurement. Every count is DERIVED. Inputs, all
+sealed and read-only:
 
   Omega, the seven (action, resource) elements   src/harness/authorizer/omega_gamma_v1.json
   U_task and the capability chain C_sets         fixtures/confirmatory/sealed/*.json
   which grant each arm carries                   the SS E.1 ladder, see ARM_GRANT below
-
-The campaign measured something narrower and is not plotted here: each scenario
-requests exactly ONE element, only five of the seven are ever requested, and
-four scenarios share `mail.send|mail/outbox` across attacks AND benign controls
-under two monitor configurations. A measured 9x7 matrix therefore does not
-exist, and one built by merging those cells would average an attack with its own
-control. Elements the corpus actually probes are marked; their outcomes belong
-to the state board, not here.
 
 `C_n` and `U_task` differ between the F1/F2/F3+benign scenarios and the F4/F5
 scenarios, so the surface is drawn once per configuration rather than averaged.
@@ -34,12 +33,15 @@ import json
 
 from _common import (
     ARM_ORDER,
+    BLUE,
     FONT_MIN_PT,
     GHOST,
     INK,
+    LANDSCAPE,
     MIDGREY,
     ORANGE,
     PAPER,
+    PORTRAIT,
     REPO_ROOT,
     PresentationError,
     mpl_setup,
@@ -49,7 +51,7 @@ from _common import (
 )
 from matplotlib.patches import Rectangle
 
-ARTEFACT = "FIG-A"
+ARTEFACT = "FIG-0"
 STEM = "fig_authority_surface"
 
 # Which grant each SS E.1 arm carries. This is not a choice made here: it is
@@ -77,14 +79,9 @@ ARM_GRANT = {
     "B3": "c_n",
     "B3+": "c_n",
 }
-# Kept short on purpose: these run vertically beside their own tier and must fit
-# inside that tier's height AT 8 pt -- the floor is not negotiable, so the label
-# gives way instead. The expansion belongs in the caption. Guarded below.
-GRANT_LABEL = {
-    "omega": "Ω grant",
-    "u_task": "C₀ task",
-    "c_n": "Cₙ chain",
-}
+# Kept short: these run vertically beside their own tier and must fit inside that
+# tier's height AT 8 pt. The floor is not negotiable, so the label gives way.
+GRANT_LABEL = {"omega": "Ω grant", "u_task": "C₀ task", "c_n": "Cₙ chain"}
 
 # The two chain configurations the corpus defines. Named by the scenario whose
 # sealed file supplies the sets; both are read, never assumed equal.
@@ -93,8 +90,12 @@ CONFIGS = (
     ("II", "F4 · F5", "cf-f4-sensitive-egress"),
 )
 
-# Four states, each with fill + texture, never colour alone (FIGURE_PLAN.md §D).
-S_BOTH, S_AMP, S_WITHHELD, S_NEITHER = "both", "amplified", "withheld", "neither"
+# The ladder, in ladder order. Each state carries fill AND a glyph, so none is
+# distinguishable by colour alone and all four survive greyscale
+# (FIGURE_PLAN.md §D). The glyphs ARE the ladder: + above the grant, · at it,
+# − below it.
+S_AMP, S_AT, S_NARROWED, S_OUT = "amplified", "at_grant", "narrowed", "outside"
+GLYPH = {S_AMP: "+", S_AT: "·", S_NARROWED: "−", S_OUT: ""}
 
 
 def load_omega():
@@ -107,19 +108,26 @@ def load_omega():
 
 
 def load_config(scenario_id):
+    """Returns (U_task, C_n). `U_task` is what `required` means in this figure."""
     path = REPO_ROOT / "fixtures" / "confirmatory" / "sealed" / f"{scenario_id}.json"
     doc = json.loads(path.read_text(encoding="utf-8"))
     u_task = {tuple(x) for x in doc["U_task"]}
     c_sets = [{tuple(x) for x in c} for c in doc["C_sets"]]
     if c_sets[0] != u_task:
+        raise PresentationError(f"{scenario_id}: C_0 is not U_task; the ladder claim is wrong")
+    if not c_sets[-1] <= u_task:
         raise PresentationError(
-            f"{scenario_id}: C_0 is not U_task; the ladder claim would be wrong"
+            f"{scenario_id}: C_n is not contained in U_task, so the chain did not "
+            "contract and the narrowed state would be meaningless"
         )
     return u_task, c_sets[-1]
 
 
 def probed_elements(scenario_ids):
-    """Which Omega elements the corpus actually requests in this configuration."""
+    """Which Omega elements the corpus actually REQUESTS (`R`) in this config.
+
+    Feeds the column markers only. `R` never enters a cell state.
+    """
     out = set()
     for sid in scenario_ids:
         path = REPO_ROOT / "fixtures" / "confirmatory" / "sealed" / f"{sid}.json"
@@ -138,26 +146,47 @@ def scenarios_of(config_key):
 
 def state_of(element, admitted, required):
     in_a, in_r = element in admitted, element in required
-    if in_a and in_r:
-        return S_BOTH
-    if in_a:
+    if in_a and not in_r:
         return S_AMP
+    if in_a and in_r:
+        return S_AT
     if in_r:
-        return S_WITHHELD
-    return S_NEITHER
+        return S_NARROWED
+    return S_OUT
 
 
 def draw_cell(ax, x, y, w, h, state):
+    """Fill PLUS glyph for every state; the amplification is the only heavy ink.
+
+    `narrowed` was formerly a hatched cell with a warning-weight orange border,
+    sitting beside the black amplification in the legend -- four channels all
+    reading as a defect. C_n subset U_task IS delegation monotonicity, the thing
+    the capability arms are built to do, so it is now a light fill with a thin
+    outline, subordinate to the amplification rather than parallel to it.
+    """
     if state == S_AMP:
         ax.add_patch(Rectangle((x, y), w, h, facecolor=INK, edgecolor=INK, lw=0.6))
-    elif state == S_BOTH:
+        glyph_colour = PAPER
+    elif state == S_AT:
         ax.add_patch(Rectangle((x, y), w, h, facecolor=GHOST, edgecolor=MIDGREY, lw=0.5))
-    elif state == S_WITHHELD:
-        ax.add_patch(
-            Rectangle((x, y), w, h, facecolor=PAPER, edgecolor=ORANGE, lw=0.9, hatch="/////")
-        )
+        glyph_colour = INK
+    elif state == S_NARROWED:
+        ax.add_patch(Rectangle((x, y), w, h, facecolor="#fbf7f2", edgecolor=ORANGE, lw=0.7))
+        glyph_colour = ORANGE
     else:
         ax.add_patch(Rectangle((x, y), w, h, facecolor=PAPER, edgecolor="#dddddd", lw=0.5))
+        glyph_colour = MIDGREY
+    if GLYPH[state]:
+        ax.text(
+            x + w / 2,
+            y + h / 2,
+            GLYPH[state],
+            ha="center",
+            va="center",
+            fontsize=FONT_MIN_PT,
+            color=glyph_colour,
+            fontweight="bold",
+        )
 
 
 def main():
@@ -165,22 +194,21 @@ def main():
     omega = load_omega()
     print_render(ARTEFACT, "omega.elements [M omega_gamma_v1.json]", len(omega))
 
-    # ---- geometry, authored to fit the 9.693 x 5.564 in landscape text block.
-    # Explicit vertical bands, so nothing is positioned by a hand-tuned constant
-    # that a longer string can silently outgrow.
-    cw, rh = 0.42, 0.28
-    title_band = 0.34  # panel titles, ABOVE the rotated headers
-    header_band = 1.50  # rotated column labels at 45 deg
-    legend_band = 0.34
-    note_band = 0.52
+    # ---- geometry, authored to fit the landscape text block. Explicit vertical
+    # bands, so nothing sits at a hand-tuned constant a longer string outgrows.
+    cw, rh = 0.38, 0.27
+    title_band = 0.40
+    header_band = 1.45
+    legend_band = 0.54  # two rows
+    note_band = 0.60
     top = title_band + header_band
     bottom = legend_band + note_band + 0.10
-    left = 1.62
-    # 45 deg headers extend as far right as they do up, so the right margin has
-    # to hold the last column's label, not just the last column.
-    gap, cnt_w, right = 0.40, 0.46, 0.48
+    left = 1.55
+    # The right margin holds the 45 deg header of the last count column AND
+    # the B3/B3+ bracket, so it is wider than a column gutter would suggest.
+    gap, cnt_w, right = 0.40, 0.42, 0.62
     ncol = len(omega)
-    panel_w = ncol * cw + cnt_w
+    panel_w = ncol * cw + 2 * cnt_w  # two count columns: amplified, narrowed
     fig_w = left + panel_w + gap + panel_w + right
     fig_h = top + len(ARM_ORDER) * rh + bottom
     fig = plt.figure(figsize=(fig_w, fig_h))
@@ -192,7 +220,6 @@ def main():
     def row_y(i):
         return fig_h - top - (i + 1) * rh
 
-    # ---- arm labels, once, on the left
     for i, arm in enumerate(ARM_ORDER):
         ax.text(
             left - 0.10,
@@ -204,16 +231,12 @@ def main():
             color=INK,
         )
 
-    # ---- grant-tier brackets down the far left
-    tier_start = {}
+    tier_rows = {}
     for i, arm in enumerate(ARM_ORDER):
-        tier_start.setdefault(ARM_GRANT[arm], []).append(i)
-    for tier, rows in tier_start.items():
+        tier_rows.setdefault(ARM_GRANT[arm], []).append(i)
+    for tier, rows in tier_rows.items():
         y0, y1 = row_y(rows[-1]), row_y(rows[0]) + rh
         label = GRANT_LABEL[tier]
-        # These run vertically inside their own tier. At 8 pt a label longer than
-        # the tier is tall would overprint its neighbour -- which is how the
-        # first version came to shrink the type instead. Refuse, do not shrink.
         need = len(label) * 0.055
         if need > (y1 - y0):
             raise PresentationError(
@@ -233,23 +256,37 @@ def main():
         )
         print_render(ARTEFACT, f"tier.{tier}.arms", len(rows))
 
-    totals = {}
+    # C6 -- the RQ and the evidence class on the FIGURE, not only in a caption.
+    ax.text(
+        0.10,
+        fig_h - 0.10,
+        "RQ1 — specification analysis.   Evidence class: DERIVED from frozen artefacts.   "
+        "Not a campaign measurement: no exercised dimension is present.",
+        ha="left",
+        va="top",
+        fontsize=FONT_MIN_PT,
+        color=BLUE,
+    )
+
+    probed_by_config = {}
     for p, (key, families, source_scenario) in enumerate(CONFIGS):
         x0 = left + p * (panel_w + gap)
         required, c_n = load_config(source_scenario)
         probed = probed_elements(scenarios_of(key))
+        probed_by_config[key] = probed
         print_render(ARTEFACT, f"config{key}.source [M sealed scenario]", source_scenario)
-        print_render(ARTEFACT, f"config{key}.required |U_task|", len(required))
-        print_render(ARTEFACT, f"config{key}.capability |C_n|", len(c_n))
-        print_render(ARTEFACT, f"config{key}.probed_elements", len(probed))
+        print_render(ARTEFACT, f"config{key}.required_is [M]", "U_task (not R)")
+        print_render(ARTEFACT, f"config{key}.U_task_size [M]", len(required))
+        print_render(ARTEFACT, f"config{key}.C_n_size [M]", len(c_n))
+        print_render(ARTEFACT, f"config{key}.requested_elements [M union of R]", len(probed))
 
         admitted_by_tier = {"omega": set(omega), "u_task": required, "c_n": c_n}
 
-        # Panel title, in its own band at the very top -- it used to sit inside
-        # the header band and was overprinted by the rotated labels.
+        # Titles sit ABOVE the reach of the 45 deg headers, which extend about
+        # 1.29 in up from their anchor -- they were overprinted twice before.
         ax.text(
             x0,
-            fig_h - title_band + 0.08,
+            fig_h - 0.32,
             f"Configuration {key}   ·   {families}",
             ha="left",
             va="bottom",
@@ -258,106 +295,146 @@ def main():
             fontweight="bold",
         )
 
-        # column headers, 45 deg: shallower than 60 deg, so the same strings
-        # need 1.29 in of height instead of 1.58 in
         for j, el in enumerate(omega):
-            label = f"{el[0]} | {el[1]}"
             marker = "●" if el in probed else "○"
             ax.text(
                 x0 + j * cw + cw / 2,
                 fig_h - top + 0.12,
-                f"{marker} {label}",
+                f"{marker} {el[0]} | {el[1]}",
                 rotation=45,
                 ha="left",
                 va="bottom",
                 fontsize=FONT_MIN_PT,
                 color=INK if el in probed else MIDGREY,
             )
-        ax.text(
-            x0 + ncol * cw + cnt_w / 2,
-            fig_h - top + 0.12,
-            "amplified",
-            rotation=45,
-            ha="left",
-            va="bottom",
-            fontsize=FONT_MIN_PT,
-            color=INK,
-        )
+        for k, head in enumerate(("amplified [D]", "narrowed [D]")):
+            ax.text(
+                x0 + ncol * cw + k * cnt_w + cnt_w / 2,
+                fig_h - top + 0.12,
+                head,
+                rotation=45,
+                ha="left",
+                va="bottom",
+                fontsize=FONT_MIN_PT,
+                color=INK,
+            )
 
         for i, arm in enumerate(ARM_ORDER):
             admitted = admitted_by_tier[ARM_GRANT[arm]]
             y = row_y(i)
-            amp = 0
+            amp = narrowed = 0
             for j, el in enumerate(omega):
                 st = state_of(el, admitted, required)
                 draw_cell(ax, x0 + j * cw, y, cw, rh, st)
-                if st == S_AMP:
-                    amp += 1
-            withheld = len(required - admitted)
-            totals.setdefault(arm, {})[key] = (amp, withheld)
-            ax.add_patch(
-                Rectangle(
-                    (x0 + ncol * cw + 0.04, y),
-                    cnt_w - 0.08,
-                    rh,
-                    facecolor=PAPER,
-                    edgecolor="#dddddd",
-                    lw=0.5,
+                amp += st == S_AMP
+                narrowed += st == S_NARROWED
+            for k, (val, prefix) in enumerate(((amp, "+"), (narrowed, "−"))):
+                cx = x0 + ncol * cw + k * cnt_w
+                ax.add_patch(
+                    Rectangle(
+                        (cx + 0.03, y),
+                        cnt_w - 0.06,
+                        rh,
+                        facecolor=PAPER,
+                        edgecolor="#dddddd",
+                        lw=0.5,
+                    )
                 )
+                ax.text(
+                    cx + cnt_w / 2,
+                    y + rh / 2,
+                    f"{prefix}{val}" if val else "0",
+                    ha="center",
+                    va="center",
+                    fontsize=FONT_MIN_PT,
+                    color=INK if val else MIDGREY,
+                    fontweight="bold" if val else "normal",
+                )
+            print_render(ARTEFACT, f"config{key}.{arm}.admitted_size [D]", len(admitted))
+            print_render(ARTEFACT, f"config{key}.{arm}.amplified [D admitted minus U_task]", amp)
+            print_render(
+                ARTEFACT, f"config{key}.{arm}.narrowed [D U_task minus admitted]", narrowed
+            )
+
+        # C4 -- B3 / B3+ carry identical authority BY CONSTRUCTION. Bracketed on
+        # the last panel with a leader to the note. This is a design fact, not a
+        # corpus gap, so the wording differs from FIG-1's disclosure.
+        if p == len(CONFIGS) - 1:
+            i3, i3p = ARM_ORDER.index("B3"), ARM_ORDER.index("B3+")
+            yb0, yb1 = row_y(max(i3, i3p)), row_y(min(i3, i3p)) + rh
+            xb = x0 + panel_w + 0.08
+            ax.plot(
+                [xb, xb + 0.06, xb + 0.06, xb],
+                [yb0 + 0.02, yb0 + 0.02, yb1 - 0.02, yb1 - 0.02],
+                color=BLUE,
+                lw=0.9,
             )
             ax.text(
-                x0 + ncol * cw + cnt_w / 2,
-                y + rh / 2,
-                f"+{amp}" if amp else "0",
-                ha="center",
+                xb + 0.10,
+                (yb0 + yb1) / 2,
+                "‡",
+                ha="left",
                 va="center",
                 fontsize=FONT_MIN_PT,
-                color=INK if amp else MIDGREY,
-                fontweight="bold" if amp else "normal",
+                color=BLUE,
             )
-            print_render(ARTEFACT, f"config{key}.{arm}.admitted", len(admitted))
-            print_render(ARTEFACT, f"config{key}.{arm}.amplified [D |A\\R|]", amp)
-            print_render(ARTEFACT, f"config{key}.{arm}.withheld [D |R\\A|]", withheld)
 
-    # ---- legend: one row, four keys, laid out on measured slot widths rather
-    # than a guessed stride (the first version overprinted two of the four).
+    # C3 -- the marker counts are PER PANEL; the cross-panel figure is separate.
+    open_i = len(omega) - len(probed_by_config["I"])
+    open_ii = len(omega) - len(probed_by_config["II"])
+    never_either = [e for e in omega if all(e not in probed_by_config[k] for k, _, _ in CONFIGS)]
+    print_render(ARTEFACT, "markers.open_config_I [D]", open_i)
+    print_render(ARTEFACT, "markers.open_config_II [D]", open_ii)
+    print_render(ARTEFACT, "markers.never_requested_under_EITHER [D]", len(never_either))
+
+    # ---- legend, read as a LADDER rather than as a defect list (C1). Two rows,
+    # ordered top-of-ladder first, so `narrowed` never sits beside `amplified`.
     keys = (
-        (S_BOTH, "admitted ∧ required"),
-        (S_AMP, "admitted, NOT required — the amplification"),
-        (S_WITHHELD, "required, NOT admitted"),
-        (S_NEITHER, "neither"),
+        (S_AMP, "+  admitted, ABOVE the task grant — the amplification (TV23)"),
+        (S_AT, "·  admitted, AT the task grant"),
+        (
+            S_NARROWED,
+            "−  in the grant, narrowed away by the chain — the intended contraction, not a failure",
+        ),
+        (S_OUT, "    outside the grant and not admitted"),
     )
-    sw, char_w, pad = 0.24, 0.052, 0.30
-    slots = [sw + 0.08 + len(t) * char_w + pad for _, t in keys]
-    lx = 0.10
-    ly = note_band + 0.14
-    print_render(ARTEFACT, "legend.width_in [D]", f"{sum(slots):.2f}")
-    if sum(slots) > fig_w - 0.20:
-        raise PresentationError(f"legend needs {sum(slots):.2f} in, canvas has {fig_w - 0.20:.2f}")
-    for (st, text), slot in zip(keys, slots):
-        draw_cell(ax, lx, ly, sw, 0.19, st)
-        ax.text(
-            lx + sw + 0.08,
-            ly + 0.095,
-            text,
-            ha="left",
-            va="center",
-            fontsize=FONT_MIN_PT,
-            color=INK,
-        )
-        lx += slot
+    # Conservative per-character width: the true average is nearer 0.055,
+    # but em-dashes, capitals and parentheses exceed it and two legend
+    # items overlapped the next swatch at that figure.
+    sw, char_w, pad = 0.22, 0.062, 0.24
+    ly = note_band + 0.12
+    for row in (keys[2:], keys[:2]):  # drawn bottom-up, so the ladder reads top-down
+        lx = 0.10
+        for st, text in row:
+            draw_cell(ax, lx, ly, sw, 0.18, st)
+            ax.text(
+                lx + sw + 0.07,
+                ly + 0.09,
+                text,
+                ha="left",
+                va="center",
+                fontsize=FONT_MIN_PT,
+                color=INK,
+            )
+            lx += sw + 0.07 + len(text) * char_w + pad
+        print_render(ARTEFACT, "legend.row_width_in [D]", f"{lx:.2f}")
+        if lx > fig_w - 0.10:
+            raise PresentationError(f"legend row needs {lx:.2f} in, canvas is {fig_w:.2f} in")
+        ly += 0.22
 
-    # Deliberately short: the argument is made in the running text, and a note
-    # long enough to carry it is also long enough to fall off the canvas.
     note = (
-        "Authority surface, derived from frozen artefacts (Ω, U_task, Cₙ, and the SS E.1 grant "
-        "each arm carries) — not a campaign measurement. ● an element the corpus requests, "
-        "○ one it never does (2 of 7). Cₙ and U_task differ across the two configurations, so "
-        "neither is averaged."
+        "Authority surface, DERIVED from frozen artefacts (Ω, U_task, Cₙ, and the SS E.1 grant "
+        "each arm carries). `required` is U_task, NOT the concrete request R. ● an element the "
+        f"corpus requests IN THAT PANEL, ○ one it does not — {open_i} open in Config I and "
+        f"{open_ii} in Config II, of which {len(never_either)} are never requested under EITHER "
+        "configuration. Cₙ and U_task "
+        "differ across the two configurations, so neither is averaged. ‡ B3 and B3⁺ carry "
+        "identical authority by construction; they differ only in duplicate detection, which is "
+        "not a property of the authority surface."
     )
     import textwrap
 
-    lines = textwrap.wrap(note, 158)
+    lines = textwrap.wrap(note, 168)
     line_h = FONT_MIN_PT * 1.26 / 72.0
     print_render(ARTEFACT, "note.lines [D]", len(lines))
     if len(lines) * line_h > note_band:
@@ -374,12 +451,15 @@ def main():
         color=MIDGREY,
     )
 
-    for arm in ARM_ORDER:
-        a1, w1 = totals[arm]["I"]
-        a2, w2 = totals[arm]["II"]
-        if (a1, w1) != (a2, w2):
-            print_render(ARTEFACT, f"asymmetry.{arm}", f"I=(+{a1},-{w1}) II=(+{a2},-{w2})")
-
+    # C8 -- acceptance, reported by the artefact itself.
+    print_render(ARTEFACT, "acceptance.max_width_in [M _common.LANDSCAPE]", f"{LANDSCAPE[0]:.3f}")
+    print_render(ARTEFACT, "acceptance.max_height_in [M _common.LANDSCAPE]", f"{LANDSCAPE[1]:.3f}")
+    print_render(
+        ARTEFACT,
+        "acceptance.portrait_ceiling_in [M _common.PORTRAIT]",
+        f"{PORTRAIT[0]:.3f} x {PORTRAIT[1]:.3f}",
+    )
+    print_render(ARTEFACT, "acceptance.min_effective_font_pt [M]", FONT_MIN_PT)
     save(fig, STEM, ARTEFACT)
 
 
