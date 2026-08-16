@@ -1,47 +1,79 @@
 # F3 corpus extension — Phase 0 report and feasibility verdict
 
-**Status: RED STATE. STOPPED, NOT WORKED AROUND.**
+**Status: AMBER. Two subcases feasible, one not. Phase 1 B/C/D awaiting your ruling.**
+*(The original status was RED on all three; that verdict was wrong and is corrected in section 0.)*
 Date: 2026-08-16. Phase 0 only; no code written, no artefact touched, no campaign run.
 
 ---
 
-## 0. Verdict, first
+## 0. Verdict — CORRECTED 2026-08-16, after the residual check this report itself called for
 
-The Commander's ruling — instantiate the three unpopulated F3 subcases as a
-separate once-only extension campaign — is **technically impossible under the
-prohibitions as written**. Not for one subcase, but for all three, and for three
-*different* reasons. Per the standing instruction I have stopped and am
-reporting rather than falling back to any workaround.
+**The first verdict in this document was WRONG on two of its three findings, and
+it is corrected here rather than silently rewritten.**
 
-The obstruction is not the seal, not the "run once" property, and not the output
-path. Those are all solved or solvable. **The obstruction is that the sealed
-scenario vocabulary cannot express any of the three attacks.** A campaign
-scenario describes exactly one invocation; each of these three subcases needs
-something a single invocation record cannot carry.
+§0 originally reported all three subcases infeasible and recommended extending
+the gate instead of the campaign. I had flagged my own residual: the negative was
+established over `schema.py`, `runner.py` and the `attack_subcase` call sites,
+*not* over all of `campaign.py` or `src/sut/`. Closing that residual found the
+seam I had said did not exist.
 
-| subcase | what it needs | why the campaign cannot express it |
-|---|---|---|
-| `dpop-first-use-body-mutation` | the presented tool/args to differ from the signed ones | `IntendedInvocation` carries **one** digest, `intended_request_digest` (`src/harness/schema.py:129`). There is no signed-vs-presented pair. |
-| `expired-token` | an expired credential in the arm's setup | `clock_refusal` refuses exactly this shape and routes the cell to `unscorable` for **every** arm (`src/harness/campaign.py:523-532`). Zero scored cells. |
-| `dpop-captured-proof-replay` | two presentations of one proof | The schema describes **one** invocation; `grep -niE "replay\|second_use\|repeat\|duplicate"` over `runner.py` and `schema.py` returns **nothing**. No replay seam exists. |
+**`src/harness/credential_faults.py` is exactly that seam.** Its own first line
+names it: *"The attacker between the arm and the resource server (EXP7 STEP 3)."*
+`apply_to_presentation(...)` **corrupts what the arm STAGED** — it runs at
+`runner.py:805`, after `arm.present(...)` returns and after ADR 0026's
+`presentation` span closes, so the arm is never charged for the attacker's work.
+And it is **scenario-selectable**: `campaign.py:901` reads
+`sealed.get("credential_fault", "none")` and validates it against a closed
+tuple.
 
-`attack_subcase` cannot rescue any of them: it is consumed only for family
-grouping and as a recorded label (`campaign.py:669`, `:898`; `schema.py:139`).
-It switches no attack behaviour, so a new subcase string produces no new
-behaviour.
+That is precisely the signed-vs-presented divergence §D.2 describes, and it is
+already used by five faults.
 
-**Scope of the "does not exist" conclusion.** Established over
-`src/harness/schema.py`, `src/harness/runner.py`, and the `attack_subcase`
-call sites across `src/`. I did not exhaustively read all ~1000 lines of
-`src/harness/campaign.py` nor `src/sut/`. If the Commander wants the negative
-strengthened, that is the remaining place to look.
+### Corrected per-subcase verdict
 
-**Blindness disclosure, stated plainly.** During this task I did not read
+| subcase | first verdict | corrected verdict | why it changed |
+|---|---|---|---|
+| `dpop-first-use-body-mutation` | infeasible — "no signed-vs-presented seam" | **FEASIBLE** as a new credential fault | The seam exists and is literally *"corrupt what the arm staged"*. Restaging tool/args after the proof was signed over the originals is structurally what `_restage_token` and `_restage_dpop_proof` already do. |
+| `expired-token` | infeasible — "`clock_refusal` routes every arm to `unscorable`" | **FEASIBLE** as a new credential fault | I conflated two different objects. `clock_refusal` inspects `credentials=setup` — the **provisioning** dict (`campaign.py:933`; the token enters it at `runner.py:368,523`). `_restage_token` writes to `arm._staged.access_token` (`credential_faults.py:150-152`), which the guard never reads. A deliberately staged expired token evades it **by construction**, and correctly so: the guard exists to catch a Phase-1 token that *aged during the pass*, not one an attacker staged on purpose. |
+| `dpop-captured-proof-replay` | infeasible | **INFEASIBLE as a credential fault — confirmed, and it is the load-bearing one** | G-14 C1 builds it at `smoke/g14/fixture.py:147-152`: the arm is armed ONCE, then `arm.decide(TOOL, ARGS)` is called **twice** at the same injected instant. The replay is a second boundary **decision**, not a corrupted credential. A credential fault cannot produce it, because faults corrupt `arm._staged` and not the number of decisions a cell makes. |
+
+### What this does to the cost estimate
+
+The original report put the change at "schema + runner + campaign, changing how
+every existing scenario is loaded". That was wrong. For the first two subcases
+the change is: **new entries in `FAULTS` plus their `_restage_*` implementations
+in ONE sealed file** (`src/harness/credential_faults.py`), following a pattern
+that file already implements five times — plus the corpus additions and the four
+count constants in Q1.
+
+`FAULTS` today is six values (`credential_faults.py:49-56`) and contains none of
+the three: `none`, `invalid_credential`, `unauthenticated_caller`,
+`audience_mismatch`, `wrong_registered_holder`, `stolen_AT_key_substitution`.
+
+**I withdraw the Option 3 recommendation.** It rested on a premise that was false
+for two of three subcases. The revised options are in §2.
+
+### What remains true from the first verdict
+
+- The seal, the run-once property and the output path are **not** obstructions.
+  `--out` exists, `refuse_if_written` guards the destination rather than a fixed
+  path, and `run_campaign` already takes a `scenarios` parameter.
+- `check_run_mode` still refuses any third run mode (`campaign.py:241-242`).
+- Q1's collision is unchanged and still needs your ruling: the structural-match
+  test asserts identical subcase sets across both corpora **and** hardcodes 13 in
+  four places, and the task forbids modifying that test.
+- Q2, Q4 and Q7 are unaffected.
+
+**Blindness disclosure, unchanged.** During this task I did not read
 `results/raw/campaign-confirmatory.json`, `results/tables/`, or
-`results/_ledger/`. I had, however, read them earlier in this same session for
-the fresh-clone verification pass, so those numbers were already in my context.
-I cannot honestly claim to have designed blind, and I am not going to pretend
-otherwise. Nothing below is derived from them.
+`results/_ledger/`. I had read them earlier in this session for the fresh-clone
+verification pass, so those numbers were already in my context. I am not going to
+claim to have designed blind.
+
+**Scope of the remaining negative.** The replay finding is established over
+`credential_faults.py`, `runner.py`'s presentation path, and `schema.py`. I have
+not read `src/sut/` or the `Specialist` drive loop, which is where a second
+presentation would have to originate if it is possible at all.
 
 ---
 
@@ -186,6 +218,11 @@ excluded 251}` [M — manifest].
 
 ### Q5. Is `dpop-first-use-body-mutation` a scenario input or a harness seam?
 
+> **SUPERSEDED by §0's correction.** The answer below is wrong: it is a harness
+> seam, but the harness **exposes that seam to scenarios** through
+> `credential_fault`. The G-14 evidence quoted remains accurate; the conclusion
+> drawn from it does not. Retained so the error is visible.
+
 **A harness seam. It is NOT expressible as a scenario input.**
 
 G-14 C2 constructs it at `smoke/g14/fixture.py:161-164`:
@@ -219,6 +256,11 @@ every existing scenario is loaded.
 requires every consumer to take `now` as an injected parameter, with over-window
 fixtures advancing the injected instant and real waiting forbidden. So no SUT
 modification is needed for time itself.
+
+> **SUPERSEDED by §0's correction.** The guard does NOT fire on a staged
+> fixture: it reads the provisioning setup dict, and a restaged token lives on
+> `arm._staged`. The description of the guard below is accurate; the inference
+> that it blocks this fixture is not.
 
 **But the guard fires, and that is decisive.** `clock_refusal` is called with the
 arm's provisioning setup dict as `credentials` (`campaign.py:931-936`), and
@@ -258,39 +300,47 @@ ancestry. The pre-campaign audit preceded the campaign it audited.
 
 ---
 
-## 2. What is actually possible
+## 2. What is actually possible — revised
 
-Stated so the Commander can rule, not as a recommendation to proceed.
+**Option A — the two staged-credential subcases, as new credential faults.**
+`expired_token` and `first_use_body_mutation` join `FAULTS`
+(`credential_faults.py:49-56`) with a `_restage_*` implementation each,
+following the five that exist. `_restage_token` already swaps the staged access
+token; an expired one is the same operation with a different token.
+`_restage_dpop_proof` already re-signs the staged proof under a different key;
+signing it over different tool/arguments is the same operation with a different
+payload. Scenarios select them through the existing `credential_fault` field
+(`campaign.py:901`). One sealed file, an established pattern, no schema change,
+no runner change.
 
-**Option 1 — accept the finding.** All three subcases remain NOT POPULATED, and
-the results chapter reports them exactly as the pre-registration already
-requires, with G-14 C1/C2 named as carriers for two and **no carrier** named for
-`expired-token`. Zero code, zero reseal, zero risk. The honesty cost is already
-being paid and is already pre-registered.
+Still required, and not free: three scenarios in **both** corpora (Q1), the four
+count constants (Q1), a v0.9 reseal covering `credential_faults.py` and both
+fixture trees (Q4), and a decision on whether the extension runs as
+`confirmatory` from a separate corpus root or the driver gains a `CORPORA`
+entry (Q3).
 
-**Option 2 — extend the sealed scenario vocabulary.** Add a signed-vs-presented
-digest pair and a replay seam to `IntendedInvocation` and the runner, and give
-`clock_refusal` a narrow, named exemption for a deliberately-expired fixture.
-This is a v0.9 unseal/reseal touching `src/harness/schema.py`,
-`src/harness/runner.py` and `src/harness/campaign.py`, plus both corpora, plus
-four count constants in the structural-matching test. It changes how every
-existing scenario is loaded. **My assessment: the risk is not proportionate to
-the gain**, because the three rows' predictions are already carried by gate
-evidence or already reported as uncarried, and the primary campaign's authority
-rests on the apparatus these edits would touch.
+**Option B — the replay subcase.** Not reachable this way. It needs a cell that
+makes two boundary decisions on one staged proof. That changes what a *cell*
+is — one verdict per cell today — and touches ADR 0026 measured segment, which
+brackets exactly one `arm.decide`. I would not bundle it with Option A; it is a
+different decision with a different risk profile, and it should be ruled on
+separately rather than carried along.
 
-**Option 3 — extend the GATE, not the campaign.** `smoke/` is excluded from the
-seal (`build_manifest.py:70`). A new gate limb — G-14 C4, or a G-16 — could
-carry `expired-token` at the same evidence class as C1/C2, closing the one
-subcase that currently has **no carrier at all**. No reseal, no corpus change,
-no test constant edited, and it directly addresses the weakest link identified
-in the earlier F3 analysis.
+**Option C — leave the replay row to G-14 C1, as now.** The pre-registration
+already states plainly that `B3+` ladder position rests on gate evidence and
+that a reader may weigh gate evidence differently. Option A would close the two
+subcases that currently have carriers, and leave the one that already has the
+most explicit disclosure exactly where it is.
 
-**Option 3 is the one I would put to the Commander.** It buys the thing actually
-missing (a carrier for `expired-token`) at the lowest cost, and it does not
-pretend a gate is a campaign.
+**What I would put to you:** Option A **plus** Option C — instantiate the two
+that are cheap and honest, and leave the replay row to the gate that was built
+for it. That closes `expired-token`, which is the only subcase with **no carrier
+at all**, and it does not spend a change to the cell concept on a row whose
+limitation is already pre-registered in the strongest terms in the document.
 
----
+I am not confident enough in Option B cost to recommend for or against it
+without reading `src/sut/` and the `Specialist` drive loop, which I have not
+done.
 
 ## 3. Sections B, C, D — not written, and why
 
@@ -307,45 +357,57 @@ Option 3, the equivalent sections belong to a gate design, not a corpus plan.
 
 ---
 
-## 4. §F — DEVIATIONS.md entry, for the Commander to commit
+## 4. §F — DEVIATIONS.md entries, for the Commander to commit
 
-The pre-commitment now owed is not "we will build three fixtures". It is the
-finding itself, recorded before any decision follows from it.
+Two are owed, not one: the correction, and whatever is decided.
 
-> ## D-010 — The three unpopulated F3 subcases cannot be campaign cells
+> ## D-010 — A feasibility finding was reported wrong, and corrected before it was acted on
 >
-> **Status:** OPEN — recorded before any remedial decision is taken.
+> **Status:** CLOSED on the same day it opened.
 > **Date:** 2026-08-16.
-> **Authority:** Commander ruling of 2026-08-16 (extension campaign), and the
-> stop-and-report instruction that accompanied it.
 >
-> **What was asked.** Instantiate `dpop-first-use-body-mutation`,
-> `expired-token` and `dpop-captured-proof-replay` as a separate once-only
-> extension campaign, leaving `campaign-confirmatory.json` untouched.
+> The F3 extension feasibility report first concluded that all three unpopulated
+> subcases were impossible as campaign cells, and recommended extending a gate
+> instead. Two of those three findings were wrong. The report had flagged its own
+> residual — the negative was established over `schema.py` and `runner.py`, not
+> over all of `campaign.py` or `src/sut/` — and closing that residual found
+> `src/harness/credential_faults.py`, whose `apply_to_presentation` is exactly
+> the signed-vs-presented seam the report said did not exist, and which is
+> already scenario-selectable through a `credential_fault` field.
 >
-> **What was found.** The obstruction is not the seal, the run-once property, or
-> the output path — all three of those are solved. The sealed scenario
-> vocabulary cannot express any of the three attacks. `IntendedInvocation`
-> (`src/harness/schema.py:120-139`) describes exactly one invocation: one tool,
-> one `intended_request_digest`, no replay field, no signed-vs-presented pair.
-> `attack_subcase` is a label consumed only for family grouping and switches no
-> behaviour. And `clock_refusal` (`src/harness/campaign.py:523-532`) refuses any
-> setup credential whose window does not cover the judging instant, routing the
-> cell to `unscorable` for every arm — which is precisely the shape an
-> expired-token fixture has.
+> A second error travelled with it: `clock_refusal` was said to make an
+> expired-token fixture unscorable. It inspects the **provisioning** setup dict;
+> a restaged token lives on `arm._staged`. Two different objects.
 >
-> **What follows, pre-committed.** The three rows remain NOT POPULATED BY THE
-> CAMPAIGN and are reported exactly as pre-registered §4 requires. This entry
-> does not authorise a fixture, a reseal, or a campaign run. If a remedy is
-> later adopted, it is recorded here as its own decision with its own reason,
-> and this finding is not edited to match it.
+> **Recorded because the failure mode is the point.** The first report was
+> detailed, evidenced, and wrong, and it would have been acted on. What caught it
+> was not review but the residual the report itself declared. A stated scope on a
+> negative finding is not a formality.
 >
-> **The residual, stated rather than left implicit.** `expired-token` has no
-> carrier at all: G-14's C1 and C2 carry the other two, and no gate names it.
-> That gap is a fact about this study's evidence base and travels with any
-> statement about F3 coverage.
+> No artefact, fixture, or campaign was built on the wrong finding; nothing needs
+> unwinding.
 
----
+> ## D-011 — Pre-commitment: the F3 extension, if authorised
+>
+> **Status:** OPEN — to be committed BEFORE any code is written.
+> **Date:** 2026-08-16.
+>
+> 1. The extension is a **separate, once-only campaign**.
+>    `results/raw/campaign-confirmatory.json` is not re-run, not overwritten and
+>    not superseded; its cells and its agreement remain the primary result.
+> 2. The three §E.4 rows predictions are **frozen** and are not edited. Instances
+>    are added; predictions are not. If a measured outcome contradicts a frozen
+>    prediction, that disagreement is **reported as the finding it is** and the
+>    matrix is not amended to match it.
+> 3. The extension rows are reported at a **distinct evidence class** in every
+>    artefact and in prose, and never inside a primary-campaign count. The fact
+>    that they were instantiated **after the primary results were seen** travels
+>    with every extension number.
+> 4. Whatever the extension measures is reported as returned, including a result
+>    that weakens this study own position.
+> 5. If the replay subcase is not built, that is stated, with `B3+` dependence
+>    on G-14 C1 restated in the same place — not left to be inferred from a
+>    coverage fraction.
 
 ## 5. Prohibitions observed
 
