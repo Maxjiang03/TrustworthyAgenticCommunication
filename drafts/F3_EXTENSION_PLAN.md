@@ -1,6 +1,6 @@
 # F3 corpus extension — Phase 0 report and feasibility verdict
 
-**Status: SPLIT ruled. `expired_token` DROPPED (R2 accepted). `first_use_body_mutation` costs ONE file (Q10 traced) but raises a threat-model question awaiting ruling. No code written.**
+**Status: CLOSED. The extension collapses — no subcase is built. F3 stays 2/5; all three subcases carried or declined on three distinct, evidenced reasons. No code was ever written.**
 *Scope: ONE fixture, `expired_token`. F3 coverage 2/5 -> 3/5, two subcases unbuilt.*
 *(The original status was RED on all three; that verdict was wrong and is corrected in section 0.)*
 Date: 2026-08-16. Phase 0 only; no code written, no artefact touched, no campaign run.
@@ -1007,6 +1007,156 @@ F3 coverage with the extension is **3/5** if `body_mutation` is built, and stays
 
 D-011 clause 5 covers the first. It needs a second sentence for the second, whose
 reason is not infeasibility and must not be blurred into it.
+
+---
+
+## FINAL — the extension collapses. Q11 finds no seam; Q13 finds my own framing was the error.
+
+**Prohibition observed.** I did not read `results/raw/campaign-confirmatory.json`,
+`results/tables/`, or `results/_ledger/` in this phase. No code was written, no
+artefact touched, no campaign run.
+
+### Q13 — what `d23fbcc` actually cut on, and why my "wrong on cost" was itself wrong
+
+**The cut was made on the seam and on fidelity. Not on cost.** Its two stated
+reasons were:
+
+1. *"a credential fault can move the **signed** side and never the **presented**
+   side"* — a claim about **capability**, evidenced at `runner.py:753`,
+   `:1043-1044` and `credential_faults.py:95-108`; and
+2. *"implementing it credential-side produces exactly the false B you
+   predicted"* — a claim about **fidelity**, evidenced at
+   `oracle/predicates.py:488-497`.
+
+Q10 refuted neither. Q10 priced the **mirror** construction — the very thing
+reason 2 had already rejected — and found it cheap. I then wrote that the cut
+was *"wrong on its cost"*, which was confused in a way that matters: **the cut
+was never made on cost, so a cost finding could not overturn it.** I re-priced a
+rejected option and presented the price as a refutation.
+
+You are right that this would have revived a correctly-cut fixture in a
+construction that bypassed the decision already made. The reasoning you are now
+ruling on in R4 is the same fidelity objection reason 2 raised, in a stronger and
+better-grounded form than I gave it.
+
+### R4, R5, R6 — accepted, and R4's decisive reason is one I did not reach
+
+I had the compromised-holder premise (Part D.1, `PRE_REGISTRATION.md:157`). I did
+not connect it to **H4a's adversary definition**, where K-none is a *constituent
+of the hypothesis* rather than background. A cell requiring K-holder cannot
+adjudicate H4a branch (ii) at all — so the mirror construction fails not on
+elegance but on the one thing the extension was primarily for.
+
+Your coherence argument is the part I would not have produced: a holder-key
+adversary would sign a **valid** assertion over whatever request they wanted,
+which is H4b's residual. Signing an assertion that cannot match one's own request
+is self-defeating. The real §D.2 attacker is coherent **because** the capability
+constraint produces the attack shape — lacking the key, he alters what he can
+(the body) and reuses what he cannot (the genuine proof). The mirror inverts
+that and keeps only the silhouette.
+
+R5 accepted: `_rebind_inv` uses the key to **maintain** consistency so a fault
+created elsewhere stays the sole attack surface; the mirror uses the key to
+**manufacture** the fault. Same function, opposite direction. My report joined
+"same function" (cost) and "therefore fine" (fidelity) in one sentence, which is
+exactly the elision.
+
+### Q12 — confirmed, and worse than I stated: a class_macro quantity inverts
+
+`realized_harm_F3` (`oracle/predicates.py:~465-485`) walks the effect set:
+
+```python
+observed = oracle_request_digest(observation)
+for effect in effects_of(ledger, cid):
+    actual = _row_value(effect, "effect_request_digest")
+    if actual != intended:  return True   # not what the task authorized
+    if actual != observed:  return True   # diverged from what arrived
+```
+
+| | real §D.2 attack | mirror construction |
+|---|---|---|
+| intended (sealed) | X | X |
+| what arrives | **Y** (mutated) | X |
+| what an admitting arm forwards | Y | X |
+| `actual != intended` | Y ≠ X → **True** | X ≠ X → False |
+| **`realized_harm_F3`** | **True** | **False** |
+
+So for the **seven admitting arms**, `realized_harm` inverts. That is not a
+reported-alongside diagnostic: `realized_harm` is one of the six `class_macro`
+quantities and is TAB-4 body content and F3 per-family count material.
+
+`effect_count` does **not** differ — the tool runs either way. That makes it
+worse, not better: the cell would look populated and well-formed, with an effect
+recorded, and only the field saying whether harm occurred would be wrong. A row
+named `body-mutation` would report that seven arms forwarded an attack and none
+of them realised any harm, because none of them did — there was no attack in the
+request.
+
+### Q11 — NO. The faithful construction needs a seam that does not exist.
+
+The faithful attack mutates the **dispatch arguments** after the INV is sealed
+and before dispatch, leaving proof and INV untouched. Traced:
+
+1. `Specialist.receive` reads `arguments = dict(envelope.intent["arguments"])`
+   (`specialist.py:61`) — one fresh dict.
+2. It passes that dict **by reference** into `InvocationContext`
+   (`specialist.py:66`); the field is `arguments: Mapping[str, Any]`
+   (`src/sut/baselines/base.py:183`), no defensive copy. **An alias therefore
+   exists.**
+3. `arm.present(...)` consumes it to compute `h_jcs(arguments)` into the INV
+   payload, and **drops it**. `B3Presentation` is `@dataclass(frozen=True)` and
+   carries only wire material — `capability_hops`, `htc_chain`,
+   `invocation_assertion`, `access_token`, `task_id`, `audience`, `method`,
+   `now_epoch`, labels, approval artifact, `resource_owner`, `oauth_actor`
+   (`capability_path.py:323-344`). **No `arguments` field. No
+   `InvocationContext`.**
+4. `Specialist` then dispatches with its own local: `self._tool_caller(tool,
+   arguments)` (`specialist.py:77`).
+
+`apply_to_presentation(fault, arm, ...)` receives **only the arm**
+(`credential_faults.py:95-108`). The arm retains no handle to the arguments dict,
+so **the fault has no path to the object the alias points at.** The alias lives
+in the Specialist's frame and nothing reachable from the fault holds it.
+
+**Cost of creating the seam, exactly, per your instruction:**
+
+- *Mutate `Specialist`* — a **SUT agent**. Modifying the system under test to
+  stage an attack against it is the measurement writing its own result. Refused
+  on principle, not on cost.
+- *Add a harness-side interception between `present` and dispatch* — a new
+  capability in `runner.py` and the tool-caller path (`runner.py:789-820`, the
+  `_LateBoundToolCaller` at `:807`). It changes the dispatch path **for every
+  scenario in every campaign**, not only for this fixture, and it is sealed
+  `src/`. That is the multi-file cost that killed `expired_token`, on a hotter
+  path.
+
+Per your standing instruction I am reporting and stopping. **I have not built the
+mirror as a fallback and am not looking for a third construction.**
+
+### The extension collapses, and I agree it is the acceptable outcome
+
+- **F3 coverage stays 2/5.** No extension instance is built.
+- **`dpop-captured-proof-replay`** — evaluated, judged **infeasible**, evidenced
+  (`smoke/g14/fixture.py:147-152`), judgement made after the primary results were
+  known. Carrier: G-14 C1.
+- **`expired_token`** — evaluated, judged **not worth its cost**, evidenced
+  (its §E.4 row is byte-identical to the populated `audience mismatch` row,
+  `PRE_REGISTRATION.md:210-211`). Not infeasible. Carrier: **none**.
+- **`first_use_body_mutation`** — evaluated; the faithful construction **needs a
+  seam the harness does not have**, and the available construction requires
+  K-holder, which H4a's adversary definition excludes as a constituent of the
+  hypothesis. Carrier: **G-14 C2**.
+- **H4a stays NOT DETERMINED**, carried by G-14 C2 — which is built faithfully,
+  needs no key, and reads the DPoP claim set directly off the artifact rather
+  than inferring the limitation from an outcome (`smoke/g14/spike.py:149-157`).
+
+Three subcases, three distinct reasons, none of them "we did not get to it". That
+is a better paragraph than a fourth coverage tick would have been.
+
+**D-011 closes unbuilt.** It was a pre-commitment for an extension that is not
+happening; nothing it constrained was ever executed, and the entry stands as the
+record that the constraints were fixed before the question was settled rather
+than after.
 
 ---
 

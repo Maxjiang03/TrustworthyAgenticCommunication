@@ -76,7 +76,15 @@ not in what it does. It is disclosed here and handled at the caller.
 
 ## D-011 — Pre-commitment: the F3 `expired_token` extension
 
-**Status:** OPEN — committed BEFORE any fixture, any code, and any run.
+**Status:** CLOSED UNBUILT, 2026-08-16. No fixture, no code and no run ever
+followed it: the extension was closed when the faithful construction of its last
+candidate was found to need a dispatch-argument seam the harness does not have,
+and the available construction required the terminal holder key that H4a's
+adversary definition excludes. The entry stands as the record that these
+constraints were fixed **before** the question was settled rather than after.
+Nothing it constrained was executed, so nothing needs unwinding.
+
+**Status when written:** OPEN — committed BEFORE any fixture, any code, and any run.
 **Date:** 2026-08-16.
 **Authority:** Commander ruling of 2026-08-16 (A + C; B declined for this
 dissertation).
