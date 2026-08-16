@@ -27,6 +27,53 @@ should expect from the sealed record.
 
 ---
 
+## D-012 — `check_run_mode` does not contemplate a third corpus root, and the gap is a labelling hazard
+
+**Status:** OPEN — recorded before the run it concerns.
+**Date:** 2026-08-16.
+**Authority:** Commander ruling of 2026-08-16 (PATH 1, item P1b).
+
+**The gap.** `check_run_mode` (`src/harness/campaign.py:232-267`) was written to
+refuse a confirmatory run carrying a pilot-provisional artifact, by three limbs:
+a fixture under `fixtures/pilot/`, an §E.6 ablation variant, and a policy
+document still marked `PILOT-PROVISIONAL`. Its author was separating **two**
+corpora. Nothing in it contemplates a third, and the F3 extension corpus passes
+the pilot-path limb simply by not being the pilot corpus.
+
+**Why it is not a hole in coverage.** Two of the three limbs are
+corpus-independent and fire on the extension unchanged — the ablation check reads
+`arms` (`:250-259`) and the `PILOT-PROVISIONAL` check reads the frozen policy
+document (`:263-267`). The limb that does not fire protects a property that is
+not at risk here.
+
+**The hazard the gap does create.** `run_mode` is restricted to
+`("pilot", "confirmatory")` (`:241-242`), so the extension must run as
+`confirmatory`. That string is stamped into the output record
+(`campaign_driver.py:271`) and selects the ledger directory
+(`campaign_driver.py:206`). Left alone, the extension artefact would **declare
+itself `run_mode: "confirmatory"`** and its ledger rows would land **in the
+primary campaign's ledger directory** — the exact confusion the evidence-class
+separation exists to prevent, arriving by default rather than by choice.
+
+**Recorded because of the pattern, not the severity.** A check that looks dormant
+becoming load-bearing, and failing toward the hypothesis, is this project's
+recurring failure. This is an instance caught before it fired rather than after.
+
+**Mitigations, both at the unsealed composition root, neither touching the seal.**
+
+1. A distinct ledger directory (`results/_ledger/f3-extension/`) is passed
+   explicitly, so no extension ledger row enters the primary campaign's directory.
+2. `evidence_class: "extension"` and the seal version are stamped into the output
+   alongside the inherited `run_mode`, so `run_mode: "confirmatory"` can never be
+   read alone.
+
+**Not fixed in the sealed code, and why.** Widening `check_run_mode` to know
+about a third mode is a change to a covered file whose current behaviour is
+correct for everything it was written for. The gap is in what it contemplates,
+not in what it does. It is disclosed here and handled at the caller.
+
+---
+
 ## D-011 — Pre-commitment: the F3 `expired_token` extension
 
 **Status:** OPEN — committed BEFORE any fixture, any code, and any run.

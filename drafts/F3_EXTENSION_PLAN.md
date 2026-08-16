@@ -1,6 +1,7 @@
 # F3 corpus extension — Phase 0 report and feasibility verdict
 
-**Status: ONE subcase buildable (`expired_token`). Ruling A+C received; Q8/Q9 narrowed A to one of its two members.**
+**Status: PATH 1 ruled. S1 resolved, P1a delivered, P1b judged, P1c specified. Phase 2 authorised.**
+*Scope: ONE fixture, `expired_token`. F3 coverage 2/5 -> 3/5, two subcases unbuilt.*
 *(The original status was RED on all three; that verdict was wrong and is corrected in section 0.)*
 Date: 2026-08-16. Phase 0 only; no code written, no artefact touched, no campaign run.
 
@@ -545,6 +546,225 @@ version of the same position — and it leaves the primary campaign's corpus, an
 the fifteen gate adjudications that describe it, untouched.
 
 This is a ruling I am not making. Both paths are live until you rule.
+
+---
+
+## S1 — RESOLVED: the scope narrowed to one fixture, deliberately, on a reported finding
+
+**Plainly: the scope narrowed. The numbers are right for the narrowed plan.**
+Ruling A approved two fixtures; one of them cannot be built. `expired_token` is
+built; **`first_use_body_mutation` is dropped**. Coverage therefore goes 2/5 →
+**3/5**, with **two** unbuilt, not 4/5 with one.
+
+It was reported as a finding, not absorbed — §B of this document and commit
+`d23fbcc`, whose subject line is *"A narrows to one subcase; body-mutation is not
+buildable"*. What I did not do is flag the **arithmetic delta against the
+ruling** (4/5 → 3/5) as its own line item, which is how the discrepancy reached
+you as numbers rather than as a decision. That is the reporting defect, and it is
+mine.
+
+### The evidence, re-verified rather than restated
+
+Your framing of the obstacle — *does `invocation_binding_ok` validate the mutated
+tool/args or a pre-mutation staged snapshot* — has a clean answer, and it is
+**not** the obstacle:
+
+> `_invocation_binding_ok` re-derives the digest from the **live** arguments:
+> `if inv["canonical_request_digest"] != h_jcs(dict(arguments))`
+> (`src/sut/authz/capability_path.py:742`), and checks the live tool at `:756`.
+> **No snapshot.** A mutation that reached that call would be caught.
+
+The obstacle is upstream of it, and the re-check makes it sharper than my
+earlier statement. In `src/sut/agents/specialist.py:58-77`:
+
+```python
+def receive(self, envelope: DelegationEnvelope) -> Any:
+    """The transport handler: one scripted tool call per delegation."""
+    tool = envelope.intent["tool"]                      # :60
+    arguments = dict(envelope.intent["arguments"])      # :61
+    self._arm.present(
+        envelope.credentials,
+        InvocationContext(tool=tool, arguments=arguments, ...),   # :66
+    )
+    return self._tool_caller(tool, arguments)           # :77
+```
+
+**The signed side and the presented side are the same two Python locals, read
+once from `envelope.intent` and used three lines apart.** The INV is minted over
+`tool`/`arguments`; the identical `tool`/`arguments` go to the tool caller, the
+boundary dispatch, and `arm.decide(tool, arguments)` (`runner.py:753`, passed
+through at `:1043-1044`).
+
+There is no seam between them and no scenario field that separates them, because
+there is only **one source**. Meanwhile `apply_to_presentation(fault, arm, ...)`
+receives only the arm and reaches `arm._staged` (`credential_faults.py:95-108`) —
+the credential, never `envelope.intent`.
+
+Prising the two apart means editing `Specialist`, which is **a SUT agent**.
+Modifying the system under test in order to stage an attack against it is not a
+fixture; it is the measurement writing its own result. That is the reason this
+is a finding and not a cost.
+
+**And building it credential-side instead produces the false B you named.**
+Re-signing the staged INV over different arguments makes B3 block, while the
+request that arrived is unchanged — so the oracle reads no tampering:
+
+```python
+def observation_was_tampered(intent, observation) -> bool:   # predicates.py:488
+    return oracle_request_digest(observation) != _row_value(intent, "intended_request_digest")
+```
+
+A strong arm blocking a request the independent oracle certifies as untampered
+is the apparatus disagreeing with itself, not a result.
+
+`first_use_body_mutation` therefore joins `dpop-captured-proof-replay` with gate
+G-14 — C2 and C1 respectively — for structurally the same reason: **the campaign
+cell does not expose the side of the boundary the attack has to move.**
+
+---
+
+## P1a — the itemised disclosure list
+
+"Outside the guardrail" is replaced by this table. It is what travels with every
+extension number.
+
+### Checks the extension instance DOES undergo
+
+Instance-local checks have no reason not to apply, and all of them do — every one
+takes `corpus_root` or is corpus-independent.
+
+| check | where | what it establishes |
+|---|---|---|
+| Sealed-document schema validation | `IntendedInvocation(...)` construction, `runner.py:981-998` (pydantic) | every sealed field present, correctly typed, `U_task`/`C_sets`/`R`/`tau_gt` well-formed |
+| Ω membership of every `(action, resource)` | frozen `Ω`, `omega_gamma_v1.json` | the instance is a harder case, not a malformed request |
+| Configuration-family coverage | `check_configuration_families(scenarios=…, corpus_root=…)`, `campaign.py:871` | the monitor configurations this corpus needs are the ones run |
+| Frozen-row conformance | `check_frozen_rows()`, `campaign.py:869` | Δ, margins, policy hashes unchanged at run time |
+| Run-mode preconditions | `check_run_mode(...)`, `campaign.py:874` — see P1b | no ablation arm, no PILOT-PROVISIONAL policy document |
+| Single-process constraint | `check_single_process_campaign(...)`, `campaign.py:879` | ADR 0034 holds for this run too |
+| Ledger availability, non-degrading | `check_ledger_available(...)`, `campaign.py:880` | ADR 0014: effect evidence or refusal, never a silent fallback |
+| Stack non-duplication | `the_stack_is_not_duplicated()`, `campaign.py:868` | one boundary, one interposition |
+| Per-cell clock/validity refusal | `clock_refusal(...)`, `campaign.py:931` | a cell judged outside its credential's window is unscorable, not scored |
+| **Oracle independence** | G-12, structural (AST over the oracle source) | **unchanged and fully applicable** — it is a property of the oracle, not of the corpus, so the extension cell is scored by the same demonstrably independent oracle |
+
+### Checks the extension instance does NOT undergo
+
+All six live in `tests/test_confirmatory_corpus.py` and are **pairwise by
+construction** — they compare a confirmatory instance against its matched pilot
+sibling. A third root has no sibling, so these cannot apply rather than have been
+waived.
+
+| check | where | what is therefore not established |
+|---|---|---|
+| one-to-one matched pilot sibling | `:189-193` | that the instance has a pilot counterpart at all |
+| identical subcase and family sets | `:203-211` | that both corpora cover the same ground |
+| paired `attack_subcase`/`is_benign`/`requires_approval` | `:196-201` | that the pair agrees on what must not vary |
+| paired `relation` | `:213-220` | that the structural relation matches its sibling |
+| identical §E.4 prediction across all nine arms per pair | `:222-235` | that the pair predicts identically |
+| byte-for-byte pilot regeneration | `:77-83` | *(unaffected: the pilot is untouched, so this still passes as-is)* |
+
+**The honest consequence, stated once and carried:** the extension instance was
+authored after the primary results were known, and it is not held to the pairwise
+bias guard that the confirmatory corpus is held to. The guard exists because
+instances authored after watching a corpus behave are where an author picks
+easier or harder cases without meaning to.
+
+### Disjointness — MUST be evaluated across all three roots
+
+Accepted, and it is the one item in the second list that is **not** pairwise by
+nature. Set disjointness generalises to three sets; only the current test's
+arity is two (`:129-158`, on specification and seed **content hashes**, never on
+token bytes — two mints of one capability differ in bytes, ADR 0007).
+
+The standard is ADR 0035's, applied repeatedly in this project: an instance
+byte-identical to an existing one **double-counts one instance rather than
+measuring a second**. That is precisely why the four `F1-chain-tamper` `NA` cells
+survived ADR 0035's audit.
+
+A **new** test asserts three-way disjointness across
+`fixtures/pilot/golden_thread/`, `fixtures/confirmatory/` and the extension root,
+on specification and seed content hashes. It is a new file, not an edit to
+`test_confirmatory_corpus.py`, so the prohibition on modifying the disjointness
+test is respected in letter and in purpose.
+
+---
+
+## P1b — `check_run_mode` and the third root: an unconsidered gap, safe in coverage, with one real hazard it creates
+
+**Judgement, not observation.**
+
+The guard's own docstring states its purpose (`campaign.py:233-239`): *"Refuse a
+confirmatory run carrying any pilot-provisional artifact. Three ways a
+provisional artifact reaches a run, and all three refuse"* — a fixture from
+`fixtures/pilot/`, an §E.6 ablation variant, and a policy document still marked
+`PILOT-PROVISIONAL`.
+
+**It is a gap in contemplation.** The author was separating two corpora, not
+admitting a third. Nothing in the docstring, the error strings, or the structure
+contemplates one.
+
+**It is not a gap in coverage.** Of its three limbs, two are corpus-independent
+and fire on the extension unchanged: the ablation check reads `arms`
+(`campaign.py:250-259`), and the `PILOT-PROVISIONAL` check reads the frozen
+policy document (`:263-267`). The third limb — the `fixtures/pilot/` path check
+(`:245-249`) — does not fire, and **correctly does not**: the extension corpus is
+not the pilot corpus, and the property that limb protects is not at risk.
+
+**But the gap creates a hazard, and it fails toward the hypothesis exactly as you
+describe.** `run_mode` is restricted to `("pilot", "confirmatory")`
+(`campaign.py:241-242`), so the extension must run as **`confirmatory`**. That
+string is then:
+
+- stamped into the output record — `"run_mode": run_mode` (`campaign_driver.py:271`), and
+- used to select the ledger directory — `results/_ledger/<run_mode>` (`campaign_driver.py:206`).
+
+So without intervention the extension's own artefact would **declare
+`run_mode: "confirmatory"`**, and its ledger rows would land **inside the primary
+campaign's ledger directory**. A reader holding the extension JSON alone would
+see the same run-mode string the primary campaign carries. That is the precise
+confusion the evidence-class separation exists to prevent, and it would arrive by
+default rather than by choice.
+
+**Why it is nonetheless safe in this use, given two required mitigations:**
+
+1. The composition root builds its own runner and passes an explicit,
+   **distinct ledger directory** (`results/_ledger/f3-extension/`), so no
+   extension ledger row lands in the primary campaign's directory. The runner
+   accepts `ledger_dir` — `campaign_driver.py:206` passes it — so this needs no
+   sealed change.
+2. The composition root stamps an explicit `evidence_class` and the seal version
+   into the output alongside the inherited `run_mode`, so `run_mode:
+   "confirmatory"` can never be read alone (P1c).
+
+Both are recorded as a DEVIATIONS entry rather than left as build notes, because
+a dormant check becoming load-bearing is this project's recurring failure and
+this is an instance of it caught before it fired.
+
+---
+
+## P1c — the asset Path 1 gives, and how it is claimed
+
+The primary campaign ran under seal **v0.7** at `17e11c9` (2026-08-07 19:01:10)
+[M — git]. The extension will run under **v0.9**. The evidence-class distinction
+is therefore anchored by two distinct manifests and two distinct OpenTimestamps
+chains, not by a label a later editor could change: **anyone can read from the
+seal version which body of results predates the other**, and the ordering is
+cryptographic rather than asserted.
+
+Path 2 would have destroyed this, because it would have changed the corpus the
+v0.7-era gate record describes.
+
+**How it is claimed, concretely:**
+
+- The extension output carries `seal_version`, `seal_manifest`,
+  `implementation_commit`, and `evidence_class: "extension"` in its top-level
+  metadata.
+- Every artefact rendering extension numbers carries a header line naming both
+  seals: *primary — seal v0.7, commit `17e11c9`; extension — seal v0.9, commit
+  `<hash>`*.
+- **One honest limitation:** the primary campaign's own record carries no
+  `seal_version` field, and it is write-once and committed, so it is **not
+  retro-stamped**. The mapping is stated in the artefacts and derivable from the
+  commit each run was executed at; it is not read back out of the primary JSON.
 
 ---
 
