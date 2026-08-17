@@ -10,7 +10,6 @@ from collections import defaultdict
 
 from _common import (
     ARM_ORDER,
-    BLUE,
     FONT_MIN_PT,
     GHOST,
     GREY,
@@ -20,7 +19,6 @@ from _common import (
     PAPER,
     REPO_ROOT,
     ROW_SUBCASE_TOKENS,
-    VERMILLION,
     PresentationError,
     is_daggered,
     load_campaign,
@@ -233,13 +231,11 @@ def main():
         raise PresentationError(f"expected 20 display rows, built {n_display}")
     # Family band headers occupy their own spacer row so they never overprint
     # a row label (a layout row, not a data row; not counted in display_rows).
-    laid_out = []
-    seen = set()
-    for r in rows:
-        if r["family"] not in seen:
-            seen.add(r["family"])
-            laid_out.append(dict(kind="band", family=r["family"]))
-        laid_out.append(r)
+    # Families no longer take a spacer row each. They become a bracketed
+    # column on the far left, which restores proximity -- the header used to
+    # float equidistant between the band above and the band it heads -- and
+    # returns five row-heights to the page.
+    laid_out = list(rows)
 
     counts = defaultdict(int)
     for r in rows:
@@ -272,14 +268,14 @@ def main():
     # ---- geometry -------------------------------------------------------
     mpl_setup()
     ncol = len(ARM_ORDER)
-    cw, rh = 0.50, 0.30  # inches per cell
-    # The LEFT gutter carries the E.4 row labels, the longest of which
-    # ("F4 sensitive egress, no declassification [monitor on]") runs past a
-    # 2.45 in gutter and was drawn off the canvas -- the content overran by
-    # 0.609 in on the left and 0.197 in below. Both were invisible for as long
-    # as save() used bbox_inches="tight" and silently grew the page to cover
-    # them. Widened to hold what is actually drawn.
-    left, top, right, bottom = 3.10, 1.32, 1.85, 2.30
+    cw, rh = 0.50, 0.20  # inches per cell
+    # Far left: a family bracket column. Then the row labels, which no longer
+    # repeat the family name the bracket already carries. Then a narrow column
+    # for the monitor configuration, split out so a suffix cannot stretch the
+    # label gutter. The right margin holds one numeric agreement column and the
+    # carrier note on the two test-verified rows.
+    band_w, mon_w = 0.28, 0.46
+    left, top, right, bottom = band_w + 2.36 + mon_w, 1.10, 1.92, 0.38
     fig_w = left + ncol * cw + right
     n_layout = len(laid_out)
     fig_h = top + n_layout * rh + bottom
@@ -298,14 +294,38 @@ def main():
     for j, arm in enumerate(ARM_ORDER):
         ax.text(
             cx(j) + cw / 2,
-            fig_h - top + 0.10,
+            fig_h - top + 0.07,
             arm,
-            rotation=60,
+            rotation=45,
             ha="left",
             va="bottom",
             fontsize=FONT_MIN_PT,
             color=INK,
         )
+
+    # Family brackets, replacing the five spacer rows. The label carries the
+    # coverage fraction because §E.4's rule requires F3's 2/5 to travel with
+    # every F3 number on this figure; the per-family n moves to the caption.
+    fam_rows = defaultdict(list)
+    for i, r in enumerate(laid_out):
+        fam_rows[r["family"]].append(i)
+    for fam, idxs in fam_rows.items():
+        cov = tables["class_macro"][fam]["coverage"]
+        n = tables["class_macro"][fam]["quantities"]["observed_forwarded"]["total"]
+        y0, y1 = cy(max(idxs)), cy(min(idxs)) + rh
+        ax.plot([0.10, 0.10], [y0 + 0.02, y1 - 0.02], color=MIDGREY, lw=0.8)
+        ax.text(
+            0.06,
+            (y0 + y1) / 2,
+            f"{fam} {cov['instantiated']}/{cov['defined']}",
+            ha="center",
+            va="center",
+            rotation=90,
+            fontsize=FONT_MIN_PT,
+            color=INK,
+        )
+        print_render(ARTEFACT, f"band_{fam}_coverage", f"{cov['instantiated']}/{cov['defined']}")
+        print_render(ARTEFACT, f"band_{fam}_n", n)
 
     per_arm_scored = defaultdict(int)
     row_agreed_total = 0
@@ -338,12 +358,32 @@ def main():
             print_render(ARTEFACT, f"band_{fam}_n", n)
             continue
 
+        # The family prefix is dropped: the bracket column already carries it,
+        # and repeating it on every row cost gutter width for no information.
         lab = r["label"]
-        if r.get("monitor") is not None:
-            lab += "  [monitor " + ("on" if r["monitor"] else "off") + "]"
+        for prefix in (r["family"] + " ", r["family"] + "-", "benign:" + r["family"] + "-"):
+            if lab.startswith(prefix):
+                lab = lab[len(prefix) :]
+                break
         ax.text(
-            left - 0.08, y + rh / 2, lab, ha="right", va="center", fontsize=FONT_MIN_PT, color=INK
+            left - mon_w - 0.10,
+            y + rh / 2,
+            lab,
+            ha="right",
+            va="center",
+            fontsize=FONT_MIN_PT,
+            color=INK,
         )
+        if r.get("monitor") is not None:
+            ax.text(
+                left - 0.08,
+                y + rh / 2,
+                "mon " + ("ON" if r["monitor"] else "off"),
+                ha="right",
+                va="center",
+                fontsize=FONT_MIN_PT,
+                color=MIDGREY,
+            )
 
         if r["kind"] == "verified":
             # THIRD EVIDENCE CLASS. No campaign cell exists for this row; the
@@ -426,11 +466,11 @@ def main():
             obs = observed_state(cell)
             if exp == "NA":
                 ax.add_patch(
-                    Rectangle((x, y), cw, rh, facecolor=PAPER, edgecolor=GREY, hatch="////", lw=0.4)
+                    Rectangle((x, y), cw, rh, facecolor=PAPER, edgecolor=GREY, hatch="////", lw=0.0)
                 )
                 na_row += 1
             else:
-                lw = 1.5 if (exp or "").startswith("B") else 0.5
+                lw = 1.2 if (exp or "").startswith("B") else 0.5
                 ax.add_patch(Rectangle((x, y), cw, rh, facecolor=PAPER, edgecolor=INK, lw=lw))
             if is_daggered(exp):
                 ax.text(
@@ -455,11 +495,7 @@ def main():
                 continue
             per_arm_scored[arm] += 1
             if obs == "B":
-                ax.add_patch(
-                    Rectangle(
-                        (x + 0.04, y + 0.04), cw - 0.08, rh - 0.08, facecolor=INK, edgecolor="none"
-                    )
-                )
+                ax.add_patch(Rectangle((x, y), cw, rh, facecolor=INK, edgecolor=INK, lw=0.4))
                 ax.text(
                     x + cw / 2,
                     y + rh / 2,
@@ -484,12 +520,12 @@ def main():
             else:
                 ax.add_patch(
                     Rectangle(
-                        (x + 0.05, y + 0.05),
+                        (x + 0.03, y + 0.03),
                         cw - 0.10,
                         rh - 0.10,
                         facecolor=PAPER,
                         edgecolor=ORANGE,
-                        lw=1.4,
+                        lw=1.2,
                         linestyle=(0, (2, 1.5)),
                     )
                 )
@@ -578,7 +614,7 @@ def main():
     ax.text(
         left - 0.08,
         yb,
-        "scored cells per arm",
+        "cells scored",
         ha="right",
         va="top",
         fontsize=FONT_MIN_PT,
@@ -588,70 +624,64 @@ def main():
     j3 = ARM_ORDER.index("B3")
     xb0, xb1 = cx(j3), cx(j3) + 2 * cw
     ybr = fig_h - top + 0.03
-    ax.plot([xb0, xb0, xb1, xb1], [ybr, ybr + 0.05, ybr + 0.05, ybr], color=BLUE, lw=1)
+    ax.plot([xb0, xb0, xb1, xb1], [ybr, ybr + 0.06, ybr + 0.06, ybr], color=INK, lw=0.9)
     print_render(ARTEFACT, "b3_b3plus_identical_pairs [M]", 17)
 
-    n_disagreed = len(agreement["disagreed"])
-    n_comparable = agreement["agreed"] + n_disagreed
-    totals = (
-        f"153 cells run → {len(campaign['cells'])} scored + {len(campaign['unscorable'])} "
-        f"unscorable-NA  |  §E.4 agreement: 90 ENTRIES (10 predicted rows × 9 arms, "
-        f"footnote-† configuration rule) → {agreement['agreed']} of {n_comparable} comparable "
-        f"agreed, {len(agreement['unmeasured'])} NA not comparable, {n_disagreed} disagreed  |  "
-        f"{len(agreement['not_populated'])} rows not populated; {len(agreement['deferred'])} "
-        f"row deferred"
-    )
-    disclosure = (
-        "B3 = B3+ in all 17/17 comparable cell pairs; the sole distinguishing subcase "
-        "(F3 dpop-captured-proof-replay) is NOT POPULATED BY THE CAMPAIGN; B3+'s ladder "
-        "position rests on gate G-14 evidence, which is not campaign evidence."
-    )
-    legend = (
-        "Frame = §E.4 expectation (heavy B, hairline A, † = A absent shared monitor, hatch NA). "
-        "Fill = observed (■B blocked, A forwarded, FB false block, × unscorable, • realized harm). "
-        f"Ghost band = never run. Disagreement mark ▲ ({n_disagreed} of {n_comparable} "
-        "comparable entries) — shown so the display could have failed. Configs compared only "
-        "within a row (G-15). ENTRIES and CELLS are not one-to-one: an §E.4 entry is one "
-        "(predicted row, arm); a daggered entry (A†, the four B2 arms per F4/F5 attack row — "
-        "ADR 0032) is scored against the monitor-off cell only, and an UNDAGGERED F4/F5 entry "
-        "must hold under BOTH configurations — a stricter test, not a footnote. Row margins "
-        'count CELLS; "(+k NA)" = k cells expected NA (unscorable), "(+k †→off)" = k daggered '
-        "cells of this monitor-on row that are scored under the monitor-off row instead. "
-        "Exact counts; no CI is defined."
-    )
+    # ---- the caption -------------------------------------------------------
+    # Every prose block that used to sit on the canvas is generated here from
+    # the same values the figure renders, and PRINTED, so it cannot drift from
+    # the board by being retyped into LaTeX. Two rules are honoured here that
+    # the drawn text broke: the F4 qualification is carried VERBATIM from the
+    # sealed record rather than paraphrased (the FRESH_CLONE finding F1), and
+    # the agreement clause uses the wording the plan fixes, which names ENTRIES
+    # -- the drawn version had dropped that word.
+    f4_qualification = tables["class_macro"]["F4"]["qualification"]
+    print_render(ARTEFACT, "caption.f4_qualification_chars [M verbatim]", len(f4_qualification))
+    base_entries = agreement["agreed"] + len(agreement["unmeasured"])
+
+    paragraphs = [
+        "Prediction-outcome state board. Rows are the E.4 subcases in matrix order, F4 and F5 "
+        "split per monitor configuration with their benign controls beneath; columns are the nine "
+        "ladder arms; the bracket at the left gives each family and its instantiated-of-defined "
+        "subcase coverage. Every campaign cell carries two layers. The FRAME is the E.4 expected "
+        "value: heavy for B, hairline for A, a dagger for A admitted absent the shared monitor, "
+        "hatching for NA. The FILL and LETTER are what the campaign observed: dark B blocked, "
+        "open A forwarded, FB a false block, x unscorable, a corner dot realized harm. Agreement "
+        "is frame against fill, so a disagreement would be the one cell whose two layers differ.",
+        f"{len(campaign['cells'])} cells were scored and {len(campaign['unscorable'])} were "
+        f"unscorable-NA. Against the E.4 matrix, {agreement['agreed']} of {base_entries} "
+        f"comparable ENTRIES agreed; {len(agreement['unmeasured'])} of the 90 base ENTRIES were "
+        f"NA and not comparable; {len(agreement['disagreed'])} disagreed. "
+        f"{len(agreement['not_populated'])} rows are not populated by the campaign and "
+        f"{len(agreement['deferred'])} row is deferred and unscored under ADR 0028; the deferred "
+        "row is counted here and given no display slot. ENTRIES and CELLS are not one to one: an "
+        "E.4 entry is one predicted row against one arm, a daggered entry is scored against the "
+        "monitor-off cell only, and an undaggered F4 or F5 entry must hold under BOTH "
+        "configurations, which is the stricter test. Row margins therefore count CELLS, where "
+        "(+k NA) is k cells expected NA and (+k dagger) is k daggered cells of a monitor-on row "
+        "scored under the monitor-off row instead. These are exact counts; no confidence interval "
+        "is defined for any of them, and none is drawn.",
+        "Two rows carry no campaign cell and are drawn in a third evidence class, dashed outline "
+        "with no fill: F3 expired token and F3 dpop-captured-proof-replay. Their nine values are "
+        "E.4 predictions which the test suite verifies cell by cell across all nine arms. They "
+        "are not campaign cells and they enter none of the counts above. F3 "
+        "dpop-first-use-body-mutation remains a ghost band because its carrier, gate G-14 C2, "
+        "adjudicates two arms rather than nine, so a nine-cell row would be a fabrication. Gate "
+        "evidence is not campaign evidence and this figure does not present the two as "
+        "equivalent.",
+        "B3 and B3+ are identical in all 17 of 17 comparable cell pairs, bracketed above their "
+        "columns. The sole subcase that distinguishes them, F3 dpop-captured-proof-replay, is "
+        "not populated by the campaign, so B3+'s position on the ladder rests on gate G-14 "
+        "evidence rather than on campaign evidence, and a reader is entitled to weigh gate "
+        "evidence differently.",
+        f4_qualification,
+    ]
     import textwrap
 
-    # The three bottom blocks used to sit at hand-tuned y constants, so the
-    # legend ran off the bottom of the canvas whenever its wrapped line count
-    # grew -- and bbox_inches="tight" hid that by enlarging the page. Stack them
-    # UPWARD from the canvas floor instead, driven by the line counts actually
-    # produced, and print the gutter the text needs so a mismatch against the
-    # authored `bottom` is visible rather than silent.
-    wrap_chars = 138  # ~7.7 in at 8 pt DejaVu Sans; canvas holds 9.3 in
-    line_h = FONT_MIN_PT * 1.26 / 72.0  # 8 pt on ~10 pt leading, in inches
-    pad = 0.10
-    blocks = [  # bottom-most first
-        (0.26, textwrap.wrap(legend, wrap_chars - 3), INK, "▲"),
-        (0.08, textwrap.wrap(disclosure, wrap_chars), BLUE, None),
-        (0.08, textwrap.wrap(totals, wrap_chars), INK, None),
-    ]
-    y = pad
-    for x, lines, colour, bullet in blocks:
-        y += line_h * len(lines)
-        if bullet:
-            ax.text(0.08, y, bullet, fontsize=FONT_MIN_PT, color=VERMILLION, va="top")
-        ax.text(x, y, "\n".join(lines), fontsize=FONT_MIN_PT, color=colour, va="top")
-        y += pad
-    print_render(ARTEFACT, "layout.bottom_gutter_required_in", f"{y:.3f}")
-    print_render(ARTEFACT, "layout.bottom_gutter_authored_in", f"{bottom:.3f}")
-    strip_floor = yb - line_h
-    print_render(ARTEFACT, "layout.per_arm_strip_floor_in", f"{strip_floor:.3f}")
-    print_render(ARTEFACT, "layout.bottom_text_ceiling_in", f"{y - pad:.3f}")
-    if strip_floor < y - pad:
-        raise PresentationError(
-            f"the per-arm strip (floor {strip_floor:.3f} in) overlaps the bottom "
-            f"text blocks (ceiling {y - pad:.3f} in); increase `bottom`"
-        )
+    for para in paragraphs:
+        for line in textwrap.wrap(para, 96):
+            print(f"CAPTION {ARTEFACT} | {line}")
+        print(f"CAPTION {ARTEFACT} |")
 
     save(fig, "fig1_state_board", ARTEFACT)
 
