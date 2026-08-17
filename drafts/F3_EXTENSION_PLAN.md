@@ -7,6 +7,15 @@ Date: 2026-08-16. Phase 0 only; no code written, no artefact touched, no campaig
 
 ---
 
+> **CORRECTED 2026-08-17, see DEVIATIONS D-013.** Every statement in this
+> document that `expired_token` has "no carrier at all" is WRONG.
+> `tests/test_f3_matrix.py` measures it, and `dpop-captured-proof-replay`,
+> **cell by cell across all nine arms** against §E.4. What was established was
+> that no GATE names it; that gate-scoped negative was reported as an unscoped
+> one. All five F3 subcases have evidence, at three distinct evidence classes.
+> The extension's closure is unaffected on its other reasons; this one reason is
+> void and must not be repeated.
+
 ## 0. Verdict — CORRECTED 2026-08-16, after the residual check this report itself called for
 
 **The first verdict in this document was WRONG on two of its three findings, and

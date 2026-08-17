@@ -27,6 +27,71 @@ should expect from the sealed record.
 
 ---
 
+## D-013 — "no carrier at all" was wrong: a nine-arm test carries two of the three unpopulated F3 rows
+
+**Status:** CLOSED on the day it opened.
+**Date:** 2026-08-17.
+**Authority:** found by an adversarial verification pass over the F3 carrier audit.
+
+**The error.** Throughout the F3 extension work I reported that
+`F3 expired token` has **no carrier at all**. That statement reached
+`DEVIATIONS.md` D-011 clause 5 ("Carrier: **none**, stated plainly"),
+`drafts/F3_EXTENSION_PLAN.md`, and the recommendation that closed the extension.
+
+It is false. `tests/test_f3_matrix.py` — 629 lines, 48 tests, green in the suite
+— measures **both** `F3 expired token` and `F3 dpop-captured-proof-replay`
+**cell by cell across all nine arms**, against the §E.4 predictions, with
+`B-cap` carrying the ADR 0031 correction. Its own first line says so:
+*"§E.4's two buildable F3 rows, over all nine arms (EXP4 STEP 6-7)."* And it
+holds the same discipline the campaign does: *"A cell that disagrees with §E.4
+is a finding to report, not a number to adjust — and neither is the prediction
+to be edited to match the cell."*
+
+**How the error was made.** I searched for a **gate**. No gate names
+`expired token`, and that finding is correct — `smoke/g1..g15` was searched
+exhaustively and the nearest hit is a G-4 RFC 8693 conformance row with no
+criterion id and no per-arm F3 cells. I then reported the gate-scoped negative
+as an unscoped one. **"No gate covers it" and "no carrier at all" are different
+claims, and only the first was established.**
+
+This is the same failure the scoped-negative rule exists to prevent (D-010), and
+this time the rule did not catch it because I stated the scope of the *search*
+and not the scope of the *conclusion*.
+
+**Corrected carrier map for F3, five subcases.**
+
+| subcase | evidence | arms covered |
+|---|---|---|
+| `dpop-stolen-AT-key-substitution` | confirmatory campaign cell | 9 |
+| `audience mismatch` | confirmatory campaign cell | 9 |
+| `expired token` | `tests/test_f3_matrix.py`, per-cell vs §E.4 | **9** |
+| `dpop-captured-proof-replay` | `tests/test_f3_matrix.py` **and** gate G-14 C1 | **9** (test); 2 (gate) |
+| `dpop-first-use-body-mutation` | gate G-14 C2 only | 2 (`B2-DPoP`, `B3`) |
+
+So **all five subcases have evidence**, four of them across all nine arms, at
+**three distinct evidence classes** — campaign cell, gate adjudication, and
+suite test. No subcase is uncarried.
+
+**What does NOT change.** F3's *campaign* coverage remains **2 of 5**, and that
+fraction still travels with every F3 number reported from the campaign
+(pre-registered §4). A suite test is not a campaign cell and is not a gate
+adjudication: it exercises the mechanism on an instance built for the test,
+inside the same process, and it is not part of the 143-cell record or the 80/0
+agreement. Nothing about the primary result moves.
+
+**What does change.** The decision to close the F3 extension was argued partly
+on `expired token` being the one subcase with no carrier at all. That argument
+is void. The other reasons stand unaffected — its §E.4 row is byte-identical to
+the already-populated `audience mismatch` row, and building it would have
+touched the AS provisioning and the campaign driver — so the outcome is
+unchanged, but one of its stated reasons must not be repeated.
+
+**Correction discipline.** D-011 is closed and its pre-commitment text is not
+edited. This entry supersedes its clause 5 on the single point of
+`expired token`'s carrier, and is the text to cite.
+
+---
+
 ## D-012 — `check_run_mode` does not contemplate a third corpus root, and the gap is a labelling hazard
 
 **Status:** OPEN — recorded before the run it concerns.

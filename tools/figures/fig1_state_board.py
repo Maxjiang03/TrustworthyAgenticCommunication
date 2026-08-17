@@ -65,9 +65,18 @@ def build_rows(campaign, tables):
     for row in tables["expected_matrix"]:
         state = row["state"]
         fam = row["family"]
+        if state.startswith("deferred"):
+            # Commander ruling 2026-08-17: the F2 wrong_principal row is not
+            # given a display slot. It is DROPPED FROM THE DISPLAY ONLY -- the
+            # deferral is still counted in the totals strip below, which reads
+            # the sealed `agreement.deferred` and therefore still says one row
+            # deferred. The row keeps its place in the sealed E.4 matrix, in
+            # TAB-2 and in ADR 0028; what changes is that FIG-1 spends no
+            # vertical space on a row that carries no cells.
+            print_render(ARTEFACT, "display.dropped_deferred_row [ruling]", row["subcase"])
+            continue
         if state != "predicted":
-            # Deferred / NOT-POPULATED rows carry no corpus token by design
-            # (the sealed mapping refuses the deferred row); they are ghost bands.
+            # NOT-POPULATED rows carry no corpus token by design; ghost bands.
             rows.append(dict(kind="ghost", label=row["subcase"], family=fam, state=state))
             continue
         token = ROW_SUBCASE_TOKENS[row_key(row["subcase"])]
@@ -116,8 +125,8 @@ def main():
     rows = build_rows(campaign, tables)
     n_display = len(rows)
     print_render(ARTEFACT, "display_rows [D]", n_display)
-    if n_display != 21:
-        raise PresentationError(f"expected 21 display rows, built {n_display}")
+    if n_display != 20:
+        raise PresentationError(f"expected 20 display rows, built {n_display}")
     # Family band headers occupy their own spacer row so they never overprint
     # a row label (a layout row, not a data row; not counted in display_rows).
     laid_out = []
