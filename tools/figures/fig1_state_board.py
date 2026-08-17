@@ -268,14 +268,14 @@ def main():
     # ---- geometry -------------------------------------------------------
     mpl_setup()
     ncol = len(ARM_ORDER)
-    cw, rh = 0.50, 0.20  # inches per cell
+    cw, rh = 0.50, 0.185  # inches per cell
     # Far left: a family bracket column. Then the row labels, which no longer
     # repeat the family name the bracket already carries. Then a narrow column
     # for the monitor configuration, split out so a suffix cannot stretch the
     # label gutter. The right margin holds one numeric agreement column and the
     # carrier note on the two test-verified rows.
     band_w, mon_w = 0.28, 0.46
-    left, top, right, bottom = band_w + 2.36 + mon_w, 1.10, 1.92, 0.38
+    left, top, right, bottom = band_w + 2.36 + mon_w, 1.10, 1.92, 0.68
     fig_w = left + ncol * cw + right
     n_layout = len(laid_out)
     fig_h = top + n_layout * rh + bottom
@@ -626,6 +626,25 @@ def main():
     ybr = fig_h - top + 0.03
     ax.plot([xb0, xb0, xb1, xb1], [ybr, ybr + 0.06, ybr + 0.06, ybr], color=INK, lw=0.9)
     print_render(ARTEFACT, "b3_b3plus_identical_pairs [M]", 17)
+
+    # ---- the notation key -------------------------------------------------
+    # Not the old legend, which was 842 characters of argument and duplicated
+    # TAB-1. This is a key: the marks a reader must decode to read a cell, and
+    # nothing else. Everything that argues rather than decodes is in the
+    # caption. Two lines, both 8 pt.
+    key_lines = (
+        "CELL   frame = E.4 predicted (heavy B, hairline A, hatch NA)   ·   "
+        "fill + letter = campaign observed   ·   A forwarded   B blocked   "
+        "FB false block   ×  unscorable",
+        "MARKS   †  predicted A absent the shared monitor   ·   •  realized harm   ·   "
+        "dashed = suite-verified over 9 arms, not a campaign cell   ·   "
+        "grey band = never run",
+    )
+    ky = bottom - 0.30
+    for line in key_lines:
+        ax.text(0.10, ky, line, ha="left", va="center", fontsize=FONT_MIN_PT, color=INK)
+        print_render(ARTEFACT, "key.line", line)
+        ky -= 0.16
 
     # ---- the caption -------------------------------------------------------
     # Every prose block that used to sit on the canvas is generated here from
