@@ -429,25 +429,36 @@ def main():
     # that must travel with the artefact is generated from the same numbers the
     # figure renders and cannot drift from them by being retyped.
     caption = (
-        "Boundary authority surface: nine ladder arms against the seven elements of the frozen "
-        "ontology Omega. DERIVED from frozen artefacts (Omega, U_task, C_n, and the SS E.1 grant "
-        "each arm carries); it is a specification surface, NOT a campaign measurement, and no "
-        "exercised dimension is present. `required` means the user's task grant U_task, not the "
-        "concrete request R. Cells: + admitted above the grant (the amplification, TV23); "
-        "· admitted at the grant; − held by the grant but narrowed away by the per-hop chain, "
-        "which is the intended contraction and not a failure; blank outside the grant and not "
-        "admitted. The two right-hand columns count the + and − cells of each row. "
-        f"Column markers show what the corpus requests: ● requested in that panel, ○ not — "
-        f"{open_i} open in Configuration I and {open_ii} in Configuration II, of which "
-        f"{len(never_either)} are never requested under either. C_n and U_task differ between the "
-        "two configurations, so neither is averaged. ‡ B3 and B3+ carry identical authority by "
-        "construction; they differ only in duplicate detection, which is not a property of the "
-        "authority surface."
+        "Boundary authority surface. Each cell places one element of the frozen ontology Omega "
+        "on a three-step ladder against U_task, the authority the user's task grant confers. An "
+        "element an arm admits without the task needing it sits above the grant, and those cells "
+        "are the scope amplification the threat vector names; an element the task needs and the "
+        "arm admits sits at it; an element the grant holds but the per-hop capability chain has "
+        "narrowed away sits below it. The last of these is the contraction the capability arms "
+        "exist to perform, not a refusal to be counted against them. A blank cell is outside the "
+        "grant and was not admitted. The two right-hand columns count the cells above and below "
+        "the grant on each row, and the row groups follow the ladder the arms themselves form: an "
+        "unscoped or coarse resource-server grant, a task-scoped grant equal to U_task, and the "
+        "attenuated chain end C_n. Read down those groups and the figure gives its result, which "
+        "is that scoping the base grant to the task removes the amplification without any "
+        "capability machinery, and that the capability arms then narrow further still."
+        "\n\n"
+        "The surface is derived, not measured. Omega, U_task and C_n are read from the sealed "
+        "configuration and corpus, and the grant each arm carries from the ladder definition, so "
+        "no exercised dimension appears and no cell reports a campaign outcome. What the corpus "
+        "actually requests is carried only by the column markers, filled where a configuration "
+        f"requests that element and open where it does not: {open_i} open in Configuration I, "
+        f"{open_ii} in Configuration II, and {len(never_either)} requested under neither. C_n and "
+        "U_task differ between the configurations, so the surface is drawn once for each rather "
+        "than averaged. B3 and B3+ carry identical authority by construction and differ only in "
+        "duplicate detection, which this surface does not describe."
     )
     import textwrap
 
-    for line in textwrap.wrap(caption, 96):
-        print(f"CAPTION {ARTEFACT} | {line}")
+    for para in caption.split("\n\n"):
+        for line in textwrap.wrap(para, 96):
+            print(f"CAPTION {ARTEFACT} | {line}")
+        print(f"CAPTION {ARTEFACT} |")
 
     # C8 -- acceptance, reported by the artefact itself.
     print_render(ARTEFACT, "acceptance.max_width_in [M _common.LANDSCAPE]", f"{LANDSCAPE[0]:.3f}")
