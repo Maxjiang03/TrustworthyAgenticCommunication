@@ -356,8 +356,16 @@ def main():
     # Family brackets, replacing the five spacer rows. The label carries the
     # coverage fraction because §E.4's rule requires F3's 2/5 to travel with
     # every F3 number on this figure; the per-family n moves to the caption.
+    # The golden thread is the STUDY-WIDE benign control, not an F1 subcase; it
+    # is carried under F1 only so it lands at the top of the board. Enclosing it
+    # in F1's rules would say it is one of the three subcases the 3/3 counts,
+    # so it sits above the block with the table's head rule over it. The F4/F5
+    # controls stay inside their own blocks, which is where they belong.
     fam_rows = defaultdict(list)
     for i, r in enumerate(laid_out):
+        if r["label"] == GOLDEN_THREAD:
+            ax.plot([0.10, cx(ncol)], [cy(i) + rh] * 2, color=INK, lw=0.9, zorder=4)
+            continue
         fam_rows[r["family"]].append(i)
     for fam, idxs in fam_rows.items():
         cov = tables["class_macro"][fam]["coverage"]
@@ -707,6 +715,20 @@ def main():
     xb0, xb1 = cx(j3), cx(j3) + 2 * cw
     ybr = fig_h - top + 0.03
     ax.plot([xb0, xb0, xb1, xb1], [ybr, ybr + 0.06, ybr + 0.06, ybr], color=INK, lw=0.9)
+    # The bracket is the MANDATED on-figure B3/B3+ disclosure, so it has to say
+    # something: an unlabelled mark discharges nothing and the caption cannot
+    # stand in for a rule that specifies the figure. Three words, in the right
+    # margin the header row leaves empty; the caption carries the consequence.
+    ax.text(
+        xb1 + 0.08,
+        ybr + 0.06,
+        "17/17 pairs identical",
+        ha="left",
+        va="center",
+        fontsize=FONT_MIN_PT,
+        color=MIDGREY,
+        style="italic",
+    )
     print_render(ARTEFACT, "b3_b3plus_identical_pairs [M]", 17)
 
     # ---- the notation key -------------------------------------------------
@@ -768,14 +790,21 @@ def main():
 
     ky = bottom - 0.30
     kx = 0.10
-    for kind, label in (
+    # The ghost swatch is CONDITIONAL. Every not-populated row now carries an
+    # off-campaign carrier, so no ghost band is drawn and a "never run" key
+    # would send the reader hunting for a state that is not on the board. It
+    # returns by itself the moment a row without a carrier appears.
+    key_items = [
         ("B", "blocked"),
         ("A", "forwarded"),
         ("FB", "false block"),
         ("NA", "not applicable"),
         ("pred", "predicted, verified off-campaign"),
-        ("ghost", "never run"),
-    ):
+    ]
+    if any(r["kind"] == "ghost" for r in laid_out):
+        key_items.append(("ghost", "never run"))
+    print_render(ARTEFACT, "key.ghost_swatch_drawn [D]", ("ghost", "never run") in key_items)
+    for kind, label in key_items:
         kx = swatch(kx, kind) + 0.07
         ax.text(kx, ky, label, ha="left", va="center", fontsize=FONT_MIN_PT, color=INK)
         kx += len(label) * 0.058 + 0.26
