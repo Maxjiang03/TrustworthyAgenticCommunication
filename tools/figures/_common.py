@@ -57,6 +57,22 @@ BLUE = "#0072B2"  # disclosure brackets / leaders
 ORANGE = "#E69F00"  # false-block dashed border
 VERMILLION = "#D55E00"  # RESERVED: the (unused) disagreement chevron
 
+# The state palette, COMPUTED rather than eyeballed (dataviz skill). The two
+# slots doing hue work clear every gate: normal-vision dE 47.7, protanopia
+# 41.3, deuteranopia 48.6 (OKLab x100, Machado 2009 severity 1.0), against a
+# target of 8 and a hard normal-vision gate of 15. BLOCKED carries chroma
+# 0.118, over the 0.10 floor, so it still reads as a hue and not as grey.
+#
+# It must also survive a MONOCHROME print, which the categorical lightness
+# band cannot express: the four fills sit at Rec.601 luma 51 / 162 / 236 /
+# 255, minimum adjacent gap 19 of 255. That is why BLOCKED sits outside the
+# 0.43-0.77 band -- the same reason the skill gives for not 'fixing' a
+# sequential ramp that spans it.
+BLOCKED = "#063C7A"  # deep blue fill, PAPER letter
+FALSE_BLOCK = "#E69F00"  # amber fill, INK letter
+HATCH = "#C0C0C0"  # NA texture, light enough that the glyph over it reads
+OFF_CAMPAIGN = "#5A6673"  # dashed outline + letter, no fill
+
 FONT_MIN_PT = 8  # minimum effective size everywhere (FIGURE_PLAN.md §D)
 
 # ---------------------------------------------------------------------------
@@ -199,7 +215,11 @@ def print_render(artefact, key, value):
 def mpl_setup():
     plt.rcParams.update(
         {
-            "font.family": "DejaVu Sans",
+            # Serif across the whole suite (Commander ruling 2026-08-17).
+            # DejaVu Serif ships WITH matplotlib, so a fresh clone renders the
+            # same glyphs on any machine; a system face would break the
+            # byte-reproduction the verification pass depends on.
+            "font.family": "DejaVu Serif",
             "font.size": FONT_MIN_PT,
             "axes.titlesize": FONT_MIN_PT + 1,
             "axes.labelsize": FONT_MIN_PT,

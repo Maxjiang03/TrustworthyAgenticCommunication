@@ -2,20 +2,23 @@
 
 Two layers per cell: FRAME = section E.4 expected value (read from the committed
 results-confirmatory.json expected_matrix); FILL + LETTER = the campaign's
-observed state (read from campaign-confirmatory.json). Never-run rows are ghost
-bands. Pure presentation (ADR 0048): nothing is computed, selected, or binned.
+observed state (read from campaign-confirmatory.json). Rows the campaign never
+populated are drawn in a third evidence class -- dashed, unfilled, counted
+nowhere. Pure presentation (ADR 0048): nothing is computed, selected, or binned.
 """
 
 from collections import defaultdict
 
 from _common import (
     ARM_ORDER,
+    BLOCKED,
+    FALSE_BLOCK,
     FONT_MIN_PT,
     GHOST,
-    GREY,
+    HATCH,
     INK,
     MIDGREY,
-    ORANGE,
+    OFF_CAMPAIGN,
     PAPER,
     REPO_ROOT,
     ROW_SUBCASE_TOKENS,
@@ -33,11 +36,6 @@ from matplotlib.patches import Rectangle
 
 ARTEFACT = "FIG-1"
 
-# The blocked fill. Pure INK turned every run of blocked cells into one
-# undifferentiated slab; this is dark enough to carry the finding at a glance
-# and light enough that the paper rules between cells still read. The letter
-# stays PAPER, so contrast is unaffected.
-BLOCKED = "#33363b"
 
 # Benign controls, keyed by their corpus token; the row label IS the token, so
 # no name is invented.
@@ -53,8 +51,8 @@ CONFIG_FAMILIES = ("F4", "F5")
 # buildable F3 rows, over all nine arms"; 48 tests, green). NOT campaign cells:
 # they enter no count on this board.
 TEST_VERIFIED_ROWS = {
-    "F3 expired token (OAuth neg. control)": "suite test, 9 arms",
-    "F3 dpop-captured-proof-replay (bit-identical)": "suite test, 9 arms; gate G-14 C1",
+    "F3 expired token (OAuth neg. control)": "suite test 9 arms",
+    "F3 dpop-captured-proof-replay (bit-identical)": "suite test 9 arms + G-14 C1",
 }
 # Carried by a gate rather than by the suite. The E.4 predictions are drawn for
 # all nine arms, but ONLY the arms the gate actually adjudicates are marked as
@@ -170,7 +168,9 @@ def build_rows(campaign, tables, e4):
             # nevertheless measured across all NINE arms by the suite, so they
             # are drawn as a THIRD evidence class -- dashed outline, no fill --
             # and are excluded from every campaign count. The third is carried
-            # by a gate that adjudicates two arms, so it stays a ghost band.
+            # by a gate that instantiated two arms, so its nine predictions are
+            # drawn with a corner tick on exactly those two: the row shows what
+            # E.4 predicts without implying the gate ruled on all nine.
             if row["subcase"] in TEST_VERIFIED_ROWS:
                 rows.append(
                     dict(
@@ -294,8 +294,8 @@ def main():
     # for the monitor configuration, split out so a suffix cannot stretch the
     # label gutter. The right margin holds one numeric agreement column and the
     # carrier note on the two test-verified rows.
-    band_w, mon_w = 0.28, 0.46
-    left, top, right, bottom = band_w + 2.36 + mon_w, 1.10, 1.92, 0.68
+    band_w, mon_w = 0.46, 0.46
+    left, top, right, bottom = band_w + 2.40 + mon_w, 1.10, 1.70, 0.68
     fig_w = left + ncol * cw + right
     n_layout = len(laid_out)
     fig_h = top + n_layout * rh + bottom
@@ -363,14 +363,26 @@ def main():
         cov = tables["class_macro"][fam]["coverage"]
         n = tables["class_macro"][fam]["quantities"]["observed_forwarded"]["total"]
         y0, y1 = cy(max(idxs)), cy(min(idxs)) + rh
-        ax.plot([0.10, 0.10], [y0 + 0.02, y1 - 0.02], color=MIDGREY, lw=0.8)
+        # A rule above and below the block, run from the family label to the end
+        # of the grid, so a reader sees which subcases the family CONTAINS.
+        for yy in (y0, y1):
+            ax.plot([0.10, cx(ncol)], [yy, yy], color=INK, lw=0.9, zorder=4)
         ax.text(
-            0.06,
+            0.10,
             (y0 + y1) / 2,
-            f"{fam} {cov['instantiated']}/{cov['defined']}",
-            ha="center",
+            fam,
+            ha="left",
             va="center",
-            rotation=90,
+            fontsize=FONT_MIN_PT + 1,
+            color=INK,
+            fontweight="bold",
+        )
+        ax.text(
+            0.10,
+            (y0 + y1) / 2 - 0.135,
+            f"{cov['instantiated']}/{cov['defined']}",
+            ha="left",
+            va="center",
             fontsize=FONT_MIN_PT,
             color=MIDGREY,
         )
@@ -448,7 +460,7 @@ def main():
                         cw,
                         rh,
                         facecolor=PAPER,
-                        edgecolor=MIDGREY,
+                        edgecolor=OFF_CAMPAIGN,
                         lw=0.6,
                         linestyle=(0, (2, 1.5)),
                     )
@@ -460,7 +472,7 @@ def main():
                     ha="center",
                     va="center",
                     fontsize=FONT_MIN_PT,
-                    color="#5a5a5a",
+                    color=OFF_CAMPAIGN,
                 )
                 if arm in r.get("adjudicated", ()):
                     # A filled corner tick: this arm, and only this arm, was
@@ -528,7 +540,9 @@ def main():
             obs = observed_state(cell)
             if exp == "NA":
                 ax.add_patch(
-                    Rectangle((x, y), cw, rh, facecolor=PAPER, edgecolor=GREY, hatch="////", lw=0.0)
+                    Rectangle(
+                        (x, y), cw, rh, facecolor=PAPER, edgecolor=HATCH, hatch="////", lw=0.0
+                    )
                 )
                 na_row += 1
             else:
@@ -583,15 +597,7 @@ def main():
                 )
             else:
                 ax.add_patch(
-                    Rectangle(
-                        (x + 0.03, y + 0.03),
-                        cw - 0.10,
-                        rh - 0.10,
-                        facecolor=PAPER,
-                        edgecolor=ORANGE,
-                        lw=1.2,
-                        linestyle=(0, (2, 1.5)),
-                    )
+                    Rectangle((x, y), cw, rh, facecolor=FALSE_BLOCK, edgecolor=INK, lw=1.2)
                 )
                 ax.text(
                     x + cw / 2,
@@ -714,27 +720,25 @@ def main():
         w, h = 0.26, 0.135
         yy = ky - h / 2
         if kind == "B":
-            ax.add_patch(Rectangle((x, yy), w, h, facecolor=INK, edgecolor=INK, lw=1.2))
+            ax.add_patch(Rectangle((x, yy), w, h, facecolor=BLOCKED, edgecolor=BLOCKED, lw=1.2))
             ax.text(x + w / 2, ky, "B", ha="center", va="center", fontsize=FONT_MIN_PT, color=PAPER)
         elif kind == "A":
             ax.add_patch(Rectangle((x, yy), w, h, facecolor=PAPER, edgecolor=INK, lw=0.5))
             ax.text(x + w / 2, ky, "A", ha="center", va="center", fontsize=FONT_MIN_PT, color=INK)
         elif kind == "FB":
-            ax.add_patch(Rectangle((x, yy), w, h, facecolor=PAPER, edgecolor=INK, lw=0.5))
-            ax.add_patch(
-                Rectangle(
-                    (x + 0.02, yy + 0.02),
-                    w - 0.04,
-                    h - 0.04,
-                    facecolor="none",
-                    edgecolor=ORANGE,
-                    lw=1.2,
-                    linestyle=(0, (1.6, 1.2)),
-                )
+            ax.add_patch(Rectangle((x, yy), w, h, facecolor=FALSE_BLOCK, edgecolor=INK, lw=1.2))
+            ax.text(
+                x + w / 2,
+                ky,
+                "FB",
+                ha="center",
+                va="center",
+                fontsize=FONT_MIN_PT,
+                color=INK,
             )
         elif kind == "NA":
             ax.add_patch(
-                Rectangle((x, yy), w, h, facecolor=PAPER, edgecolor=GREY, hatch="////", lw=0.0)
+                Rectangle((x, yy), w, h, facecolor=PAPER, edgecolor=HATCH, hatch="////", lw=0.0)
             )
             ax.text(x + w / 2, ky, "×", ha="center", va="center", fontsize=FONT_MIN_PT, color=INK)
         elif kind == "pred":
@@ -750,7 +754,13 @@ def main():
                 )
             )
             ax.text(
-                x + w / 2, ky, "A", ha="center", va="center", fontsize=FONT_MIN_PT, color=MIDGREY
+                x + w / 2,
+                ky,
+                "A",
+                ha="center",
+                va="center",
+                fontsize=FONT_MIN_PT,
+                color=OFF_CAMPAIGN,
             )
         elif kind == "ghost":
             ax.add_patch(Rectangle((x, yy), w, h, facecolor=GHOST, edgecolor="none"))
@@ -801,9 +811,13 @@ def main():
         "ladder arms; the bracket at the left gives each family and its instantiated-of-defined "
         "subcase coverage. Every campaign cell carries two layers. The FRAME is the E.4 expected "
         "value: heavy for B, hairline for A, a dagger for A admitted absent the shared monitor, "
-        "hatching for NA. The FILL and LETTER are what the campaign observed: dark B blocked, "
-        "open A forwarded, FB a false block, x unscorable, a corner dot realized harm. Agreement "
-        "is frame against fill, so a disagreement would be the one cell whose two layers differ.",
+        "hatching for NA. The FILL and LETTER are what the campaign observed: a filled blue cell "
+        "lettered B is a block, an open cell lettered A a forwarded request, a filled amber cell "
+        "lettered FB a false block, x over hatching an unscorable cell, and a corner dot realized "
+        "harm. The two fills are separated for colour-vision deficiency and in lightness, so the "
+        "states stay distinct in a monochrome print and no state is carried by hue alone. "
+        "Agreement is frame against fill, so a disagreement would be the one cell whose two "
+        "layers differ.",
         f"{len(campaign['cells'])} cells were scored and {len(campaign['unscorable'])} were "
         f"unscorable-NA. Against the E.4 matrix, {agreement['agreed']} of {base_entries} "
         f"comparable ENTRIES agreed; {len(agreement['unmeasured'])} of the 90 base ENTRIES were "
@@ -817,14 +831,15 @@ def main():
         "(+k NA) is k cells expected NA and (+k dagger) is k daggered cells of a monitor-on row "
         "scored under the monitor-off row instead. These are exact counts; no confidence interval "
         "is defined for any of them, and none is drawn.",
-        "Two rows carry no campaign cell and are drawn in a third evidence class, dashed outline "
-        "with no fill: F3 expired token and F3 dpop-captured-proof-replay. Their nine values are "
-        "E.4 predictions which the test suite verifies cell by cell across all nine arms. They "
-        "are not campaign cells and they enter none of the counts above. F3 "
-        "dpop-first-use-body-mutation remains a ghost band because its carrier, gate G-14 C2, "
-        "adjudicates two arms rather than nine, so a nine-cell row would be a fabrication. Gate "
-        "evidence is not campaign evidence and this figure does not present the two as "
-        "equivalent.",
+        "Three rows carry no campaign cell and are drawn in a third evidence class, dashed "
+        "outline with a grey letter and no fill. Their nine values are E.4 predictions, and the "
+        "row's right margin names what has actually tested each one. F3 expired token and F3 "
+        "dpop-captured-proof-replay are verified cell by cell across all nine arms by the test "
+        "suite. F3 dpop-first-use-body-mutation is not: its carrier, gate G-14 C2, instantiated "
+        "two arms rather than nine, and a corner tick marks exactly those two, so the seven "
+        "unticked cells are predictions no evidence of any class has touched. Gate evidence is "
+        "not campaign evidence, a suite test is neither, and none of these values enters any "
+        "count above; the figure does not present the three classes as equivalent.",
         "B3 and B3+ are identical in all 17 of 17 comparable cell pairs, bracketed above their "
         "columns. The sole subcase that distinguishes them, F3 dpop-captured-proof-replay, is "
         "not populated by the campaign, so B3+'s position on the ladder rests on gate G-14 "
