@@ -18,6 +18,7 @@ from _common import (
     MIDGREY,
     ORANGE,
     PAPER,
+    REPO_ROOT,
     ROW_SUBCASE_TOKENS,
     VERMILLION,
     PresentationError,
@@ -43,8 +44,86 @@ CONTROL_TOKENS = {
 }
 CONFIG_FAMILIES = ("F4", "F5")
 
+# Rows the campaign does not instantiate but the SUITE measures across all nine
+# arms, cell by cell against E.4 (tests/test_f3_matrix.py:1 -- "E.4's two
+# buildable F3 rows, over all nine arms"; 48 tests, green). NOT campaign cells:
+# they enter no count on this board.
+TEST_VERIFIED_ROWS = {
+    "F3 expired token (OAuth neg. control)": "suite test, 9 arms",
+    "F3 dpop-captured-proof-replay (bit-identical)": "suite test, 9 arms; gate G-14 C1",
+}
+# Rows carried only by a gate, which adjudicates TWO arms and not nine, so a
+# nine-cell row would be a fabrication.
+GATE_ONLY_ROWS = {
+    "F3 dpop-first-use-body-mutation (T-tool/T-args)": "gate G-14 C2 (B2-DPoP, B3 only)",
+}
 
-def build_rows(campaign, tables):
+
+# ---------------------------------------------------------------------------
+# The E.4 predictions for rows the sealed report withholds.
+#
+# analysis/matrix.py:84-88 empties `cells` for any row that is not PREDICTED --
+# that is how it enforces "a NOT_POPULATED row is never counted as agreeing,
+# never folded into a family" (matrix.py:22). The nine values therefore live
+# only in the sealed docs/PRE_REGISTRATION.md.
+#
+# This reads that sealed document directly, the same class of act as FIG-0
+# reading omega_gamma_v1.json and the sealed corpus, so it adds no import from
+# analysis/ and touches no ADR 0048 exception.
+#
+# It is TRUSTED ONLY AFTER IT IS PROVED: every PREDICTED row the report DOES
+# carry is re-parsed and compared cell by cell, and one mismatch refuses the
+# whole figure. Ninety comparisons stand behind the rows the report withholds.
+# ---------------------------------------------------------------------------
+E4_DOC = REPO_ROOT / "docs" / "PRE_REGISTRATION.md"
+
+
+def parse_e4_predictions():
+    """Every E.4 row as {subcase: [nine values]}, normalised to A / B / NA / A-dagger."""
+    out = {}
+    for line in E4_DOC.read_text(encoding="utf-8").splitlines():
+        if not line.startswith("|") or line.startswith("|--"):
+            continue
+        parts = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(parts) != 1 + len(ARM_ORDER):
+            continue
+        subcase, values = parts[0], parts[1:]
+        if subcase.startswith("Subcase"):
+            continue
+        norm = [v.replace("**", "").replace("*", "").strip() for v in values]
+        if any(v.startswith("deferred") for v in norm):
+            continue  # the deferred row carries no per-arm value by design
+        out[subcase] = norm
+    return out
+
+
+def proved_e4(tables):
+    """The parsed E.4 table, refused unless it reproduces every published row."""
+    parsed = parse_e4_predictions()
+    checked = 0
+    for row in tables["expected_matrix"]:
+        if row["state"] != "predicted":
+            continue
+        doc = parsed.get(row["subcase"])
+        if doc is None:
+            raise PresentationError(
+                f"E.4 row {row['subcase']!r} is published by the report but not found in "
+                f"{E4_DOC.name}; parser and sealed layer disagree on what exists"
+            )
+        for arm, want in zip(ARM_ORDER, doc, strict=True):
+            got = row["cells"].get(arm)
+            checked += 1
+            if got != want:
+                raise PresentationError(
+                    f"E.4 {row['subcase']!r} / {arm}: document says {want!r}, sealed report says "
+                    f"{got!r}. The parser is not trustworthy; refusing to use it on the rows "
+                    "the report withholds"
+                )
+    print_render(ARTEFACT, "e4_parser.cells_proved_against_sealed_report [D]", checked)
+    return parsed
+
+
+def build_rows(campaign, tables, e4):
     """Display rows in E.4 order, F4/F5 split per configuration, then controls."""
     cells = defaultdict(dict)  # (token, monitor) -> {arm: cell}
     for cell in campaign["cells"]:
@@ -76,8 +155,32 @@ def build_rows(campaign, tables):
             print_render(ARTEFACT, "display.dropped_deferred_row [ruling]", row["subcase"])
             continue
         if state != "predicted":
-            # NOT-POPULATED rows carry no corpus token by design; ghost bands.
-            rows.append(dict(kind="ghost", label=row["subcase"], family=fam, state=state))
+            # A NOT-POPULATED row has no campaign cell. Two of the three are
+            # nevertheless measured across all NINE arms by the suite, so they
+            # are drawn as a THIRD evidence class -- dashed outline, no fill --
+            # and are excluded from every campaign count. The third is carried
+            # by a gate that adjudicates two arms, so it stays a ghost band.
+            if row["subcase"] in TEST_VERIFIED_ROWS:
+                rows.append(
+                    dict(
+                        kind="verified",
+                        label=row["subcase"],
+                        family=fam,
+                        state=state,
+                        expected=dict(zip(ARM_ORDER, e4[row["subcase"]], strict=True)),
+                        carrier=TEST_VERIFIED_ROWS[row["subcase"]],
+                    )
+                )
+            else:
+                rows.append(
+                    dict(
+                        kind="ghost",
+                        label=row["subcase"],
+                        family=fam,
+                        state=state,
+                        carrier=GATE_ONLY_ROWS.get(row["subcase"], ""),
+                    )
+                )
             continue
         token = ROW_SUBCASE_TOKENS[row_key(row["subcase"])]
         configs = (False, True) if fam in CONFIG_FAMILIES else (None,)
@@ -122,7 +225,8 @@ def main():
     campaign = load_campaign()
     tables = load_tables()
     agreement = tables["agreement"]
-    rows = build_rows(campaign, tables)
+    e4 = proved_e4(tables)
+    rows = build_rows(campaign, tables, e4)
     n_display = len(rows)
     print_render(ARTEFACT, "display_rows [D]", n_display)
     if n_display != 20:
@@ -139,8 +243,8 @@ def main():
 
     counts = defaultdict(int)
     for r in rows:
-        if r["kind"] == "ghost":
-            continue
+        if r["kind"] in ("ghost", "verified"):
+            continue  # neither carries a campaign cell
         for arm in ARM_ORDER:
             cell = r["observed"].get(arm)
             counts[observed_state(cell)] += 1
@@ -235,11 +339,51 @@ def main():
             continue
 
         lab = r["label"]
-        if r["kind"] != "ghost" and r["monitor"] is not None:
+        if r.get("monitor") is not None:
             lab += "  [monitor " + ("on" if r["monitor"] else "off") + "]"
         ax.text(
             left - 0.08, y + rh / 2, lab, ha="right", va="center", fontsize=FONT_MIN_PT, color=INK
         )
+
+        if r["kind"] == "verified":
+            # THIRD EVIDENCE CLASS. No campaign cell exists for this row; the
+            # nine values are E.4 predictions and the suite verifies them cell
+            # by cell across all nine arms. Dashed outline, no fill, mid grey,
+            # so it cannot be read as a campaign cell -- and counted nowhere.
+            for j, arm in enumerate(ARM_ORDER):
+                x = cx(j)
+                ax.add_patch(
+                    Rectangle(
+                        (x, y),
+                        cw,
+                        rh,
+                        facecolor=PAPER,
+                        edgecolor=MIDGREY,
+                        lw=0.6,
+                        linestyle=(0, (2, 1.5)),
+                    )
+                )
+                ax.text(
+                    x + cw / 2,
+                    y + rh / 2,
+                    r["expected"][arm].rstrip("†"),
+                    ha="center",
+                    va="center",
+                    fontsize=FONT_MIN_PT,
+                    color=MIDGREY,
+                )
+            ax.text(
+                left + ncol * cw + 0.10,
+                y + rh / 2,
+                r["carrier"],
+                ha="left",
+                va="center",
+                fontsize=FONT_MIN_PT,
+                color=MIDGREY,
+                style="italic",
+            )
+            print_render(ARTEFACT, f"verified.{r['label']}", r["carrier"])
+            continue
 
         if r["kind"] == "ghost":
             ax.add_patch(Rectangle((left, y), ncol * cw, rh, facecolor=GHOST, edgecolor="none"))
@@ -249,6 +393,8 @@ def main():
                 if is_np
                 else "deferred — unscored (ADR 0028, current for this row; not NA)"
             )
+            if is_np and r.get("carrier"):
+                txt += " — " + r["carrier"]
             ax.text(
                 left + ncol * cw / 2,
                 y + rh / 2,
