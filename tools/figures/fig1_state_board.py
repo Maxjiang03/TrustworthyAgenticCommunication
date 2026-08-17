@@ -36,7 +36,7 @@ from _common import (
     row_key,
     save,
 )
-from matplotlib.patches import Polygon, Rectangle
+from matplotlib.patches import Circle, Polygon, Rectangle
 
 ARTEFACT = "FIG-1"
 
@@ -315,6 +315,46 @@ def main():
     def cy(i):
         return fig_h - top - (i + 1) * rh
 
+    def monitor_icon(mx, my, on):
+        """The shared monitor's presence, drawn rather than spelled.
+
+        Two rows of every F4/F5 scenario differ ONLY by whether the monitor was
+        attached, and "mon off" / "mon ON" spent a text column saying so on
+        every one of them. A screen with a lens reads at a glance and, being
+        geometry rather than type, is unaffected by the 8 pt floor. Filled with
+        an open lens = attached; hollow and struck through = absent. The two
+        differ in fill, in the slash, and in overall darkness, so the pair
+        survives greyscale and needs no hue at all.
+        """
+        w, h = 0.15, 0.095
+        ax.add_patch(
+            Rectangle(
+                (mx - w / 2, my - h / 2 + 0.012),
+                w,
+                h,
+                facecolor=INK if on else PAPER,
+                edgecolor=INK,
+                lw=0.7,
+            )
+        )
+        ax.plot(
+            [mx - 0.035, mx + 0.035],
+            [my - h / 2 + 0.008, my - h / 2 + 0.008],
+            color=INK,
+            lw=0.9,
+            solid_capstyle="butt",
+        )
+        if on:
+            ax.add_patch(Circle((mx, my + 0.012), 0.022, facecolor=PAPER, edgecolor="none"))
+        else:
+            ax.plot(
+                [mx - w / 2 + 0.012, mx + w / 2 - 0.012],
+                [my - h / 2 + 0.024, my + h / 2],
+                color=INK,
+                lw=0.9,
+                solid_capstyle="butt",
+            )
+
     for j, arm in enumerate(ARM_ORDER):
         ax.text(
             cx(j) + cw / 2,
@@ -449,15 +489,7 @@ def main():
             color=INK,
         )
         if r.get("monitor") is not None:
-            ax.text(
-                left - 0.08,
-                y + rh / 2,
-                "mon " + ("ON" if r["monitor"] else "off"),
-                ha="right",
-                va="center",
-                fontsize=FONT_MIN_PT,
-                color=MIDGREY,
-            )
+            monitor_icon(left - 0.08 - 0.075, y + rh / 2, r["monitor"])
 
         if r["kind"] == "verified":
             # THIRD EVIDENCE CLASS. No campaign cell exists for this row; the
@@ -497,15 +529,18 @@ def main():
                 )
                 if arm in r.get("adjudicated", ()):
                     # A filled corner tick: this arm, and only this arm, was
-                    # actually adjudicated by the named carrier. It takes the
-                    # fill's contrast colour, or it vanishes on a blue cell --
-                    # the same trap the harm dot was already fixed for.
+                    # actually adjudicated by the named carrier. INK on every
+                    # cell, filled or not. Flipping it to PAPER on a blue fill
+                    # bought contrast at the cost of the mark no longer matching
+                    # the black square the key shows -- two colours read as two
+                    # different marks. INK on OFF_BLOCKED still separates by 71
+                    # of 255 in greyscale, which is enough.
                     ax.add_patch(
                         Rectangle(
                             (x + cw - 0.055, y + rh - 0.045),
                             0.04,
                             0.032,
-                            facecolor=PAPER if blocked_pred else INK,
+                            facecolor=INK,
                             edgecolor="none",
                         )
                     )
@@ -900,13 +935,14 @@ def main():
 
     ky -= 0.17
     kx = 0.10
+    # The monitor icons are named here, since they replace words on the rows.
+    # Both in one entry, in the order the words then run, so the two glyphs are
+    # read against each other rather than as two unrelated marks.
+    monitor_icon(kx + 0.075, ky, True)
+    monitor_icon(kx + 0.075 + 0.19, ky, False)
+    kx = place("shared monitor attached / absent", kx + 0.42, color=MIDGREY) + 0.26
     for mark, label in (
-        # The frame no longer encodes the prediction, so the key states the
-        # inference that replaces it -- and states its ONE exception in the
-        # same breath, because a daggered cell of a monitor-ON row shows B
-        # against a predicted A and is nevertheless not a disagreement.
-        ("unmarked", "cell matched E.4"),
-        ("†", "predicted A absent the monitor, scored on the mon-off row"),
+        ("†", "predicted A absent the monitor; scored on that row"),
         ("•", "realized harm"),
         ("▪", "arm adjudicated by the carrier"),
     ):
@@ -927,7 +963,8 @@ def main():
 
     paragraphs = [
         "Prediction-outcome state board. Rows are the E.4 subcases in matrix order, F4 and F5 "
-        "split per monitor configuration with their benign controls beneath; columns are the nine "
+        "split per monitor configuration with their benign controls beneath, the icon in the "
+        "left gutter marking whether the shared monitor was attached; columns are the nine "
         "ladder arms; the rules at the left enclose each family and give its "
         "instantiated-of-defined subcase coverage. A cell's FILL and LETTER are what the campaign "
         "observed: a filled blue cell lettered B is a block, an open cell lettered A a forwarded "

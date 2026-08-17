@@ -696,6 +696,9 @@ Commander ruling. Each departure and its reason:
 | body-mutation row carried by gate G-14 C2 | drawn, with a **corner tick on exactly the two arms the gate instantiated** | the gate's own imports name two arms (`smoke/g14/fixture.py:21,23`); the seven unticked cells are predictions no evidence of any class has touched. |
 | deferred F2 wrong_principal row = dotted band | **no display slot** | ruling 2026-08-17. Counted still — the totals strip reads the sealed `agreement.deferred` and says one row deferred. |
 | B3=B3⁺ bracket with boxed text and a leader | bracket + "17/17 pairs identical"; the consequence moves to the caption | the on-figure disclosure is mandatory and a bare bracket discharged nothing; the boxed paragraph was on-canvas prose, which the concision ruling removes. |
+| F4/F5 config sub-rows labelled "mon off" / "mon ON" | **a drawn monitor icon** in the left gutter — filled screen with an open lens = attached, hollow and struck through = absent — named once in the key | eight rows spent a text column repeating two words. Geometry rather than type, so the 8 pt floor does not apply to it; the pair differs in fill, in the slash, and in overall darkness, so it needs no hue and survives greyscale. |
+| — | **adjudication tick is INK on every cell**, filled or not | it had been flipped to `PAPER` on a blue fill for contrast, which made it stop matching the black square the key shows — two colours read as two different marks. INK on `OFF_BLOCKED` still separates by 71 of 255 in greyscale. |
+| — | the "unmarked = cell matched E.4" key note **removed** | ruling 2026-08-17. The disagreement entry states the same fact positively, and the caption carries the inference rule with its dagger exception. |
 
 Also on this figure and not in §C: **serif suite-wide** (DejaVu Serif, which ships
 with matplotlib, so a fresh clone renders identical glyphs — a system face would
