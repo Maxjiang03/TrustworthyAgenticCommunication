@@ -33,6 +33,12 @@ from matplotlib.patches import Rectangle
 
 ARTEFACT = "FIG-1"
 
+# The blocked fill. Pure INK turned every run of blocked cells into one
+# undifferentiated slab; this is dark enough to carry the finding at a glance
+# and light enough that the paper rules between cells still read. The letter
+# stays PAPER, so contrast is unaffected.
+BLOCKED = "#33363b"
+
 # Benign controls, keyed by their corpus token; the row label IS the token, so
 # no name is invented.
 GOLDEN_THREAD = "benign:golden-thread"
@@ -50,10 +56,17 @@ TEST_VERIFIED_ROWS = {
     "F3 expired token (OAuth neg. control)": "suite test, 9 arms",
     "F3 dpop-captured-proof-replay (bit-identical)": "suite test, 9 arms; gate G-14 C1",
 }
-# Rows carried only by a gate, which adjudicates TWO arms and not nine, so a
-# nine-cell row would be a fabrication.
-GATE_ONLY_ROWS = {
-    "F3 dpop-first-use-body-mutation (T-tool/T-args)": "gate G-14 C2 (B2-DPoP, B3 only)",
+# Carried by a gate rather than by the suite. The E.4 predictions are drawn for
+# all nine arms, but ONLY the arms the gate actually adjudicates are marked as
+# adjudicated -- the scope is read off the gate's own imports
+# (smoke/g14/fixture.py:21,23 import B2ExchangeTaskDPoPArm and B3Arm and nothing
+# else), so the figure never implies the gate ruled on seven arms it never
+# instantiated.
+GATE_ADJUDICATED_ROWS = {
+    "F3 dpop-first-use-body-mutation (T-tool/T-args)": (
+        "gate G-14 C2",
+        ("B2-exchange-task-DPoP", "B3"),
+    ),
 }
 
 
@@ -169,15 +182,22 @@ def build_rows(campaign, tables, e4):
                         carrier=TEST_VERIFIED_ROWS[row["subcase"]],
                     )
                 )
-            else:
+            elif row["subcase"] in GATE_ADJUDICATED_ROWS:
+                carrier, arms = GATE_ADJUDICATED_ROWS[row["subcase"]]
                 rows.append(
                     dict(
-                        kind="ghost",
+                        kind="verified",
                         label=row["subcase"],
                         family=fam,
                         state=state,
-                        carrier=GATE_ONLY_ROWS.get(row["subcase"], ""),
+                        expected=dict(zip(ARM_ORDER, e4[row["subcase"]], strict=True)),
+                        carrier=f"{carrier} · {len(arms)}/{len(ARM_ORDER)} arms",
+                        adjudicated=set(arms),
                     )
+                )
+            else:
+                rows.append(
+                    dict(kind="ghost", label=row["subcase"], family=fam, state=state, carrier="")
                 )
             continue
         token = ROW_SUBCASE_TOKENS[row_key(row["subcase"])]
@@ -303,6 +323,36 @@ def main():
             color=INK,
         )
 
+    # The B fill runs edge to edge, so a run of blocked cells used to merge
+    # into one undifferentiated slab in which no reader could count a cell.
+    # Hairline paper rules on every column boundary, drawn over the fills,
+    # restore cell identity without reintroducing the inset that made each cell
+    # read as a button.
+    def draw_grid_rules(rows_drawn):
+        # Hairline paper rules on every cell boundary, drawn over the fills.
+        # Column rules alone left runs of blocked cells merging vertically; a
+        # reader could not count a cell in either direction.
+        top_y, bottom_y = cy(0) + rh, cy(rows_drawn - 1)
+        for j in range(len(ARM_ORDER) + 1):
+            ax.plot(
+                [cx(j), cx(j)],
+                [bottom_y, top_y],
+                color=PAPER,
+                lw=0.7,
+                zorder=3,
+                solid_capstyle="butt",
+            )
+        for i in range(rows_drawn + 1):
+            yy = cy(i - 1) if i else top_y
+            ax.plot(
+                [cx(0), cx(len(ARM_ORDER))],
+                [yy, yy],
+                color=PAPER,
+                lw=0.7,
+                zorder=3,
+                solid_capstyle="butt",
+            )
+
     # Family brackets, replacing the five spacer rows. The label carries the
     # coverage fraction because §E.4's rule requires F3's 2/5 to travel with
     # every F3 number on this figure; the per-family n moves to the caption.
@@ -322,7 +372,7 @@ def main():
             va="center",
             rotation=90,
             fontsize=FONT_MIN_PT,
-            color=INK,
+            color=MIDGREY,
         )
         print_render(ARTEFACT, f"band_{fam}_coverage", f"{cov['instantiated']}/{cov['defined']}")
         print_render(ARTEFACT, f"band_{fam}_n", n)
@@ -410,8 +460,20 @@ def main():
                     ha="center",
                     va="center",
                     fontsize=FONT_MIN_PT,
-                    color=MIDGREY,
+                    color="#5a5a5a",
                 )
+                if arm in r.get("adjudicated", ()):
+                    # A filled corner tick: this arm, and only this arm, was
+                    # actually adjudicated by the named carrier.
+                    ax.add_patch(
+                        Rectangle(
+                            (x + cw - 0.055, y + rh - 0.045),
+                            0.04,
+                            0.032,
+                            facecolor=INK,
+                            edgecolor="none",
+                        )
+                    )
             ax.text(
                 left + ncol * cw + 0.10,
                 y + rh / 2,
@@ -495,7 +557,9 @@ def main():
                 continue
             per_arm_scored[arm] += 1
             if obs == "B":
-                ax.add_patch(Rectangle((x, y), cw, rh, facecolor=INK, edgecolor=INK, lw=0.4))
+                ax.add_patch(
+                    Rectangle((x, y), cw, rh, facecolor=BLOCKED, edgecolor=BLOCKED, lw=0.4)
+                )
                 ax.text(
                     x + cw / 2,
                     y + rh / 2,
@@ -540,7 +604,18 @@ def main():
                     fontweight="bold",
                 )
             if cell.get("realized_harm"):
-                ax.plot(x + cw - 0.10, y + 0.08, marker="o", ms=3, color=INK)
+                # Bottom-LEFT, so it never crowds the dagger at top-right, and
+                # in the fill's own contrast colour: drawn in INK on a blocked
+                # cell it would have been invisible. No campaign cell is both
+                # blocked and harmful today, but the code no longer relies on
+                # that holding.
+                ax.plot(
+                    x + 0.075,
+                    y + 0.05,
+                    marker="o",
+                    ms=2.4,
+                    color=PAPER if obs in ("B",) else INK,
+                )
             if r["kind"] == "scored" and exp not in (None, "NA"):
                 if is_daggered(exp) and r["monitor"] is True:
                     outside_row += 1  # A-dagger is scored against the False pass only
@@ -595,6 +670,7 @@ def main():
             "entry-based reconstruction does not reproduce the sealed agreement "
             "block; the presentation layer must not disagree with analysis/ingest.py"
         )
+    draw_grid_rules(len(laid_out))
     for arm in ARM_ORDER:
         print_render(ARTEFACT, f"per_arm_scored.{arm}", per_arm_scored[arm])
     # The per-arm strip hangs just under the grid. It must clear the bottom text
@@ -632,19 +708,80 @@ def main():
     # TAB-1. This is a key: the marks a reader must decode to read a cell, and
     # nothing else. Everything that argues rather than decodes is in the
     # caption. Two lines, both 8 pt.
-    key_lines = (
-        "CELL   frame = E.4 predicted (heavy B, hairline A, hatch NA)   ·   "
-        "fill + letter = campaign observed   ·   A forwarded   B blocked   "
-        "FB false block   ×  unscorable",
-        "MARKS   †  predicted A absent the shared monitor   ·   •  realized harm   ·   "
-        "dashed = suite-verified over 9 arms, not a campaign cell   ·   "
-        "grey band = never run",
-    )
+    # A key made of the marks themselves, not sentences about them. Each swatch
+    # is drawn exactly as the matrix draws it, with a one- or two-token label.
+    def swatch(x, kind):
+        w, h = 0.26, 0.135
+        yy = ky - h / 2
+        if kind == "B":
+            ax.add_patch(Rectangle((x, yy), w, h, facecolor=INK, edgecolor=INK, lw=1.2))
+            ax.text(x + w / 2, ky, "B", ha="center", va="center", fontsize=FONT_MIN_PT, color=PAPER)
+        elif kind == "A":
+            ax.add_patch(Rectangle((x, yy), w, h, facecolor=PAPER, edgecolor=INK, lw=0.5))
+            ax.text(x + w / 2, ky, "A", ha="center", va="center", fontsize=FONT_MIN_PT, color=INK)
+        elif kind == "FB":
+            ax.add_patch(Rectangle((x, yy), w, h, facecolor=PAPER, edgecolor=INK, lw=0.5))
+            ax.add_patch(
+                Rectangle(
+                    (x + 0.02, yy + 0.02),
+                    w - 0.04,
+                    h - 0.04,
+                    facecolor="none",
+                    edgecolor=ORANGE,
+                    lw=1.2,
+                    linestyle=(0, (1.6, 1.2)),
+                )
+            )
+        elif kind == "NA":
+            ax.add_patch(
+                Rectangle((x, yy), w, h, facecolor=PAPER, edgecolor=GREY, hatch="////", lw=0.0)
+            )
+            ax.text(x + w / 2, ky, "×", ha="center", va="center", fontsize=FONT_MIN_PT, color=INK)
+        elif kind == "pred":
+            ax.add_patch(
+                Rectangle(
+                    (x, yy),
+                    w,
+                    h,
+                    facecolor=PAPER,
+                    edgecolor=MIDGREY,
+                    lw=0.6,
+                    linestyle=(0, (2, 1.5)),
+                )
+            )
+            ax.text(
+                x + w / 2, ky, "A", ha="center", va="center", fontsize=FONT_MIN_PT, color=MIDGREY
+            )
+        elif kind == "ghost":
+            ax.add_patch(Rectangle((x, yy), w, h, facecolor=GHOST, edgecolor="none"))
+        return x + w
+
     ky = bottom - 0.30
-    for line in key_lines:
-        ax.text(0.10, ky, line, ha="left", va="center", fontsize=FONT_MIN_PT, color=INK)
-        print_render(ARTEFACT, "key.line", line)
-        ky -= 0.16
+    kx = 0.10
+    for kind, label in (
+        ("B", "blocked"),
+        ("A", "forwarded"),
+        ("FB", "false block"),
+        ("NA", "not applicable"),
+        ("pred", "predicted, verified off-campaign"),
+        ("ghost", "never run"),
+    ):
+        kx = swatch(kx, kind) + 0.07
+        ax.text(kx, ky, label, ha="left", va="center", fontsize=FONT_MIN_PT, color=INK)
+        kx += len(label) * 0.058 + 0.26
+
+    ky -= 0.17
+    kx = 0.10
+    for mark, label in (
+        ("frame", "heavy = E.4 predicts B, hairline = predicts A"),
+        ("†", "predicted A absent the shared monitor"),
+        ("•", "realized harm"),
+        ("▪", "arm adjudicated by the named carrier"),
+    ):
+        ax.text(kx, ky, mark, ha="left", va="center", fontsize=FONT_MIN_PT, color=INK)
+        kx += len(mark) * 0.062 + 0.08
+        ax.text(kx, ky, label, ha="left", va="center", fontsize=FONT_MIN_PT, color=MIDGREY)
+        kx += len(label) * 0.055 + 0.24
 
     # ---- the caption -------------------------------------------------------
     # Every prose block that used to sit on the canvas is generated here from
