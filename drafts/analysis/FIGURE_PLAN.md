@@ -682,6 +682,32 @@ Cost is therefore not primarily code: it is a governance decision about admittin
 an unsealed, uncommitted source into a chapter artefact, plus the re-registration
 that a change of evidence class forces. Reported; nothing read, nothing built.
 
+### B.4 FIG-1 — encoding rulings, 2026-08-17
+
+§C's FIG-1 spec below is the ORIGINAL registration and is left standing as the
+record of what was planned. Six of its provisions have since been superseded by
+Commander ruling. Each departure and its reason:
+
+| §C said | now | why |
+|---|---|---|
+| expected layer = frame weight (heavy = B, hairline = A) | **frame weight removed**; uniform hairline | MEASURED half blind. A `BLOCKED` fill covers its own cell, and the paper grid rule painted over each boundary at zorder 3 erases a 0.5 pt frame outright while leaving ~0.25 pt of a 1.2 pt one. So "predicts B" read as a faint edge and "predicts A" read as its ABSENCE — the case the board most needs to show (E.4 says A, campaign blocked) was signalled by nothing being there. Probe: `scratchpad/frameprobe.py`, reproduced on the real render. |
+| vermillion chevron RESERVED, never drawn | **drawn**: vermillion border + corner wedge at zorder 5, from the same predicate that feeds the row margins and the totals strip | the prediction layer now speaks only where it was NOT met. Key reads "disagrees with E.4 — 0 of 90". PROVED, not assumed: forcing one cell to disagree makes the sealed cross-check REFUSE the figure, and with a sealed block that matches, the mark renders (`scratchpad/prove_mark.py`). |
+| 3 NOT-POPULATED rows = ghost bands, "no frame, no fill, no glyph may appear there" | **all three drawn** with their E.4 predictions; a predicted B filled in `OFF_BLOCKED` `#3A6FB5`, dashed outline kept | absence-as-encoding hid the one thing worth seeing — that captured-proof-replay is predicted blocked at B3⁺ and nowhere earlier, which is B3⁺'s entire reason to hold a rung. Same hue as a measured block so the STATE reads; one step lighter so the EVIDENCE never does. Computed: ΔE 17.7 / 18.0 / 17.4 (normal / protan / deutan), greyscale luma 97 between 51 and 162, white text 5.10:1. |
+| body-mutation row carried by gate G-14 C2 | drawn, with a **corner tick on exactly the two arms the gate instantiated** | the gate's own imports name two arms (`smoke/g14/fixture.py:21,23`); the seven unticked cells are predictions no evidence of any class has touched. |
+| deferred F2 wrong_principal row = dotted band | **no display slot** | ruling 2026-08-17. Counted still — the totals strip reads the sealed `agreement.deferred` and says one row deferred. |
+| B3=B3⁺ bracket with boxed text and a leader | bracket + "17/17 pairs identical"; the consequence moves to the caption | the on-figure disclosure is mandatory and a bare bracket discharged nothing; the boxed paragraph was on-canvas prose, which the concision ruling removes. |
+
+Also on this figure and not in §C: **serif suite-wide** (DejaVu Serif, which ships
+with matplotlib, so a fresh clone renders identical glyphs — a system face would
+break the byte-reproduction the verification pass rests on); the state palette
+recomputed rather than eyeballed (§D updated); family blocks enclosed by rules
+with horizontal labels; the golden thread placed OUTSIDE F1's rules because it is
+the study-wide control, not one of the three subcases F1's 3/3 counts.
+
+**Key-width rule.** Two overruns on this key came from per-character width
+estimates. Advance is now taken from `Text.get_window_extent`, i.e. the width the
+string actually renders at. No new per-character factor is to be introduced.
+
 ## C. Per-artefact specification
 
 ### FIG-1 — the prediction–outcome board (centerpiece)
@@ -822,6 +848,32 @@ encodes anything.
   and vermillion #D55E00 RESERVED exclusively for the (unused) disagreement
   chevron, so "no red anywhere on the board" is itself a readable statement of the
   0-disagreement result.
+- **SUPERSEDED for the state board, 2026-08-17** (ruling: colour permitted provided
+  it survives a greyscale print). The colour part is computable, so it is computed,
+  not eyeballed — OKLab ΔE ×100, Machado–Oliveira–Fernandes 2009 protanopia and
+  deuteranopia at severity 1.0, OKLCH lightness and chroma, plus a Rec.601 luma
+  gate this figure adds because it must survive monochrome. Slots and their
+  measured results (`scratchpad/validate.py`, `validate2.py`):
+
+  | slot | hex | role |
+  |---|---|---|
+  | `BLOCKED` | `#063C7A` | measured block, PAPER letter |
+  | `OFF_BLOCKED` | `#3A6FB5` | E.4 predicts block, row never populated |
+  | `FALSE_BLOCK` | `#E69F00` | false block, INK letter |
+  | `HATCH` | `#C0C0C0` | NA texture |
+  | `OFF_CAMPAIGN` | `#5A6673` | dashed outline + letter |
+  | `VERMILLION` | `#D55E00` | the disagreement mark — now drawn, 0 times |
+
+  `BLOCKED` vs `FALSE_BLOCK`: ΔE 47.7 normal, 41.3 protan, 48.6 deutan (hard gate
+  15, target 8). `BLOCKED` vs `OFF_BLOCKED`: 17.7 / 18.0 / 17.4. `VERMILLION` vs
+  `FALSE_BLOCK`, the only warm pair that shares a key line: 15.6 / 16.9 / 13.1.
+  Chroma 0.118 on `BLOCKED`, over the 0.10 floor. Greyscale ladder 51 / 97 / 162 /
+  192 / 255, minimum adjacent gap 29.9 of 255. `BLOCKED` sits OUTSIDE the
+  0.43–0.77 categorical lightness band by design: that band assumes hues carrying
+  series identity, whereas these states must span lightness or a monochrome print
+  collapses them — the same reason the rule is not applied to a sequential ramp.
+  The first candidate `#0B3D66` FAILED the chroma floor at 0.087 and was re-stepped;
+  the sweep held darkness while raising chroma, so greyscale was not traded away.
 - **No hue-only encoding anywhere.** Every categorical state carries fill/texture +
   glyph + letters; arm identity is position + direct text label, never a colour
   legend; cold/warm is panel position + marker fill; benign/refusal is separate

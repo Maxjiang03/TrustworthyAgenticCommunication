@@ -1,9 +1,11 @@
 """FIG-1 -- the prediction-outcome state board (chapter centerpiece).
 
-Two layers per cell: FRAME = section E.4 expected value (read from the committed
-results-confirmatory.json expected_matrix); FILL + LETTER = the campaign's
-observed state (read from campaign-confirmatory.json). Rows the campaign never
-populated are drawn in a third evidence class -- dashed, unfilled, counted
+A cell's FILL + LETTER are the campaign's observed state (read from
+campaign-confirmatory.json). Section E.4's expected value (read from the
+committed results-confirmatory.json expected_matrix) is NOT drawn as a second
+layer over every cell; it is drawn only where it was not met, as the vermillion
+disagreement mark. Rows the campaign never populated are drawn in a third
+evidence class -- dashed outline, a lighter blue for a predicted block, counted
 nowhere. Pure presentation (ADR 0048): nothing is computed, selected, or binned.
 """
 
@@ -18,10 +20,12 @@ from _common import (
     HATCH,
     INK,
     MIDGREY,
+    OFF_BLOCKED,
     OFF_CAMPAIGN,
     PAPER,
     REPO_ROOT,
     ROW_SUBCASE_TOKENS,
+    VERMILLION,
     PresentationError,
     is_daggered,
     load_campaign,
@@ -32,7 +36,7 @@ from _common import (
     row_key,
     save,
 )
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Polygon, Rectangle
 
 ARTEFACT = "FIG-1"
 
@@ -462,12 +466,21 @@ def main():
             # so it cannot be read as a campaign cell -- and counted nowhere.
             for j, arm in enumerate(ARM_ORDER):
                 x = cx(j)
+                letter = r["expected"][arm].rstrip("†")
+                # An E.4 'B' here takes the SAME blue one step lighter. Leaving
+                # these rows unfilled made the one thing worth seeing -- that
+                # captured-proof-replay is predicted blocked at B3+ and nowhere
+                # else -- invisible against nine grey letters. Filling them in
+                # the measured blue instead would have said the campaign
+                # measured them, so the fill is the same hue at a lighter step
+                # and the dashed outline stays: same STATE, different EVIDENCE.
+                blocked_pred = letter == "B"
                 ax.add_patch(
                     Rectangle(
                         (x, y),
                         cw,
                         rh,
-                        facecolor=PAPER,
+                        facecolor=OFF_BLOCKED if blocked_pred else PAPER,
                         edgecolor=OFF_CAMPAIGN,
                         lw=0.6,
                         linestyle=(0, (2, 1.5)),
@@ -476,21 +489,23 @@ def main():
                 ax.text(
                     x + cw / 2,
                     y + rh / 2,
-                    r["expected"][arm].rstrip("†"),
+                    letter,
                     ha="center",
                     va="center",
                     fontsize=FONT_MIN_PT,
-                    color=OFF_CAMPAIGN,
+                    color=PAPER if blocked_pred else OFF_CAMPAIGN,
                 )
                 if arm in r.get("adjudicated", ()):
                     # A filled corner tick: this arm, and only this arm, was
-                    # actually adjudicated by the named carrier.
+                    # actually adjudicated by the named carrier. It takes the
+                    # fill's contrast colour, or it vanishes on a blue cell --
+                    # the same trap the harm dot was already fixed for.
                     ax.add_patch(
                         Rectangle(
                             (x + cw - 0.055, y + rh - 0.045),
                             0.04,
                             0.032,
-                            facecolor=INK,
+                            facecolor=PAPER if blocked_pred else INK,
                             edgecolor="none",
                         )
                     )
@@ -554,8 +569,18 @@ def main():
                 )
                 na_row += 1
             else:
-                lw = 1.2 if (exp or "").startswith("B") else 0.5
-                ax.add_patch(Rectangle((x, y), cw, rh, facecolor=PAPER, edgecolor=INK, lw=lw))
+                # Uniform hairline. The frame USED to carry E.4's prediction by
+                # weight -- heavy for B, hairline for A -- and that channel was
+                # measured and found half blind: a BLOCKED fill covers its own
+                # cell, and the paper grid rule painted over the boundary at
+                # zorder 3 erases a 0.5 pt frame entirely while leaving about
+                # 0.25 pt of a 1.2 pt one. So "predicted B" read as a faint dark
+                # edge and "predicted A" read as its ABSENCE -- meaning the one
+                # thing the board must be able to show, a cell where E.4 said A
+                # and the campaign did B, was signalled by nothing being there.
+                # The prediction layer now speaks through the explicit
+                # disagreement mark below instead (Commander ruling 2026-08-17).
+                ax.add_patch(Rectangle((x, y), cw, rh, facecolor=PAPER, edgecolor=INK, lw=0.5))
             if is_daggered(exp):
                 ax.text(
                     x + cw - 0.05,
@@ -641,6 +666,42 @@ def main():
                         agreed_row += 1
                     else:
                         disagreed_row += 1
+                        # THE DISAGREEMENT MARK. Drawn from the SAME predicate
+                        # that feeds this row's margin and the totals strip, so
+                        # a mark and a count can never tell different stories.
+                        # Above the fill AND above the paper grid rules, which
+                        # is the whole lesson of the frame it replaces: a
+                        # signal that another layer can paint over is not a
+                        # signal. Vermillion appears nowhere else on the board.
+                        ax.add_patch(
+                            Rectangle(
+                                (x, y),
+                                cw,
+                                rh,
+                                facecolor="none",
+                                edgecolor=VERMILLION,
+                                lw=1.8,
+                                zorder=5,
+                            )
+                        )
+                        ax.add_patch(
+                            Polygon(
+                                [
+                                    (x, y + rh),
+                                    (x + 0.13, y + rh),
+                                    (x, y + rh - 0.09),
+                                ],
+                                closed=True,
+                                facecolor=VERMILLION,
+                                edgecolor="none",
+                                zorder=5,
+                            )
+                        )
+                        print_render(
+                            ARTEFACT,
+                            f"DISAGREEMENT [M] {r['label']} / {arm}",
+                            f"E.4 predicts {exp}, campaign observed {obs}",
+                        )
                     ekey = (r["token"], arm)
                     entry_ok[ekey] = entry_ok.get(ekey, True) and ok
         if r["kind"] == "scored":
@@ -764,13 +825,15 @@ def main():
             )
             ax.text(x + w / 2, ky, "×", ha="center", va="center", fontsize=FONT_MIN_PT, color=INK)
         elif kind == "pred":
+            # Drawn as a predicted B, because that is the variant a reader has
+            # to be able to tell from a measured B at a glance.
             ax.add_patch(
                 Rectangle(
                     (x, yy),
                     w,
                     h,
-                    facecolor=PAPER,
-                    edgecolor=MIDGREY,
+                    facecolor=OFF_BLOCKED,
+                    edgecolor=OFF_CAMPAIGN,
                     lw=0.6,
                     linestyle=(0, (2, 1.5)),
                 )
@@ -778,11 +841,26 @@ def main():
             ax.text(
                 x + w / 2,
                 ky,
-                "A",
+                "B",
                 ha="center",
                 va="center",
                 fontsize=FONT_MIN_PT,
-                color=OFF_CAMPAIGN,
+                color=PAPER,
+            )
+        elif kind == "DIS":
+            ax.add_patch(Rectangle((x, yy), w, h, facecolor=PAPER, edgecolor=INK, lw=0.5))
+            ax.text(x + w / 2, ky, "B", ha="center", va="center", fontsize=FONT_MIN_PT, color=INK)
+            ax.add_patch(
+                Rectangle((x, yy), w, h, facecolor="none", edgecolor=VERMILLION, lw=1.8, zorder=5)
+            )
+            ax.add_patch(
+                Polygon(
+                    [(x, yy + h), (x + 0.075, yy + h), (x, yy + h - 0.055)],
+                    closed=True,
+                    facecolor=VERMILLION,
+                    edgecolor="none",
+                    zorder=5,
+                )
             )
         elif kind == "ghost":
             ax.add_patch(Rectangle((x, yy), w, h, facecolor=GHOST, edgecolor="none"))
@@ -794,33 +872,46 @@ def main():
     # off-campaign carrier, so no ghost band is drawn and a "never run" key
     # would send the reader hunting for a state that is not on the board. It
     # returns by itself the moment a row without a carrier appears.
+    cells_compared = row_agreed_total + row_disagreed_total
+    print_render(ARTEFACT, "key.cells_compared [D]", cells_compared)
     key_items = [
         ("B", "blocked"),
         ("A", "forwarded"),
         ("FB", "false block"),
         ("NA", "not applicable"),
-        ("pred", "predicted, verified off-campaign"),
+        ("pred", "predicted off-campaign"),
+        ("DIS", f"disagrees with E.4 — {row_disagreed_total} of {cells_compared}"),
     ]
     if any(r["kind"] == "ghost" for r in laid_out):
         key_items.append(("ghost", "never run"))
     print_render(ARTEFACT, "key.ghost_swatch_drawn [D]", ("ghost", "never run") in key_items)
+
+    # Advance by the width the text ACTUALLY renders at, not by a per-character
+    # guess. The guess has now failed twice on this key -- once when em-dashes
+    # and capitals overran a neighbour's swatch, and once when the eight-letter
+    # word "unmarked" ran straight into its own label -- because a fixed factor
+    # cannot be right for both "•" and "unmarked" in a proportional serif.
+    def place(s, x, **kw):
+        t = ax.text(x, ky, s, ha="left", va="center", fontsize=FONT_MIN_PT, **kw)
+        return x + t.get_window_extent(renderer=fig.canvas.get_renderer()).width / fig.dpi
+
     for kind, label in key_items:
-        kx = swatch(kx, kind) + 0.07
-        ax.text(kx, ky, label, ha="left", va="center", fontsize=FONT_MIN_PT, color=INK)
-        kx += len(label) * 0.058 + 0.26
+        kx = place(label, swatch(kx, kind) + 0.07, color=INK) + 0.26
 
     ky -= 0.17
     kx = 0.10
     for mark, label in (
-        ("frame", "heavy = E.4 predicts B, hairline = predicts A"),
-        ("†", "predicted A absent the shared monitor"),
+        # The frame no longer encodes the prediction, so the key states the
+        # inference that replaces it -- and states its ONE exception in the
+        # same breath, because a daggered cell of a monitor-ON row shows B
+        # against a predicted A and is nevertheless not a disagreement.
+        ("unmarked", "cell matched E.4"),
+        ("†", "predicted A absent the monitor, scored on the mon-off row"),
         ("•", "realized harm"),
-        ("▪", "arm adjudicated by the named carrier"),
+        ("▪", "arm adjudicated by the carrier"),
     ):
-        ax.text(kx, ky, mark, ha="left", va="center", fontsize=FONT_MIN_PT, color=INK)
-        kx += len(mark) * 0.062 + 0.08
-        ax.text(kx, ky, label, ha="left", va="center", fontsize=FONT_MIN_PT, color=MIDGREY)
-        kx += len(label) * 0.055 + 0.24
+        kx = place(mark, kx, color=INK) + 0.09
+        kx = place(label, kx, color=MIDGREY) + 0.24
 
     # ---- the caption -------------------------------------------------------
     # Every prose block that used to sit on the canvas is generated here from
@@ -837,16 +928,24 @@ def main():
     paragraphs = [
         "Prediction-outcome state board. Rows are the E.4 subcases in matrix order, F4 and F5 "
         "split per monitor configuration with their benign controls beneath; columns are the nine "
-        "ladder arms; the bracket at the left gives each family and its instantiated-of-defined "
-        "subcase coverage. Every campaign cell carries two layers. The FRAME is the E.4 expected "
-        "value: heavy for B, hairline for A, a dagger for A admitted absent the shared monitor, "
-        "hatching for NA. The FILL and LETTER are what the campaign observed: a filled blue cell "
-        "lettered B is a block, an open cell lettered A a forwarded request, a filled amber cell "
-        "lettered FB a false block, x over hatching an unscorable cell, and a corner dot realized "
-        "harm. The two fills are separated for colour-vision deficiency and in lightness, so the "
-        "states stay distinct in a monochrome print and no state is carried by hue alone. "
-        "Agreement is frame against fill, so a disagreement would be the one cell whose two "
-        "layers differ.",
+        "ladder arms; the rules at the left enclose each family and give its "
+        "instantiated-of-defined subcase coverage. A cell's FILL and LETTER are what the campaign "
+        "observed: a filled blue cell lettered B is a block, an open cell lettered A a forwarded "
+        "request, a filled amber cell lettered FB a false block, x over hatching an unscorable "
+        "cell, and a corner dot realized harm. The fills are separated for colour-vision "
+        "deficiency and in lightness, so the states stay distinct in a monochrome print and no "
+        "state is carried by hue alone. E.4's PREDICTION is not drawn as a second layer over the "
+        "cell; it is drawn only where it was not met. A cell that disagrees with E.4 carries a "
+        "vermillion border and corner wedge, above every other layer, and vermillion appears "
+        "nowhere else on the board. An unmarked cell therefore matched the prediction, with one "
+        "exception the key also states: a daggered cell of a monitor-on row shows B against a "
+        "predicted A and is nevertheless not a disagreement, because a daggered entry is scored "
+        "on the monitor-off row instead. This replaces an earlier encoding in which the cell's "
+        "border weight carried the prediction. That channel was measured and found half blind -- "
+        "a filled cell covers its own border, and the hairline rules drawn over every cell "
+        "boundary erase a light border entirely -- so the case the board most needs to be able "
+        "to show, E.4 predicting A where the campaign blocked, was signalled by the absence of a "
+        "mark rather than the presence of one.",
         f"{len(campaign['cells'])} cells were scored and {len(campaign['unscorable'])} were "
         f"unscorable-NA. Against the E.4 matrix, {agreement['agreed']} of {base_entries} "
         f"comparable ENTRIES agreed; {len(agreement['unmeasured'])} of the 90 base ENTRIES were "
@@ -860,15 +959,20 @@ def main():
         "(+k NA) is k cells expected NA and (+k dagger) is k daggered cells of a monitor-on row "
         "scored under the monitor-off row instead. These are exact counts; no confidence interval "
         "is defined for any of them, and none is drawn.",
-        "Three rows carry no campaign cell and are drawn in a third evidence class, dashed "
-        "outline with a grey letter and no fill. Their nine values are E.4 predictions, and the "
-        "row's right margin names what has actually tested each one. F3 expired token and F3 "
-        "dpop-captured-proof-replay are verified cell by cell across all nine arms by the test "
-        "suite. F3 dpop-first-use-body-mutation is not: its carrier, gate G-14 C2, instantiated "
-        "two arms rather than nine, and a corner tick marks exactly those two, so the seven "
-        "unticked cells are predictions no evidence of any class has touched. Gate evidence is "
-        "not campaign evidence, a suite test is neither, and none of these values enters any "
-        "count above; the figure does not present the three classes as equivalent.",
+        "Three rows carry no campaign cell and are drawn in a third evidence class, under a "
+        "dashed outline. Their nine values are E.4 predictions, and the row's right margin names "
+        "what has actually tested each one. A predicted block is filled in the same blue as a "
+        "measured one, one step lighter: the state is the same, the evidence is not, and the "
+        "distinction is carried by lightness and by the dashed outline rather than by hue, so it "
+        "survives a monochrome print. Reading these rows as filled cells is what makes the "
+        "pattern visible at all -- that dpop-captured-proof-replay is predicted blocked at B3+ "
+        "and at no earlier arm, which is B3+'s entire reason to occupy a rung. F3 expired token "
+        "and F3 dpop-captured-proof-replay are verified cell by cell across all nine arms by the "
+        "test suite. F3 dpop-first-use-body-mutation is not: its carrier, gate G-14 C2, "
+        "instantiated two arms rather than nine, and a corner tick marks exactly those two, so "
+        "the seven unticked cells are predictions no evidence of any class has touched. Gate "
+        "evidence is not campaign evidence, a suite test is neither, and none of these values "
+        "enters any count above; the figure does not present the three classes as equivalent.",
         "B3 and B3+ are identical in all 17 of 17 comparable cell pairs, bracketed above their "
         "columns. The sole subcase that distinguishes them, F3 dpop-captured-proof-replay, is "
         "not populated by the campaign, so B3+'s position on the ladder rests on gate G-14 "

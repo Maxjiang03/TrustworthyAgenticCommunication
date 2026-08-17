@@ -55,7 +55,7 @@ GHOST = "0.90"  # NOT-POPULATED ghost bands
 MIDGREY = "0.55"
 BLUE = "#0072B2"  # disclosure brackets / leaders
 ORANGE = "#E69F00"  # false-block dashed border
-VERMILLION = "#D55E00"  # RESERVED: the (unused) disagreement chevron
+VERMILLION = "#D55E00"  # the disagreement mark -- drawn 0 times, and that is the result
 
 # The state palette, COMPUTED rather than eyeballed (dataviz skill). The two
 # slots doing hue work clear every gate: normal-vision dE 47.7, protanopia
@@ -72,6 +72,16 @@ BLOCKED = "#063C7A"  # deep blue fill, PAPER letter
 FALSE_BLOCK = "#E69F00"  # amber fill, INK letter
 HATCH = "#C0C0C0"  # NA texture, light enough that the glyph over it reads
 OFF_CAMPAIGN = "#5A6673"  # dashed outline + letter, no fill
+
+# The SAME blue one step lighter (same OKLCH hue, L 0.363 -> 0.54): an E.4 'B'
+# on a row the campaign never populated. Same hue, so it reads as the same
+# STATE; lighter, so it is never mistaken for a MEASUREMENT -- which matters
+# because letting suite or gate evidence look like campaign evidence is the one
+# conflation this figure exists to prevent. Computed, not eyeballed: dE against
+# BLOCKED is 17.7 normal / 18.0 protanopia / 17.4 deuteranopia, all over the
+# hard gate of 15; greyscale luma 97 sits 46 below the amber and 46 above the
+# blue; white text on it clears 5.10:1.
+OFF_BLOCKED = "#3A6FB5"
 
 FONT_MIN_PT = 8  # minimum effective size everywhere (FIGURE_PLAN.md §D)
 
