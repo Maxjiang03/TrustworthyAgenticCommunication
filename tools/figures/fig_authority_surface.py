@@ -200,7 +200,7 @@ def main():
     title_band = 0.40
     header_band = 1.45
     legend_band = 0.54  # two rows
-    note_band = 0.60
+    note_band = 0.0  # the caption is printed, not drawn
     top = title_band + header_band
     bottom = legend_band + note_band + 0.10
     left = 1.55
@@ -256,16 +256,19 @@ def main():
         )
         print_render(ARTEFACT, f"tier.{tier}.arms", len(rows))
 
-    # C6 -- the RQ and the evidence class on the FIGURE, not only in a caption.
+    # The RQ tag, and only the RQ tag (Commander ruling, 2026-08-17). The
+    # evidence class, the `required` definition, the marker key and the B3/B3+
+    # disclosure all moved to the caption, which is printed below as
+    # CAPTION lines so it travels with the artefact rather than being retyped.
     ax.text(
         0.10,
         fig_h - 0.10,
-        "RQ1 — specification analysis.   Evidence class: DERIVED from frozen artefacts.   "
-        "Not a campaign measurement: no exercised dimension is present.",
+        "RQ1",
         ha="left",
         va="top",
         fontsize=FONT_MIN_PT,
         color=BLUE,
+        fontweight="bold",
     )
 
     probed_by_config = {}
@@ -402,7 +405,7 @@ def main():
     # but em-dashes, capitals and parentheses exceed it and two legend
     # items overlapped the next swatch at that figure.
     sw, char_w, pad = 0.22, 0.062, 0.24
-    ly = note_band + 0.12
+    ly = 0.12
     for row in (keys[2:], keys[:2]):  # drawn bottom-up, so the ladder reads top-down
         lx = 0.10
         for st, text in row:
@@ -422,34 +425,29 @@ def main():
             raise PresentationError(f"legend row needs {lx:.2f} in, canvas is {fig_w:.2f} in")
         ly += 0.22
 
-    note = (
-        "Authority surface, DERIVED from frozen artefacts (Ω, U_task, Cₙ, and the SS E.1 grant "
-        "each arm carries). `required` is U_task, NOT the concrete request R. ● an element the "
-        f"corpus requests IN THAT PANEL, ○ one it does not — {open_i} open in Config I and "
-        f"{open_ii} in Config II, of which {len(never_either)} are never requested under EITHER "
-        "configuration. Cₙ and U_task "
-        "differ across the two configurations, so neither is averaged. ‡ B3 and B3⁺ carry "
-        "identical authority by construction; they differ only in duplicate detection, which is "
-        "not a property of the authority surface."
+    # The caption is no longer drawn on the canvas. It is PRINTED, so the text
+    # that must travel with the artefact is generated from the same numbers the
+    # figure renders and cannot drift from them by being retyped.
+    caption = (
+        "Boundary authority surface: nine ladder arms against the seven elements of the frozen "
+        "ontology Omega. DERIVED from frozen artefacts (Omega, U_task, C_n, and the SS E.1 grant "
+        "each arm carries); it is a specification surface, NOT a campaign measurement, and no "
+        "exercised dimension is present. `required` means the user's task grant U_task, not the "
+        "concrete request R. Cells: + admitted above the grant (the amplification, TV23); "
+        "· admitted at the grant; − held by the grant but narrowed away by the per-hop chain, "
+        "which is the intended contraction and not a failure; blank outside the grant and not "
+        "admitted. The two right-hand columns count the + and − cells of each row. "
+        f"Column markers show what the corpus requests: ● requested in that panel, ○ not — "
+        f"{open_i} open in Configuration I and {open_ii} in Configuration II, of which "
+        f"{len(never_either)} are never requested under either. C_n and U_task differ between the "
+        "two configurations, so neither is averaged. ‡ B3 and B3+ carry identical authority by "
+        "construction; they differ only in duplicate detection, which is not a property of the "
+        "authority surface."
     )
     import textwrap
 
-    lines = textwrap.wrap(note, 168)
-    line_h = FONT_MIN_PT * 1.26 / 72.0
-    print_render(ARTEFACT, "note.lines [D]", len(lines))
-    if len(lines) * line_h > note_band:
-        raise PresentationError(
-            f"the note needs {len(lines) * line_h:.2f} in but the band is {note_band:.2f} in"
-        )
-    ax.text(
-        0.10,
-        note_band - 0.04,
-        "\n".join(lines),
-        ha="left",
-        va="top",
-        fontsize=FONT_MIN_PT,
-        color=MIDGREY,
-    )
+    for line in textwrap.wrap(caption, 96):
+        print(f"CAPTION {ARTEFACT} | {line}")
 
     # C8 -- acceptance, reported by the artefact itself.
     print_render(ARTEFACT, "acceptance.max_width_in [M _common.LANDSCAPE]", f"{LANDSCAPE[0]:.3f}")
