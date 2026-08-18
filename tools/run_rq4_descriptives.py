@@ -40,6 +40,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from analysis.latency import (  # noqa: E402
     PHASES,
+    REFUSAL_PATH_SCENARIO,
     RQ4_SPANS,
     AnalysisError,
     Sample,
@@ -117,9 +118,22 @@ def main(argv: "list[str] | None" = None) -> int:
             f"n={d.n} median={d.median} p95={d.p95} iqr={d.iqr}"
         )
 
-    # ---- arm_pair_delta: warm-up discarded FIRST by the sealed function --------
-    before = len(all_samples)
-    kept = discard_warmup(all_samples, per_batch=warmup_per_batch)
+    # ---- arm_pair_delta: refusal path separated, then warm-up discarded, both
+    # by the SEALED constant and the SEALED function -------------------------
+    # ADR 0026's exclusion, applied exactly as tools/run_row1_decision.py:96-100
+    # applies it: `benign_span_series` REFUSES rather than filters when the
+    # refusal-path scenario reaches it, so that scenario is separated here with
+    # the sealed constant and its count is printed. Run 1 of D-014 omitted this
+    # and every delta was refused by the sealed layer -- the artefact of that
+    # run is kept, unedited, and D-014 records it. Nothing else is dropped.
+    benign_only = [s for s in all_samples if s.scenario_id != REFUSAL_PATH_SCENARIO]
+    print(f"INPUT refusal_path_scenario [M sealed constant] = {REFUSAL_PATH_SCENARIO}")
+    print(
+        f"INPUT samples_separated_refusal_path_for_deltas [D] = "
+        f"{len(all_samples) - len(benign_only)}"
+    )
+    before = len(benign_only)
+    kept = discard_warmup(benign_only, per_batch=warmup_per_batch)
     print(f"INPUT samples_discarded_warmup_for_deltas [D] = {before - len(kept)}")
     print(f"INPUT samples_into_deltas [D] = {len(kept)}")
 
@@ -188,6 +202,7 @@ def main(argv: "list[str] | None" = None) -> int:
             "resamples": resamples,
             "warmup_per_batch": warmup_per_batch,
             "samples_loaded": len(all_samples),
+            "samples_separated_refusal_path_for_deltas": len(all_samples) - len(benign_only),
             "samples_discarded_warmup_for_deltas": before - len(kept),
             "samples_into_deltas": len(kept),
             "plan": plan,
