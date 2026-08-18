@@ -124,6 +124,37 @@ output with the run commit hash, the artefact path, the count of reports and del
 count of refusals, and whether every kept `n` equalled 210. The pre-commitment text above is not
 edited.
 
+### RUN 1 — executed at clean-tree commit `02b3b56`; artefact `results/tables/results-latency-pilot-rq4.json`. DEFECTIVE IN THE COMPOSITION ROOT; recorded, kept, not edited.
+
+**As returned.** `span_descriptives`: **180 reports** (9 arms × 2 phases × 5 spans × 2 series),
+every `n = 210` — the plan block's `kept_after_warmup_per_configuration`, so the warm-up discard
+held. `arm_pair_delta`: **0 deltas, 80 refusals.** Ten of the refusals are the pre-committed
+`B1 vs B0` refusals (clause 3), one per span per phase, each carrying the sealed ADR 0035 message.
+**The other seventy are a defect in `tools/run_rq4_descriptives.py`, not in the sealed layer:**
+the root passed the warm-up-discarded samples of BOTH scenarios to `arm_pair_delta`, and the sealed
+`benign_span_series` REFUSES rather than filters when `gt-f1-chain-tamper` samples reach it
+(`analysis/latency.py:443-466`; message: *"'gt-f1-chain-tamper' samples were passed to a BENIGN
+span series … Refusal-path latency is its own series"*). `tools/run_row1_decision.py:96-100`
+separates that scenario with the SEALED constant `REFUSAL_PATH_SCENARIO` before calling the
+decision, and says why in its own comment; the RQ4 root did not do the same before its deltas.
+
+**What this is.** The sealed layer refusing a composition-root error, as it is built to. Nothing
+about the seventy refusals is a measurement; no delta exists to report. The 180 span reports are
+unaffected — `span_descriptives` separates the two series itself — and are valid as returned.
+
+**Handling, under clause 5 and the D-009 precedent.** Run 1's artefact is committed here as
+written, and is not overwritten, edited or deleted. The root is corrected in one respect only:
+the refusal-path scenario is separated with the sealed `REFUSAL_PATH_SCENARIO` constant before
+`arm_pair_delta` is called, exactly as `run_row1_decision.py` does, and the count separated is
+printed. Nothing else changes — not the seed, resamples, warm-up count, control arm, spans, phases,
+or the reporting rule. Run 2 writes to a distinct path. Its span reports are expected to be
+byte-identical to run 1's (the function and its inputs are unchanged) and that equality is checked
+and reported on exit; a difference would be reported as the finding it would be.
+
+**Pre-commitment for run 2, written before it runs.** Every delta returned is reported as
+returned; the ten `B1 vs B0` refusals are expected to recur and are reported as refusals; any
+other refusal is reported with its sealed message and is not worked around.
+
 ---
 
 ## D-013 — "no carrier at all" was wrong: a nine-arm test carries two of the three unpopulated F3 rows
