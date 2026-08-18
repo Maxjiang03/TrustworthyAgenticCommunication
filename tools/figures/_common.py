@@ -83,6 +83,17 @@ OFF_CAMPAIGN = "#5A6673"  # dashed outline + letter, no fill
 # blue; white text on it clears 5.10:1.
 OFF_BLOCKED = "#3A6FB5"
 
+# FIG-0's authority ladder. Its four states are ORDERED -- above / at / below
+# the task grant, plus off-scale -- so the rule that applies is the SEQUENTIAL
+# one, a single hue light to dark, not the categorical one. The hue is BLOCKED's,
+# so the two matrix figures read as one system; the token is its own, because
+# "admitted above the grant" and "the boundary blocked the request" are
+# different facts and one name across both would invite exactly the wrong
+# transfer. Computed: luma 192, which is 141 clear of BLOCKED and 63 clear of
+# PAPER, and an INK glyph on it clears 9.68:1.
+LADDER_AT = "#B0C3DC"
+
+
 FONT_MIN_PT = 8  # minimum effective size everywhere (FIGURE_PLAN.md §D)
 
 # ---------------------------------------------------------------------------

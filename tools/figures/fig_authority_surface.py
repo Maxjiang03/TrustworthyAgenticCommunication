@@ -33,13 +33,12 @@ import json
 
 from _common import (
     ARM_ORDER,
-    BLUE,
+    BLOCKED,
     FONT_MIN_PT,
-    GHOST,
     INK,
+    LADDER_AT,
     LANDSCAPE,
     MIDGREY,
-    ORANGE,
     PAPER,
     PORTRAIT,
     REPO_ROOT,
@@ -94,6 +93,13 @@ CONFIGS = (
 # distinguishable by colour alone and all four survive greyscale
 # (FIGURE_PLAN.md §D). The glyphs ARE the ladder: + above the grant, · at it,
 # − below it.
+# ONE hue at four weights. These states are ORDERED -- above / at / below the
+# task grant, plus off-scale -- so the sequential rule applies, not the
+# categorical one: a single hue, light to dark, never a set of unrelated hues.
+# It is the state board's hue, so the two matrix figures read as one system,
+# and the ORDER of the fills is the reading: the darkest cell is the one
+# furthest above the grant, which is the finding this figure exists to show.
+LADDER_TOP = BLOCKED  # same ink as a measured block, a different fact -- see the key
 S_AMP, S_AT, S_NARROWED, S_OUT = "amplified", "at_grant", "narrowed", "outside"
 GLYPH = {S_AMP: "+", S_AT: "·", S_NARROWED: "−", S_OUT: ""}
 
@@ -161,18 +167,24 @@ def draw_cell(ax, x, y, w, h, state):
     `narrowed` was formerly a hatched cell with a warning-weight orange border,
     sitting beside the black amplification in the legend -- four channels all
     reading as a defect. C_n subset U_task IS delegation monotonicity, the thing
-    the capability arms are built to do, so it is now a light fill with a thin
-    outline, subordinate to the amplification rather than parallel to it.
+    the capability arms are built to do, so it carries the lightest weight of the
+    hue, subordinate to the amplification rather than parallel to it.
+
+    Weight tracks POSITION ON THE LADDER and nothing else, so the eye reads the
+    surface in the order the quantity runs: solid above the grant, a tint at it,
+    an outline below it, nothing off it. Greyscale luma 51 / 192 / 255 / 255, and
+    the two that share paper are separated by their glyph and their outline
+    weight -- which is why every state on this figure carries a glyph at all.
     """
     if state == S_AMP:
-        ax.add_patch(Rectangle((x, y), w, h, facecolor=INK, edgecolor=INK, lw=0.6))
+        ax.add_patch(Rectangle((x, y), w, h, facecolor=LADDER_TOP, edgecolor=LADDER_TOP, lw=0.6))
         glyph_colour = PAPER
     elif state == S_AT:
-        ax.add_patch(Rectangle((x, y), w, h, facecolor=GHOST, edgecolor=MIDGREY, lw=0.5))
+        ax.add_patch(Rectangle((x, y), w, h, facecolor=LADDER_AT, edgecolor=LADDER_AT, lw=0.5))
         glyph_colour = INK
     elif state == S_NARROWED:
-        ax.add_patch(Rectangle((x, y), w, h, facecolor="#fbf7f2", edgecolor=ORANGE, lw=0.7))
-        glyph_colour = ORANGE
+        ax.add_patch(Rectangle((x, y), w, h, facecolor=PAPER, edgecolor=LADDER_TOP, lw=0.7))
+        glyph_colour = LADDER_TOP
     else:
         ax.add_patch(Rectangle((x, y), w, h, facecolor=PAPER, edgecolor="#dddddd", lw=0.5))
         glyph_colour = MIDGREY
@@ -189,6 +201,24 @@ def draw_cell(ax, x, y, w, h, state):
         )
 
 
+def measured_width_in(strings, size=FONT_MIN_PT):
+    """The widest of these strings, in inches, as matplotlib will actually set it.
+
+    Text extents depend on the font and the point size, not on the figure that
+    hosts them, so a throwaway canvas at the same dpi answers the question
+    before the real figure exists -- which is what lets the header band be
+    MEASURED rather than guessed at.
+    """
+    probe = plt.figure(figsize=(1, 1))
+    r = probe.canvas.get_renderer()
+    widest = 0.0
+    for text in strings:
+        t = probe.text(0, 0, text, fontsize=size)
+        widest = max(widest, t.get_window_extent(renderer=r).width / probe.dpi)
+    plt.close(probe)
+    return widest
+
+
 def main():
     mpl_setup()
     omega = load_omega()
@@ -198,7 +228,19 @@ def main():
     # bands, so nothing sits at a hand-tuned constant a longer string outgrows.
     cw, rh = 0.38, 0.27
     title_band = 0.40
-    header_band = 1.45
+    # The 45 deg headers rise by width x sin(45) from their anchor, and the band
+    # that has to clear them was a CONSTANT -- "about 1.29 in" -- taken from
+    # eyeballing an earlier render. The longest element label outgrew it and put
+    # a header through the panel title, the fourth overprint of this kind on
+    # this suite. It is measured now: the widest string that will be drawn,
+    # rotated, plus the anchor offset and a gap under the title baseline.
+    # Both markers, because the two glyphs need not set to the same width.
+    header_strings = [f"{m} {a} | {b}" for a, b in omega for m in ("●", "○")]
+    header_strings += ["amplified [D]", "narrowed [D]"]
+    header_reach = 0.7072 * measured_width_in(header_strings)
+    header_band = header_reach + 0.10
+    print_render(ARTEFACT, "geometry.header_reach_in [M rendered extent]", f"{header_reach:.3f}")
+    print_render(ARTEFACT, "geometry.header_band_in [D]", f"{header_band:.3f}")
     legend_band = 0.54  # two rows
     note_band = 0.0  # the caption is printed, not drawn
     top = title_band + header_band
@@ -256,20 +298,13 @@ def main():
         )
         print_render(ARTEFACT, f"tier.{tier}.arms", len(rows))
 
-    # The RQ tag, and only the RQ tag (Commander ruling, 2026-08-17). The
-    # evidence class, the `required` definition, the marker key and the B3/B3+
-    # disclosure all moved to the caption, which is printed below as
-    # CAPTION lines so it travels with the artefact rather than being retyped.
-    ax.text(
-        0.10,
-        fig_h - 0.10,
-        "RQ1",
-        ha="left",
-        va="top",
-        fontsize=FONT_MIN_PT,
-        color=BLUE,
-        fontweight="bold",
-    )
+    # No on-canvas text block at all (Commander ruling, 2026-08-17, extended
+    # 2026-08-18). The RQ tag was the last of it, and a figure that has to
+    # label itself with its own research question is not carrying its weight.
+    # Everything that argued rather than decoded -- the evidence class, the
+    # `required` definition, the marker key, the B3/B3+ disclosure -- is in
+    # the caption, PRINTED below so it travels with the artefact instead of
+    # being retyped into LaTeX.
 
     probed_by_config = {}
     for p, (key, families, source_scenario) in enumerate(CONFIGS):
@@ -285,8 +320,8 @@ def main():
 
         admitted_by_tier = {"omega": set(omega), "u_task": required, "c_n": c_n}
 
-        # Titles sit ABOVE the reach of the 45 deg headers, which extend about
-        # 1.29 in up from their anchor -- they were overprinted twice before.
+        # Titles sit above the header band, which is now derived from the
+        # headers' own rendered extent rather than from a remembered number.
         ax.text(
             x0,
             fig_h - 0.32,
@@ -369,7 +404,7 @@ def main():
             ax.plot(
                 [xb, xb + 0.06, xb + 0.06, xb],
                 [yb0 + 0.02, yb0 + 0.02, yb1 - 0.02, yb1 - 0.02],
-                color=BLUE,
+                color=LADDER_TOP,
                 lw=0.9,
             )
             ax.text(
@@ -379,7 +414,7 @@ def main():
                 ha="left",
                 va="center",
                 fontsize=FONT_MIN_PT,
-                color=BLUE,
+                color=LADDER_TOP,
             )
 
     # C3 -- the marker counts are PER PANEL; the cross-panel figure is separate.
@@ -401,16 +436,17 @@ def main():
         ),
         (S_OUT, "    outside the grant and not admitted"),
     )
-    # Conservative per-character width: the true average is nearer 0.055,
-    # but em-dashes, capitals and parentheses exceed it and two legend
-    # items overlapped the next swatch at that figure.
-    sw, char_w, pad = 0.22, 0.062, 0.24
+    # Advance by the width the text ACTUALLY renders at. The conservative
+    # per-character constant this replaces was already a patch over one overlap,
+    # and the same guess failed twice more on FIG-1 -- no fixed factor is right
+    # for both a bullet and a capitalised phrase in a proportional serif.
+    sw, pad = 0.22, 0.24
     ly = 0.12
     for row in (keys[2:], keys[:2]):  # drawn bottom-up, so the ladder reads top-down
         lx = 0.10
         for st, text in row:
             draw_cell(ax, lx, ly, sw, 0.18, st)
-            ax.text(
+            t = ax.text(
                 lx + sw + 0.07,
                 ly + 0.09,
                 text,
@@ -419,7 +455,8 @@ def main():
                 fontsize=FONT_MIN_PT,
                 color=INK,
             )
-            lx += sw + 0.07 + len(text) * char_w + pad
+            w_in = t.get_window_extent(renderer=fig.canvas.get_renderer()).width / fig.dpi
+            lx += sw + 0.07 + w_in + pad
         print_render(ARTEFACT, "legend.row_width_in [D]", f"{lx:.2f}")
         if lx > fig_w - 0.10:
             raise PresentationError(f"legend row needs {lx:.2f} in, canvas is {fig_w:.2f} in")
@@ -429,14 +466,21 @@ def main():
     # that must travel with the artefact is generated from the same numbers the
     # figure renders and cannot drift from them by being retyped.
     caption = (
-        "Boundary authority surface. Each cell places one element of the frozen ontology Omega "
+        "Boundary authority surface, the specification analysis for RQ1. Each cell places one "
+        "element of the frozen ontology Omega "
         "on a three-step ladder against U_task, the authority the user's task grant confers. An "
         "element an arm admits without the task needing it sits above the grant, and those cells "
         "are the scope amplification the threat vector names; an element the task needs and the "
         "arm admits sits at it; an element the grant holds but the per-hop capability chain has "
         "narrowed away sits below it. The last of these is the contraction the capability arms "
         "exist to perform, not a refusal to be counted against them. A blank cell is outside the "
-        "grant and was not admitted. The two right-hand columns count the cells above and below "
+        "grant and was not admitted. Weight tracks position on that ladder and nothing else: a "
+        "solid cell sits above the grant, a tint at it, an outlined cell below it, and a blank "
+        "cell off the scale, so the eye reads the surface in the order the quantity runs and "
+        "the darkest cells are the finding. The hue is the state board's, so the two matrix "
+        "figures read as one system, but they share no dictionary of states: a solid cell here "
+        "is authority admitted beyond the task grant, not a request the boundary stopped. The "
+        "two right-hand columns count the cells above and below "
         "the grant on each row, and the row groups follow the ladder the arms themselves form: an "
         "unscoped or coarse resource-server grant, a task-scoped grant equal to U_task, and the "
         "attenuated chain end C_n. Read down those groups and the figure gives its result, which "

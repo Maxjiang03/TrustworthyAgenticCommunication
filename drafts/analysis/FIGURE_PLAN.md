@@ -711,6 +711,31 @@ the study-wide control, not one of the three subcases F1's 3/3 counts.
 estimates. Advance is now taken from `Text.get_window_extent`, i.e. the width the
 string actually renders at. No new per-character factor is to be introduced.
 
+### B.5 FIG-0 — colour and the last of the on-canvas text, 2026-08-18
+
+| before | now | why |
+|---|---|---|
+| an "RQ1" tag in the top-left corner | **nothing on the canvas but the surface, its headers, its key and its counts** | a figure that has to label itself with its own research question is not carrying its weight. The RQ moves into the caption's first clause, so nothing is lost and the canvas is free of argument entirely. |
+| ink / ghost-grey / a warm-tinted cell with an orange border | **one hue at four weights** — solid `#063C7A` above the grant, a `#B0C3DC` tint at it, an outline below it, blank off it | FIG-0's states are ORDERED, not categorical, so the rule that applies is the sequential one: a single hue light to dark. Weight now tracks ladder position and nothing else, and the darkest cells are the finding. Greyscale luma 51 / 192 / 255 / 255; the two that share paper are separated by glyph and outline weight, which is why every state on this figure carries a glyph. |
+| Okabe–Ito `#0072B2` on the B3/B3⁺ bracket | the ladder hue | two blues in one figure read as an encoding. There is only one hue here now. |
+
+**Shared hue, separate dictionaries.** FIG-0 and FIG-1 draw from the same hue so
+the chapter reads as one system, but they share no state vocabulary and the
+caption says so outright: a solid cell on FIG-0 is authority admitted beyond the
+task grant, not a request the boundary stopped. Tokens are named for their own
+figure's role (`LADDER_AT`, not a reused `OFF_BLOCKED`) for the same reason.
+
+**The header band is measured now.** Panel titles sat above a remembered
+constant — "about 1.29 in of header reach" — and the longest element label
+outgrew it, putting a rotated header through "F3" in Configuration I's title.
+Measured reach is **1.431 in**. The band is derived from the rendered extent of
+every header string that will be drawn, both marker glyphs included, so a longer
+element name moves the title rather than colliding with it. Same fix applied to
+the legend row, whose per-character constant was itself already a patch over one
+overlap. **Neither figure now advances by a per-character estimate**; both take
+the width the string actually renders at. This class of defect has cost four
+overprints across the suite and is closed.
+
 ## C. Per-artefact specification
 
 ### FIG-1 — the prediction–outcome board (centerpiece)
