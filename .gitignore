@@ -49,15 +49,22 @@ results/**
 !results/raw/latency-pilot.json
 smoke/g10/_ledger_tmp/
 
-# Working-tree copies of task specifications the Commander issues at the
-# repository root. Every one of them is already archived byte-for-byte under
-# docs/tasks/archive/ or docs/workplan/archive/, so these are redundant
-# copies, NOT the record -- deleting them is not this repository's call
-# (HANDOFF.md §2), but leaving them untracked is not free either:
-# src/harness/campaign.py stamps `git_dirty: true` on every run record from
-# `git status --porcelain`, so an untracked leftover would mark the one
-# confirmatory campaign's provenance dirty for a reason unrelated to the
-# experiment. Ignored, so the tree is clean and the files stay.
+# Task specifications the Commander issues, collected in task_briefs/ (see its
+# README). Ignored for ONE reason, which is unchanged: src/harness/campaign.py
+# stamps `git_dirty: true` on every run record from `git status --porcelain`,
+# so an untracked leftover would mark a run's provenance dirty for a reason
+# unrelated to the experiment. Ignored, so the tree is clean and the files stay.
+#
+# CORRECTED 2026-08-18. This rule previously also claimed every such file was
+# "already archived byte-for-byte under docs/tasks/archive/ or
+# docs/workplan/archive/, so these are redundant copies, NOT the record".
+# Measured before moving them: docs/tasks/archive/ does not exist; 13 of the 17
+# have no archived counterpart anywhere; the other 4 differ from their archived
+# namesakes (the working copies carry a STEP 0 self-check the archive drops, and
+# cite CLAUDE.md where the archive says PROJECT_RULES.md). They are the briefs
+# AS ISSUED and they are not redundant -- ignoring them is a provenance
+# decision, never a statement that they may be deleted.
+/task_briefs/
 /*_TASK.md
 /TASK_*.md
 /HANDOFF.md
