@@ -290,3 +290,93 @@ def save(fig, stem, artefact):
     fig.savefig(png)
     print(f"WROTE {artefact} | {pdf}")
     print(f"WROTE {artefact} | {png}")
+
+
+# ---------------------------------------------------------------------------
+# The latency artefacts (FIG-L1/L2/L3): loaders and two guards that RAISE.
+# ---------------------------------------------------------------------------
+MAX_WIDTH_IN, MAX_HEIGHT_IN = LANDSCAPE  # the measured text block, rotated
+
+
+def load_row1_decisions():
+    """Both committed row-1 decision artefacts (D-009): run 1 and run 2.
+
+    Run 1 (n=225) omitted the pre-registered warm-up discard; run 2 (n=210)
+    applied it. D-009 clause 2 keeps run 1's verdict as the reported one, and
+    its closure says the descriptives quoted must be run 2's, labelled as such.
+    A figure showing both rows, each labelled, is the only shape that does not
+    describe two runs as one.
+    """
+    out = {}
+    for run, name in ((1, "results-latency-pilot.json"), (2, "results-latency-pilot-run2.json")):
+        path = RESULTS_TABLES / name
+        if not path.is_file():
+            raise PresentationError(f"missing {path}; the row-1 decision (D-009) is not committed")
+        out[run] = json.loads(path.read_text(encoding="utf-8"))
+    return out
+
+
+def load_latency_rq4():
+    """The committed RQ4 descriptive layer (D-014): run 2, the reported one.
+
+    Run 1's artefact exists beside it with identical span reports and no
+    deltas (its composition root handed refusal-path samples to
+    arm_pair_delta and the sealed layer refused); it is not read here.
+    """
+    path = RESULTS_TABLES / "results-latency-pilot-rq4-run2.json"
+    if not path.is_file():
+        raise PresentationError(f"missing {path}; the RQ4 layer (D-014) is not committed")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def enforce_placement(fig, artefact):
+    """RAISE if the authored canvas exceeds the measured landscape text block.
+
+    `save()` reports placement for the whole suite; the latency artefacts are
+    built to a stricter contract in which an unplaceable canvas is an error at
+    build time, not a line in a report.
+    """
+    aw, ah = (float(v) for v in fig.get_size_inches())
+    if aw > MAX_WIDTH_IN + 1e-6 or ah > MAX_HEIGHT_IN + 1e-6:
+        raise PresentationError(
+            f"{artefact}: authored {aw:.3f} x {ah:.3f} in exceeds the landscape text block "
+            f"{MAX_WIDTH_IN:.3f} x {MAX_HEIGHT_IN:.3f} in (mproj.cls / mproj.log)"
+        )
+    print_render(artefact, "guard.placement", f"{aw:.3f} x {ah:.3f} in <= landscape")
+
+
+def assert_no_text_overlap(fig, artefact, pad_px=0.0):
+    """RAISE if any two text artists' rendered bounding boxes intersect.
+
+    Numeric overflow checks cannot see two blocks overprinting inside the
+    canvas -- FIG-1's per-arm strip and totals collided at 0.000 overflow.
+    This walks every Text artist on the figure (titles, tick labels, in-panel
+    numbers, legends), takes its window extent from the renderer, and refuses
+    the figure on the first intersection. `pad_px` shrinks each box by that
+    many pixels on each side before testing, so a hairline touch is not an
+    overlap; the default is zero.
+    """
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    boxes = []
+    for artist in fig.findobj(matplotlib.text.Text):
+        if not artist.get_visible() or not artist.get_text().strip():
+            continue
+        bb = artist.get_window_extent(renderer=renderer)
+        if bb.width <= 0 or bb.height <= 0:
+            continue
+        boxes.append((artist.get_text(), bb, artist))
+    for i in range(len(boxes)):
+        ti, bi, _ = boxes[i]
+        for j in range(i + 1, len(boxes)):
+            tj, bj, _ = boxes[j]
+            x0 = max(bi.x0, bj.x0) + pad_px
+            y0 = max(bi.y0, bj.y0) + pad_px
+            x1 = min(bi.x1, bj.x1) - pad_px
+            y1 = min(bi.y1, bj.y1) - pad_px
+            if x0 < x1 and y0 < y1:
+                raise PresentationError(
+                    f"{artefact}: text overlap -- {ti!r} intersects {tj!r} "
+                    f"({x1 - x0:.1f} x {y1 - y0:.1f} px)"
+                )
+    print_render(artefact, "guard.text_overlap", f"none among {len(boxes)} text artists")
