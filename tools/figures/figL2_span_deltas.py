@@ -34,6 +34,7 @@ from _common import (
     PresentationError,
     assert_no_text_overlap,
     enforce_placement,
+    fmt_ms3,
     load_latency_rq4,
     mpl_setup,
     plt,
@@ -248,7 +249,7 @@ def main():
                 fig.text(
                     (gutter + col * col_w + plot_w + iqr_w + 0.08) / fig_w,
                     ax.get_position().y0 + (y + 0.5) / len(ARM_ORDER) * ax.get_position().height,
-                    f"{d['treatment']['iqr']:.3f}",
+                    fmt_ms3(d["treatment"]["iqr"]),
                     ha="right",
                     va="center",
                     fontsize=FONT_MIN_PT,

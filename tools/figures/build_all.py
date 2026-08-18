@@ -29,6 +29,13 @@ AUTHORISED = (
     # surface (RQ1/RQ2). Requested directly; added here so one command still
     # regenerates everything.
     "fig_authority_surface.py",
+    # Commander task 2026-08-18: the RQ4 latency artefacts, gated by D3 and now
+    # ungated -- D-009 (row-1 decision) and D-014 (descriptive layer) are both
+    # committed. Each reads only results/tables/ and RAISES on placement or
+    # text overlap.
+    "figL1_decision_strip.py",
+    "figL2_span_deltas.py",
+    "figL3_refusal_path.py",
 )
 
 

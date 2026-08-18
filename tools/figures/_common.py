@@ -380,3 +380,13 @@ def assert_no_text_overlap(fig, artefact, pad_px=0.0):
                     f"({x1 - x0:.1f} x {y1 - y0:.1f} px)"
                 )
     print_render(artefact, "guard.text_overlap", f"none among {len(boxes)} text artists")
+
+
+def fmt_ms3(value):
+    """Three decimals, right-alignable; a width that would print as 0.000 says <0.001.
+
+    Every latency figure prints IQR widths in one column, so the format is
+    shared: rounding 0.0004 to "0.000" would state a zero the sealed record
+    does not contain, while "<0.001" is exact about what the column can show.
+    """
+    return "<0.001" if 0 < value < 0.0005 else f"{value:.3f}"
