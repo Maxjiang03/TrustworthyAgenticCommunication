@@ -27,6 +27,105 @@ should expect from the sealed record.
 
 ---
 
+## D-014 — Pre-commitment: reporting the RQ4 descriptive layer (span descriptives and arm-pair deltas)
+
+**Status:** OPEN — written BEFORE the analysis is run.
+**Date:** 2026-08-18
+**Authority:** Commander task 2026-08-18 ("RQ4 overhead analysis and figures"), continued after the
+Phase 0 STOP; D3(i); frozen_parameters row 1 (sampling clause); ADR 0041; ADR 0047; ADR 0048
+third named exception; D-006; D-009.
+
+**Context.** D-009 decided the row-1 lightweight claim, twice, in agreement, and closed with "No
+further run"; it covered `lightweight_claim` and nothing else. The RQ4 layer of the sealed
+`analysis/latency.py` — `span_descriptives` (`Descriptives` for every arm × phase × span × series)
+and `arm_pair_delta` (median difference against a control arm with a bootstrap interval, labelled
+by the §E.5 bit derivation) — has never been executed over `results/raw/latency-pilot.json` with
+its output committed. Every RQ4 latency number in any draft chapter is therefore, today,
+UNVERIFIED: the Phase 0 investigation of 2026-08-18 found no committed artefact under `results/`
+producing any of them (`0.2284`, `31.0037`, `39.7833`, `22.7360`, the cold-start percentages, or
+the forty-five hand-typed pgfplots medians in `drafts/3_8_latency.tex`), while `6.4432` was found
+to be run 2's treatment median of the MEASURED SEGMENT (presentation + boundary_verification)
+mislabelled in prose as boundary verification alone. This entry commits, before the layer is run,
+to how its output will be reported.
+
+**Disclosure that precedes the pre-commitment.** During Phase 0, to answer the Commander's B2
+(whether the presentation span is effectively zero), the sealed `span_descriptives` was executed
+uncommitted and its `presentation`-span rows ONLY were printed to the terminal — all nine arms,
+both phases, both series. No other span's descriptives and no arm-pair delta was viewed. That
+readout is recorded here so no reader has to take it on trust that nothing below was shaped by it;
+the reporting rule below leaves nothing to shape, because it reports everything the layer emits.
+
+**Pre-commitment.**
+
+1. **Everything the sealed layer emits is committed verbatim, and nothing else is computed.** The
+   output artefact carries every `SpanReport` from `span_descriptives` — every arm, both phases,
+   all five spans, both series (`benign`, `refusal_path`) — and every `ArmPairDelta` from
+   `arm_pair_delta` for every arm against control `B0`, for every one of the five spans, for both
+   phases. No row is selected, dropped, binned or reordered by the composition root; no median,
+   quantile, delta or interval is computed outside `analysis/latency.py`.
+2. **Warm-up is discarded by the sealed `discard_warmup`, with `per_batch` READ from the plan
+   block** (`warmup_per_batch: 5`), before `arm_pair_delta` is called — because `arm_pair_delta`,
+   like `lightweight_claim`, does not discard it itself (`analysis/latency.py:802-857` has no such
+   call), and run 1 of D-009 is the record of what omitting this looks like. `span_descriptives`
+   applies the same sealed function internally (`:503`); the composition root passes it the same
+   `per_batch`. Every kept `n` is expected to equal the plan block's
+   `kept_after_warmup_per_configuration` (210) and any other value is reported, not fixed.
+3. **Refusals are reported as refusals.** `arm_pair_delta` refuses any pair involving `B1`
+   (§E.5 carries no bit for its static shared secret, ADR 0035; `analysis/latency.py:713-719`).
+   The `B1 vs B0` delta is therefore recorded, for every span and phase, as REFUSED with the
+   sealed layer's own message — not omitted, not approximated from descriptives, not computed
+   another way.
+4. **Seed, resamples and confidence are the plan block's** (`bootstrap_seed`,
+   `bootstrap_resamples`) and the sealed defaults; identical for every delta; not re-seeded, not
+   varied. Corpus, phases, spans, series and the refusal-path constant are the sealed layer's own.
+5. **The layer is run ONCE.** If it is re-run for any reason, every run and its reason is recorded
+   in this entry, the first run's artefact is neither overwritten nor edited, and the runner
+   refuses to overwrite an existing output.
+6. **No decision, no margin, no verdict.** `arm_pair_delta` carries no verdict and no margin by
+   construction (its docstring, `analysis/latency.py:754-761`); none is added, and no delta is
+   compared to the 20 ms row-1 margin anywhere — in the artefact, in a figure, or in prose.
+7. **Every delta is reported under the sealed label** (`mechanism-increment` or
+   `composite-delta`), with `differing_bits`, `mechanism` and `unmodelled` carried verbatim. Every
+   delta against `B0` is expected to be a `composite-delta` with `mechanism = None`; a
+   configuration difference is what it is called, never a mechanism cost (ADR 0041).
+8. **The chapter's numbers are not reconciled by this run.** After the artefact is committed the
+   draft chapter's figures may be COMPARED to it, and the comparison reported; agreement does not
+   retroactively verify the chapter's provenance, and disagreement is reported as the finding it
+   is. Nothing in the run is adjusted to meet a number already in prose.
+
+**Presentation rules fixed before the numbers are seen (Commander ruling R4, 2026-08-18).**
+- C1: no figure plots or states an absolute end-to-end latency for any protected arm; every span
+  is shown as the sealed delta against `B0`. The one absolute end-to-end value stated is `B0`'s own
+  warm benign median, as the fixed-testbed-overhead disclosure CLAIMS_LEDGER A7 requires, and it is
+  read from this artefact, never carried from prose.
+- FIG-L1 reads the COMMITTED row-1 decision (run 2's descriptives, run 1's verdict per D-009
+  clause 2 — both `stands`); no third decision run.
+- FIG-L2 shows, per arm and span, the delta point and the sealed interval; the sealed layer emits
+  no p95 delta, so no p95 tick is drawn on a delta axis and no p95 difference is computed; the
+  treatment arm's IQR width is printed as the number the sealed `Descriptives` gives.
+- Axis rule: `log10` if and only if every plotted value — every point and every interval bound —
+  is strictly positive; otherwise `symlog`. Which branch fired is printed by the script.
+- FIG-L3 shows the refusal-path series in the only form the sealed layer emits for it —
+  `span_descriptives` under `series = refusal_path` — because `arm_pair_delta` builds from the
+  benign series alone (`analysis/latency.py:836-841`) and emits no refusal-path delta. Its
+  end-to-end panel is not drawn (C1); the omission is stated on the figure.
+
+**Disclosures that travel with every number this run produces, regardless of what it shows.**
+PILOT corpus (`fixtures/pilot/golden_thread`), not confirmatory (D-006, ADR 0047). No CPU affinity
+pinning on this pass (the only pinned measurement in the repository is the G-3 gate). In-process
+harness on one machine (ADR 0034): no network hop is implied by any figure. The G-3 5 ms threshold
+governs an isolated pinned microbenchmark and appears on no artefact here. ADR 0041 bars any
+per-mechanism cost for the online exchange or across the exchange partition; every delta here is a
+configuration difference. Cold and warm are never pooled; the refusal path is never pooled with
+the benign path.
+
+**On exit.** When the run completes, this entry is updated in the same commit as the committed
+output with the run commit hash, the artefact path, the count of reports and deltas emitted, the
+count of refusals, and whether every kept `n` equalled 210. The pre-commitment text above is not
+edited.
+
+---
+
 ## D-013 — "no carrier at all" was wrong: a nine-arm test carries two of the three unpopulated F3 rows
 
 **Status:** CLOSED on the day it opened.
