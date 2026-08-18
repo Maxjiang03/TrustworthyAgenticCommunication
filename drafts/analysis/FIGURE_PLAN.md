@@ -760,8 +760,9 @@ per-arm per-span medians including `end_to_end`, which CLAIMS_LEDGER C1 forbids.
 supersede that spec: every span is the sealed **delta against B0** from `arm_pair_delta`, the
 plotting layer subtracts nothing and forms no interval, and the one absolute end-to-end value stated
 anywhere is B0's own warm median — 22.736 ms — as the fixed-testbed-overhead disclosure A7
-requires, read from the artefact. A7 and C10 are now carried on the figures themselves (footer:
-substrate, pinning, corpus, fixed overhead). §C's FIG-4/5/6 entries stand as the original
+requires, read from the artefact. A7 and C10 are carried in each figure's printed caption; on the canvas, as on FIG-1, only a
+one-line key of the marks remains (Commander ruling 2026-08-18: keep the critical note, drop the
+rest). §C's FIG-4/5/6 entries stand as the original
 registration; the artefacts that discharge them are:
 
 | built | discharges | source | shape |

@@ -27,6 +27,7 @@ from _common import (
     PAPER,
     PresentationError,
     assert_no_text_overlap,
+    draw_key,
     enforce_placement,
     fmt_ms3,
     load_latency_rq4,
@@ -94,7 +95,7 @@ def main():
     col_w = plot_w + iqr_w + gap
     top, head_h, row_h, band_gap = 0.50, 0.32, 0.185, 0.18
     band_h = head_h + len(ARM_ORDER) * row_h
-    xtick_h, footer_h = 0.30, 0.52
+    xtick_h, footer_h = 0.30, 0.34
     fig_h = top + len(PHASE_ROWS) * band_h + band_gap + xtick_h + footer_h
     fig = plt.figure(figsize=(fig_w, fig_h))
     fig.patch.set_facecolor(PAPER)
@@ -247,26 +248,19 @@ def main():
     fig.text(
         (gutter + len(SPANS) * col_w / 2) / fig_w,
         y_x,
-        "absolute span latency, ms  ·  shared log10 axis  ·  refusal-path series only",
+        "absolute span latency, ms   ·   log10   ·   IQR = interquartile width, ms",
         ha="center",
         va="bottom",
         fontsize=FONT_MIN_PT,
         color=INK,
     )
-    footer = [
-        "●  warm median     ○  cold median     |  p95     IQR = interquartile width, ms  ·  "
-        "all "
-        "three the sealed Descriptives, verbatim",
-        "no delta is drawn: the sealed arm-pair delta builds from the benign series alone and "
-        "emits "
-        "none for this path  ·  the end-to-end panel is not drawn (C1)",
-        "on this scenario the exchange arms' failed AS round trip lands in delegation; the "
-        "capability arms do purely local work  ·  PILOT corpus  ·  in-process  ·  CPU unpinned",
-    ]
-    yy = 0.40 / fig_h
-    for line in footer:
-        fig.text(0.05 / fig_w, yy, line, ha="left", va="top", fontsize=FONT_MIN_PT, color=MIDGREY)
-        yy -= 0.135 / fig_h
+    key = (
+        ("dot-filled", "warm median"),
+        ("dot-open", "cold median"),
+        ("tick", "p95"),
+    )
+    draw_key(fig, key, x_in=0.10, y_in=0.14)
+    footer = ["key line"]
     print_render(ARTEFACT, "footer.lines", len(footer))
 
     caption = (

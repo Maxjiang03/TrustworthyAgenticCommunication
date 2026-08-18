@@ -390,3 +390,65 @@ def fmt_ms3(value):
     does not contain, while "<0.001" is exact about what the column can show.
     """
     return "<0.001" if 0 < value < 0.0005 else f"{value:.3f}"
+
+
+def draw_key(fig, items, *, x_in=0.10, y_in=0.16, gap_in=0.30, color=INK):
+    """FIG-1's key idiom for the dot-plot figures: the marks themselves, then a
+    short label, on ONE line at the bottom-left, advancing by the width each
+    label actually renders at. `items` is a sequence of (kind, label) with kind
+    one of "dot-filled", "dot-open", "bar", "tick". Everything that argues rather
+    than decodes belongs in the caption, not here.
+    """
+    from matplotlib.lines import Line2D
+
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    fw, fh = fig.get_size_inches()
+    tf = fig.transFigure
+    x = x_in
+    for kind, label in items:
+        y = y_in / fh
+        if kind in ("dot-filled", "dot-open"):
+            face = INK if kind == "dot-filled" else PAPER
+            fig.add_artist(
+                Line2D(
+                    [x / fw],
+                    [y],
+                    marker="o",
+                    ms=3.6,
+                    markerfacecolor=face,
+                    markeredgecolor=INK,
+                    markeredgewidth=0.8,
+                    linestyle="none",
+                    transform=tf,
+                )
+            )
+            x += 0.09
+        elif kind == "bar":
+            fig.add_artist(
+                Line2D(
+                    [(x - 0.06) / fw, (x + 0.12) / fw],
+                    [y, y],
+                    color=BLUE,
+                    lw=1.8,
+                    solid_capstyle="butt",
+                    transform=tf,
+                )
+            )
+            x += 0.20
+        elif kind == "tick":
+            fig.add_artist(
+                Line2D(
+                    [x / fw, x / fw],
+                    [(y_in - 0.045) / fh, (y_in + 0.045) / fh],
+                    color=MIDGREY,
+                    lw=0.9,
+                    transform=tf,
+                )
+            )
+            x += 0.08
+        else:
+            raise PresentationError(f"unknown key mark {kind!r}")
+        t = fig.text(x / fw, y, label, ha="left", va="center", fontsize=FONT_MIN_PT, color=color)
+        x += t.get_window_extent(renderer=renderer).width / fig.dpi + gap_in
+    return x

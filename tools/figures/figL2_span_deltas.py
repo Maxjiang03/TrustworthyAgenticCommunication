@@ -33,6 +33,7 @@ from _common import (
     PAPER,
     PresentationError,
     assert_no_text_overlap,
+    draw_key,
     enforce_placement,
     fmt_ms3,
     load_latency_rq4,
@@ -132,7 +133,7 @@ def main():
     col_w = plot_w + iqr_w + gap
     top, head_h, row_h, band_gap = 0.30, 0.32, 0.19, 0.20
     band_h = head_h + len(ARM_ORDER) * row_h
-    xtick_h, footer_h = 0.30, 0.66
+    xtick_h, footer_h = 0.30, 0.34
     fig_w = gutter + len(SPANS) * col_w + 0.05
     fig_h = top + len(PHASE_ROWS) * band_h + band_gap + xtick_h + footer_h
     fig = plt.figure(figsize=(fig_w, fig_h))
@@ -297,32 +298,23 @@ def main():
     fig.text(
         (gutter + len(SPANS) * col_w / 2) / fig_w,
         y_x,
-        f"median(arm) − median({control}), ms   ·   shared "
-        f"{'log10' if use_log else 'symlog'} axis"
-        + ("" if use_log else f", linear within ±{linthresh:g} ms"),
+        f"median(arm) − median({control}), ms   ·   {'log10' if use_log else 'symlog'}"
+        + ("" if use_log else f", linear within ±{linthresh:g} ms")
+        + "   ·   IQR = the arm's interquartile width, ms",
         ha="center",
         va="bottom",
         fontsize=FONT_MIN_PT,
         color=INK,
     )
-    footer = [
-        "●  warm     ○  cold     ▬  95 % bootstrap interval     "
-        "IQR = the arm's interquartile "
-        "width, ms",
-        "intervals narrower than the marker lie under it; the symlog axis widens the one interval "
-        "that "
-        "crosses zero (B2-broad-noexchange, end to end)",
-        "every delta is a composite configuration difference and none is a mechanism cost (ADR "
-        "0041)  ·  "
-        "B1: the sealed layer refuses every pair against it (ADR 0035)",
-        f"PILOT corpus  ·  in-process, one machine  ·  CPU unpinned  ·  {control}'s warm "
-        f"end-to-end "
-        f"median, {b0_e2e_med:.3f} ms, is fixed testbed overhead in every arm",
-    ]
-    yy = 0.50 / fig_h
-    for line in footer:
-        fig.text(0.05 / fig_w, yy, line, ha="left", va="top", fontsize=FONT_MIN_PT, color=MIDGREY)
-        yy -= 0.135 / fig_h
+    # The key: the marks themselves and a short label each, one line, as FIG-1
+    # does it. Every disclosure that used to sit here is in the caption below.
+    key = (
+        ("dot-filled", "warm"),
+        ("dot-open", "cold"),
+        ("bar", "95 % bootstrap interval"),
+    )
+    draw_key(fig, key, x_in=0.10, y_in=0.14)
+    footer = ["key line"]
     print_render(ARTEFACT, "footer.lines", len(footer))
 
     caption = (
@@ -333,9 +325,10 @@ def main():
         "committed arm-pair record and never subtracted here. The number at the right of each row "
         "is "
         "the arm's interquartile width, printed because the sealed descriptives expose the width "
-        "and "
-        "not the quartiles. Warm and cold are separate panel rows, warm above, and differ in "
-        "marker fill "
+        "and not the quartiles; a width the column cannot resolve prints as below 0.001. Intervals "
+        "narrower than the marker lie under it, and the symlog compression near zero makes the one "
+        "interval that crosses zero look widest. Warm and cold are separate panel rows, warm "
+        "above, and differ in marker fill "
         f"as well as position. {control} is the zero line. B1 has no marks because the sealed "
         f"layer "
         "refuses every pair involving it, its static shared secret being invisible to the E.5 "
