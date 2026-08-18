@@ -40,6 +40,7 @@ results/**
 !results/tables/results-confirmatory.json
 !results/tables/results-latency-pilot.json
 !results/tables/results-latency-pilot-run2.json
+!results/tables/results-latency-pilot-rq4.json
 !results/tables/results-confirmatory.md
 # RQ4's latency pass, 2026-08-07 (ADR 0047). Raw per-repetition values, so a
 # Sighting C stall is locatable rather than absorbed into a summary; admitted

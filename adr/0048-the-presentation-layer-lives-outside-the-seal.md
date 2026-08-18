@@ -82,6 +82,21 @@ while the frozen margin accessor lives in `src/harness/`, so a runner inside
 instance of this class is `tools/run_row1_decision.py`, governed by
 `DEVIATIONS.md` D-009. (Commander ruling, 2026-08-15.)
 
+[DESIGN] **Dated addition, 2026-08-18 — the third exception covers sealed
+DESCRIPTIVE functions on the same five conditions.** The wording above says
+"decision function" because the row-1 decision was the first instance; the
+class it names is the composition root, and its five conditions are what do the
+work, not the word. `tools/run_rq4_descriptives.py` is the second instance: it
+invokes the sealed `span_descriptives` and `arm_pair_delta`, implements no
+selection or statistic of its own, reads `seed`, `resamples` and
+`warmup_per_batch` from the plan block, prints every emitted field, refuses to
+overwrite, and is preceded in git by its pre-commitment (`DEVIATIONS.md` D-014,
+`2357964`). One condition is sharpened by D-009's own record: where a sealed
+function does NOT discard warm-up itself (`lightweight_claim`, `arm_pair_delta`),
+the root passes the samples through the sealed `discard_warmup` first, with
+`per_batch` read from the plan block — a sealed function called with a frozen
+argument, not a rule of the root's own. (Commander ruling, 2026-08-18.)
+
 [DESIGN] **The one non-JSON datum.** `campaign-confirmatory.json` carries no run
 timestamp. TAB-0 prints the run date `2026-08-07` from the claims record
 (`DEVIATIONS.md` D-005) and labels that provenance on the artefact and in its
