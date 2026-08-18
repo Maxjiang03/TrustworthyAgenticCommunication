@@ -791,6 +791,18 @@ labels colliding at 0.14 in per decade; a log axis's automatic minor-tick labels
 title. None of these moved the overflow number. The FIG-1 lesson — a numeric check cannot see two
 blocks overprinting inside the canvas — is now a check.
 
+**Layout, revised 2026-08-18.** L2 and L3 stacked warm and cold as two bands of nine arm rows.
+That repeated the arm labels, the tier brackets, the panel headers and the IQR headers twice, and
+put ~2.5 in between an arm's warm mark and its cold one — which is the comparison the cold-start
+paragraph makes. Both now use ONE band with the pair **dodged inside the arm row**, warm above the
+centre and cold below, the offset smaller than half the row so a pair groups more tightly than two
+arms do. Phase is still carried by position and by marker fill, never by hue, and the two series
+are still two marks: nothing is pooled. L2 goes 5.38 → **3.96 in**, L3 5.52 → **4.12 in**, and the
+warm/cold gap goes 2.5 in → 0.10 in. This supersedes the task spec's "cold and warm as separate
+panel rows"; the numbers are untouched and `tools/verify/verify_latency_figures.py` passes
+unchanged against the new geometry. L3's on-canvas title is now the short form; the "own series,
+never pooled" claim it dropped is carried by the caption's first sentence.
+
 **Register (colour ruling 2026-08-18: colour permitted, greyscale-safe).** The latency set has
 its own dictionary, one meaning per hue and every hue separated from ink by lightness: **ink** for
 point statistics (medians, deltas); **one blue `#3A6FB5`** for spread statistics — the sealed 95 %

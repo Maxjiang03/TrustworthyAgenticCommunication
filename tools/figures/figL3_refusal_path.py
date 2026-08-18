@@ -52,6 +52,8 @@ SPAN_TITLE = {
 }
 PHASE_ROWS = ("warm", "cold")
 SERIES = "refusal_path"
+# Dodge within the arm row, as FIG-L2 does: warm above the centre, cold below.
+PHASES_IN_ROW = (("warm", 0.18, True), ("cold", -0.18, False))
 
 from figL2_span_deltas import draw_tier_brackets  # noqa: E402  (one idiom, one definition)
 
@@ -96,16 +98,17 @@ def main():
     fig_w = 9.65
     plot_w = (fig_w - gutter - 0.05) / len(SPANS) - iqr_w - gap
     col_w = plot_w + iqr_w + gap
-    top, head_h, row_h, band_gap = 0.46, 0.32, 0.20, 0.18
-    band_h = head_h + len(ARM_ORDER) * row_h
+    # ONE band, warm and cold dodged inside each arm row (see FIG-L2).
+    top, head_h, row_h = 0.46, 0.32, 0.30
     xtick_h, footer_h = 0.30, 0.34
-    fig_h = top + len(PHASE_ROWS) * band_h + band_gap + xtick_h + footer_h
+    fig_h = top + head_h + len(ARM_ORDER) * row_h + xtick_h + footer_h
     fig = plt.figure(figsize=(fig_w, fig_h))
     fig.patch.set_facecolor(PAPER)
 
-    def ax_rect(col, band):
+    y_top = fig_h - top - head_h
+
+    def ax_rect(col):
         x0 = (gutter + col * col_w) / fig_w
-        y_top = fig_h - top - band * (band_h + band_gap) - head_h
         y0 = (y_top - len(ARM_ORDER) * row_h) / fig_h
         return [x0, y0, plot_w / fig_w, len(ARM_ORDER) * row_h / fig_h]
 
@@ -122,8 +125,7 @@ def main():
     fig.text(
         0.05 / fig_w,
         (fig_h - 0.12) / fig_h,
-        "Refusal-path latency (chain-tamper scenario) — its own series, never pooled with the "
-        "benign path",
+        "Refusal-path latency (chain-tamper scenario)",
         ha="left",
         va="top",
         fontsize=FONT_MIN_PT + 1,
@@ -132,9 +134,9 @@ def main():
     )
 
     ys = {arm: len(ARM_ORDER) - 1 - i for i, arm in enumerate(ARM_ORDER)}
-    for band, phase in enumerate(PHASE_ROWS):
+    if True:  # one band; the loop over phases moved inside the arm row
         for col, span in enumerate(SPANS):
-            ax = fig.add_axes(ax_rect(col, band))
+            ax = fig.add_axes(ax_rect(col))
             ax.set_xscale("log")
             ax.set_xlim(10**dec_lo / 1.5, 10**dec_hi * 1.5)
             ax.set_ylim(-0.5, len(ARM_ORDER) - 0.5)
@@ -146,12 +148,9 @@ def main():
             ax.set_yticks([])
             ax.set_xticks(ticks)
             ax.set_xticks(minor, minor=True)
-            last_band = band == len(PHASE_ROWS) - 1
             # a log axis labels its minor ticks by default; nothing here may
             ax.xaxis.set_minor_formatter(NullFormatter())
-            ax.xaxis.set_major_formatter(
-                FixedFormatter(tick_labels) if last_band else NullFormatter()
-            )
+            ax.xaxis.set_major_formatter(FixedFormatter(tick_labels))
             ax.tick_params(
                 axis="x", colors=INK, labelsize=FONT_MIN_PT, length=2.2, width=0.5, pad=1.5
             )
@@ -178,75 +177,67 @@ def main():
             )
             fig.text(
                 (gutter + col * col_w + plot_w + iqr_w + 0.08) / fig_w,
-                (fig_h - top - band * (band_h + band_gap) - head_h + 0.19) / fig_h,
+                (y_top + 0.19) / fig_h,
                 "IQR",
                 ha="right",
                 va="bottom",
                 fontsize=FONT_MIN_PT,
                 color=MIDGREY,
             )
+            pos = ax.get_position()
             for arm in ARM_ORDER:
-                y = ys[arm]
-                d = by[(arm, phase, span)]
-                filled = phase == "warm"
-                # p95: an open tick, the sealed value, to the right of the median
-                ax.plot(
-                    [d["p95"], d["p95"]],
-                    [y - 0.32, y + 0.32],
-                    color=LATENCY_SPREAD,
-                    lw=0.9,
-                    solid_capstyle="butt",
-                    zorder=3,
-                )
-                ax.plot(
-                    [d["median"]],
-                    [y],
-                    marker="o",
-                    ms=3.6,
-                    markerfacecolor=INK if filled else PAPER,
-                    markeredgecolor=INK,
-                    markeredgewidth=0.8,
-                    linestyle="none",
-                    zorder=4,
-                )
-                fig.text(
-                    (gutter + col * col_w + plot_w + iqr_w + 0.08) / fig_w,
-                    ax.get_position().y0 + (y + 0.5) / len(ARM_ORDER) * ax.get_position().height,
-                    fmt_ms3(d["iqr"]),
-                    ha="right",
-                    va="center",
-                    fontsize=FONT_MIN_PT,
-                    color=MIDGREY,
-                )
-                print_render(
-                    ARTEFACT,
-                    f"refusal.{arm}.{phase}.{span} [M]",
-                    f"median={d['median']:.4f} p95={d['p95']:.4f} iqr={d['iqr']:.4f} n={d['n']}",
-                )
-        ax0 = fig.axes[-len(SPANS)]
-        pos = ax0.get_position()
-        fig.text(
-            0.05 / fig_w,
-            pos.y1 + 0.04 / fig_h,
-            f"{phase}   {'●' if phase == 'warm' else '○'}",
-            ha="left",
-            va="bottom",
-            fontsize=FONT_MIN_PT + 1,
-            color=INK,
-            fontweight="bold",
-        )
-        draw_tier_brackets(fig, pos, ys, fig_w, fig_h)
-        for arm in ARM_ORDER:
-            y = pos.y0 + (ys[arm] + 0.5) / len(ARM_ORDER) * pos.height
-            fig.text(
-                (gutter - 0.10) / fig_w,
-                y,
-                arm,
-                ha="right",
-                va="center",
-                fontsize=FONT_MIN_PT,
-                color=INK,
-            )
+                for phase, dy, filled in PHASES_IN_ROW:
+                    y = ys[arm] + dy
+                    d = by[(arm, phase, span)]
+                    # p95: the sealed value as a tick beside its own median
+                    ax.plot(
+                        [d["p95"], d["p95"]],
+                        [y - 0.13, y + 0.13],
+                        color=LATENCY_SPREAD,
+                        lw=0.9,
+                        solid_capstyle="butt",
+                        zorder=3,
+                    )
+                    ax.plot(
+                        [d["median"]],
+                        [y],
+                        marker="o",
+                        ms=3.4,
+                        markerfacecolor=INK if filled else PAPER,
+                        markeredgecolor=INK,
+                        markeredgewidth=0.8,
+                        linestyle="none",
+                        zorder=4,
+                    )
+                    fig.text(
+                        (gutter + col * col_w + plot_w + iqr_w + 0.08) / fig_w,
+                        pos.y0 + (y + 0.5) / len(ARM_ORDER) * pos.height,
+                        fmt_ms3(d["iqr"]),
+                        ha="right",
+                        va="center",
+                        fontsize=FONT_MIN_PT,
+                        color=INK if filled else MIDGREY,
+                    )
+                    print_render(
+                        ARTEFACT,
+                        f"refusal.{arm}.{phase}.{span} [M]",
+                        f"median={d['median']:.4f} p95={d['p95']:.4f} "
+                        f"iqr={d['iqr']:.4f} n={d['n']}",
+                    )
+            # The gutter is drawn ONCE, beside the first panel.
+            if col == 0:
+                draw_tier_brackets(fig, pos, ys, fig_w, fig_h)
+                for arm in ARM_ORDER:
+                    y = pos.y0 + (ys[arm] + 0.5) / len(ARM_ORDER) * pos.height
+                    fig.text(
+                        (gutter - 0.10) / fig_w,
+                        y,
+                        arm,
+                        ha="right",
+                        va="center",
+                        fontsize=FONT_MIN_PT,
+                        color=INK,
+                    )
 
     y_x = (footer_h + 0.02) / fig_h
     fig.text(
@@ -289,7 +280,8 @@ def main():
         "exists "
         "to draw in its place. B1 appears here because the descriptive layer does not refuse it; "
         "only "
-        "the bit-labelled delta does. Warm above, cold below, distinguished by position and marker "
+        "the bit-labelled delta does. Warm and cold are dodged within each arm row, warm above "
+        "the row centre, distinguished by position and marker "
         f"fill; n is {n} per arm and phase after the pre-registered warm-up discard; pilot corpus, "
         "unpinned, one machine. The gutter groups the arms into the three ladder tiers of the "
         "authority-surface figure. Colour carries one meaning each and survives greyscale by "

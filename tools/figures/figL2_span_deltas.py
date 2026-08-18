@@ -9,8 +9,10 @@ subtracted, pooled or interpolated here. B0 is the zero line; B1 has no row of
 marks because the sealed layer REFUSES every pair involving it (ADR 0035), and
 that refusal is what its row says.
 
-Cold and warm are separate panel rows -- warm above, cold below -- told apart
-by position and by marker fill, never by hue. The one hue on the figure is the
+Cold and warm are DODGED inside each arm row -- warm above the row centre,
+cold below -- told apart by position and by marker fill, never by hue, and
+never pooled into one mark. One band, so the arm labels, the tier brackets and
+the panel headers are drawn once. The one hue on the figure is the
 interval bar. Absolute end-to-end latency appears nowhere on this figure (C1);
 the only absolute end-to-end value stated is B0's own warm median, in the
 footer, as the fixed-testbed-overhead disclosure (CLAIMS_LEDGER A7), read from
@@ -55,6 +57,9 @@ SPAN_TITLE = {
     "end_to_end": "end to end",
 }
 PHASE_ROWS = ("warm", "cold")  # warm above: the row-1 estimand's phase
+# Dodge within the arm row: warm above the centre, cold below. The offset is
+# smaller than half the row, so a pair groups more tightly than two arms do.
+PHASES_IN_ROW = (("warm", 0.18, True), ("cold", -0.18, False))
 
 
 def draw_tier_brackets(fig, pos, ys, fig_w, fig_h):
@@ -162,17 +167,19 @@ def main():
     gutter = 1.72  # tier bracket + arm labels
     plot_w, iqr_w, gap = 1.036, 0.38, 0.16
     col_w = plot_w + iqr_w + gap
-    top, head_h, row_h, band_gap = 0.30, 0.32, 0.20, 0.20
-    band_h = head_h + len(ARM_ORDER) * row_h
+    # ONE band: warm and cold are dodged inside each arm row, so the row is
+    # taller and there is no second copy of the labels, brackets or headers.
+    top, head_h, row_h = 0.30, 0.32, 0.30
     xtick_h, footer_h = 0.30, 0.34
     fig_w = gutter + len(SPANS) * col_w + 0.05
-    fig_h = top + len(PHASE_ROWS) * band_h + band_gap + xtick_h + footer_h
+    fig_h = top + head_h + len(ARM_ORDER) * row_h + xtick_h + footer_h
     fig = plt.figure(figsize=(fig_w, fig_h))
     fig.patch.set_facecolor(PAPER)
 
-    def ax_rect(col, band):
+    y_top = fig_h - top - head_h
+
+    def ax_rect(col):
         x0 = (gutter + col * col_w) / fig_w
-        y_top = fig_h - top - band * (band_h + band_gap) - head_h
         y0 = (y_top - len(ARM_ORDER) * row_h) / fig_h
         return [x0, y0, plot_w / fig_w, len(ARM_ORDER) * row_h / fig_h]
 
@@ -184,9 +191,9 @@ def main():
     minor = [-0.1, -0.01, -0.001, 0.001, 0.01, 1]
 
     ys = {arm: len(ARM_ORDER) - 1 - i for i, arm in enumerate(ARM_ORDER)}
-    for band, phase in enumerate(PHASE_ROWS):
+    if True:  # one band; the loop over phases moved inside the arm row
         for col, span in enumerate(SPANS):
-            ax = fig.add_axes(ax_rect(col, band))
+            ax = fig.add_axes(ax_rect(col))
             if use_log:
                 ax.set_xscale("log")
                 ax.set_xlim(min_pos / 1.6, xmax * 1.6)
@@ -206,8 +213,7 @@ def main():
             ax.set_yticks([])
             ax.set_xticks(ticks)
             ax.set_xticks(minor, minor=True)
-            last_band = band == len(PHASE_ROWS) - 1
-            ax.set_xticklabels(tick_labels if last_band else [])
+            ax.set_xticklabels(tick_labels)
             ax.tick_params(
                 axis="x", colors=INK, labelsize=FONT_MIN_PT, length=2.2, width=0.5, pad=1.5
             )
@@ -241,91 +247,84 @@ def main():
             # IQR column header
             fig.text(
                 (gutter + col * col_w + plot_w + iqr_w + 0.08) / fig_w,
-                (fig_h - top - band * (band_h + band_gap) - head_h + 0.19) / fig_h,
+                (y_top + 0.19) / fig_h,
                 "IQR",
                 ha="right",
                 va="bottom",
                 fontsize=FONT_MIN_PT,
                 color=MIDGREY,
             )
+            pos = ax.get_position()
             for arm in ARM_ORDER:
-                y = ys[arm]
                 if arm == control or arm in refused_arms:
                     continue
-                d = by.get((arm, phase, span))
-                if d is None:
-                    raise PresentationError(
-                        f"no delta for {arm} / {phase} / {span} and no refusal either"
+                for phase, dy, filled in PHASES_IN_ROW:
+                    y = ys[arm] + dy
+                    d = by.get((arm, phase, span))
+                    if d is None:
+                        raise PresentationError(
+                            f"no delta for {arm} / {phase} / {span} and no refusal either"
+                        )
+                    ax.plot(
+                        [d["ci_low_ms"], d["ci_high_ms"]],
+                        [y, y],
+                        color=LATENCY_SPREAD,
+                        lw=1.6,
+                        solid_capstyle="butt",
+                        zorder=3,
                     )
-                ax.plot(
-                    [d["ci_low_ms"], d["ci_high_ms"]],
-                    [y, y],
-                    color=LATENCY_SPREAD,
-                    lw=1.8,
-                    solid_capstyle="butt",
-                    zorder=3,
-                )
-                filled = phase == "warm"
-                ax.plot(
-                    [d["point_estimate_ms"]],
-                    [y],
-                    marker="o",
-                    ms=3.6,
-                    markerfacecolor=INK if filled else PAPER,
-                    markeredgecolor=INK,
-                    markeredgewidth=0.8,
-                    linestyle="none",
-                    zorder=4,
-                )
-                # the treatment arm's IQR width, verbatim, in the text column
-                fig.text(
-                    (gutter + col * col_w + plot_w + iqr_w + 0.08) / fig_w,
-                    ax.get_position().y0 + (y + 0.5) / len(ARM_ORDER) * ax.get_position().height,
-                    fmt_ms3(d["treatment"]["iqr"]),
-                    ha="right",
-                    va="center",
-                    fontsize=FONT_MIN_PT,
-                    color=MIDGREY,
-                )
-                print_render(
-                    ARTEFACT,
-                    f"delta.{arm}.{phase}.{span} [M]",
-                    f"{d['point_estimate_ms']:.4f} [{d['ci_low_ms']:.4f}, {d['ci_high_ms']:.4f}] "
-                    f"iqr={d['treatment']['iqr']:.4f} {d['label']}",
-                )
-        # band label and arm labels, once per band, in the gutter
-        ax0 = fig.axes[-len(SPANS)]
-        pos = ax0.get_position()
-        fig.text(
-            0.05 / fig_w,
-            pos.y1 + 0.04 / fig_h,
-            f"{phase}   {'●' if phase == 'warm' else '○'}",
-            ha="left",
-            va="bottom",
-            fontsize=FONT_MIN_PT + 1,
-            color=INK,
-            fontweight="bold",
-        )
-        draw_tier_brackets(fig, pos, ys, fig_w, fig_h)
-        for arm in ARM_ORDER:
-            y = pos.y0 + (ys[arm] + 0.5) / len(ARM_ORDER) * pos.height
-            if arm == control:
-                lab, col_ = f"{arm}   baseline, 0", INK
-            elif arm in refused_arms:
-                lab, col_ = f"{arm}  refused, ADR 0035", MIDGREY
-            else:
-                lab, col_ = arm, INK
-            fig.text(
-                (gutter - 0.10) / fig_w,
-                y,
-                lab,
-                ha="right",
-                va="center",
-                fontsize=FONT_MIN_PT,
-                color=col_,
-            )
+                    ax.plot(
+                        [d["point_estimate_ms"]],
+                        [y],
+                        marker="o",
+                        ms=3.4,
+                        markerfacecolor=INK if filled else PAPER,
+                        markeredgecolor=INK,
+                        markeredgewidth=0.8,
+                        linestyle="none",
+                        zorder=4,
+                    )
+                    # The arm's IQR width, verbatim, on its own mark's line and
+                    # in its own mark's weight -- ink for warm, grey for cold --
+                    # so the column is read the same way the panel is.
+                    fig.text(
+                        (gutter + col * col_w + plot_w + iqr_w + 0.08) / fig_w,
+                        pos.y0 + (y + 0.5) / len(ARM_ORDER) * pos.height,
+                        fmt_ms3(d["treatment"]["iqr"]),
+                        ha="right",
+                        va="center",
+                        fontsize=FONT_MIN_PT,
+                        color=INK if filled else MIDGREY,
+                    )
+                    print_render(
+                        ARTEFACT,
+                        f"delta.{arm}.{phase}.{span} [M]",
+                        f"{d['point_estimate_ms']:.4f} [{d['ci_low_ms']:.4f}, "
+                        f"{d['ci_high_ms']:.4f}] "
+                        f"iqr={d['treatment']['iqr']:.4f} {d['label']}",
+                    )
+            # The gutter is drawn ONCE, beside the first panel: one set of arm
+            # labels and one set of tier brackets now serve both phases.
+            if col == 0:
+                draw_tier_brackets(fig, pos, ys, fig_w, fig_h)
+                for arm in ARM_ORDER:
+                    y = pos.y0 + (ys[arm] + 0.5) / len(ARM_ORDER) * pos.height
+                    if arm == control:
+                        lab, col_ = f"{arm}   baseline, 0", INK
+                    elif arm in refused_arms:
+                        lab, col_ = f"{arm}  refused, ADR 0035", MIDGREY
+                    else:
+                        lab, col_ = arm, INK
+                    fig.text(
+                        (gutter - 0.10) / fig_w,
+                        y,
+                        lab,
+                        ha="right",
+                        va="center",
+                        fontsize=FONT_MIN_PT,
+                        color=col_,
+                    )
 
-    # ---- x label, key and footer -------------------------------------------
     y_x = (footer_h + 0.02) / fig_h
     fig.text(
         (gutter + len(SPANS) * col_w / 2) / fig_w,
@@ -359,8 +358,8 @@ def main():
         "the arm's interquartile width, printed because the sealed descriptives expose the width "
         "and not the quartiles; a width the column cannot resolve prints as below 0.001. Intervals "
         "narrower than the marker lie under it, and the symlog compression near zero makes the one "
-        "interval that crosses zero look widest. Warm and cold are separate panel rows, warm "
-        "above, and differ in marker fill "
+        "interval that crosses zero look widest. Warm and cold are dodged within each arm "
+        "row, warm above the row centre, and differ in marker fill "
         f"as well as position. {control} is the zero line. B1 has no marks because the sealed "
         f"layer "
         "refuses every pair involving it, its static shared secret being invisible to the E.5 "
