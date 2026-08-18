@@ -26,9 +26,9 @@ import warnings
 
 from _common import (
     ARM_ORDER,
-    BLUE,
     FONT_MIN_PT,
     INK,
+    LATENCY_SPREAD,
     MIDGREY,
     PAPER,
     PresentationError,
@@ -55,6 +55,37 @@ SPAN_TITLE = {
     "end_to_end": "end to end",
 }
 PHASE_ROWS = ("warm", "cold")  # warm above: the row-1 estimand's phase
+
+
+def draw_tier_brackets(fig, pos, ys, fig_w, fig_h):
+    """FIG-0's ladder tiers beside the arm rows, so the two figures read as one.
+
+    A hairline bracket and a rotated 8 pt label per tier, in the far-left
+    column of the gutter. The tier assignment is FIG-0's own transcription of
+    section E.1, imported rather than retyped.
+    """
+    from fig_authority_surface import ARM_GRANT, GRANT_LABEL
+    from matplotlib.lines import Line2D
+
+    tiers = {}
+    for arm in ARM_ORDER:
+        tiers.setdefault(ARM_GRANT[arm], []).append(ys[arm])
+    for tier, rows in tiers.items():
+        y0 = pos.y0 + (min(rows) + 0.06) / len(ARM_ORDER) * pos.height
+        y1 = pos.y0 + (max(rows) + 0.94) / len(ARM_ORDER) * pos.height
+        fig.add_artist(
+            Line2D([0.16 / fig_w] * 2, [y0, y1], color=MIDGREY, lw=0.8, transform=fig.transFigure)
+        )
+        fig.text(
+            0.10 / fig_w,
+            (y0 + y1) / 2,
+            GRANT_LABEL[tier],
+            ha="center",
+            va="center",
+            rotation=90,
+            fontsize=FONT_MIN_PT,
+            color=MIDGREY,
+        )
 
 
 def main():
@@ -128,10 +159,10 @@ def main():
     print_render(ARTEFACT, "A7.fixed_overhead_B0_warm_end_to_end_median_ms [M]", b0_e2e_med)
 
     # ---- geometry, in inches ------------------------------------------------
-    gutter = 1.50  # arm labels
-    plot_w, iqr_w, gap = 1.08, 0.38, 0.16
+    gutter = 1.72  # tier bracket + arm labels
+    plot_w, iqr_w, gap = 1.036, 0.38, 0.16
     col_w = plot_w + iqr_w + gap
-    top, head_h, row_h, band_gap = 0.30, 0.32, 0.19, 0.20
+    top, head_h, row_h, band_gap = 0.30, 0.32, 0.20, 0.20
     band_h = head_h + len(ARM_ORDER) * row_h
     xtick_h, footer_h = 0.30, 0.34
     fig_w = gutter + len(SPANS) * col_w + 0.05
@@ -229,7 +260,7 @@ def main():
                 ax.plot(
                     [d["ci_low_ms"], d["ci_high_ms"]],
                     [y, y],
-                    color=BLUE,
+                    color=LATENCY_SPREAD,
                     lw=1.8,
                     solid_capstyle="butt",
                     zorder=3,
@@ -275,6 +306,7 @@ def main():
             color=INK,
             fontweight="bold",
         )
+        draw_tier_brackets(fig, pos, ys, fig_w, fig_h)
         for arm in ARM_ORDER:
             y = pos.y0 + (ys[arm] + 0.5) / len(ARM_ORDER) * pos.height
             if arm == control:
@@ -346,7 +378,9 @@ def main():
         "fixed testbed overhead present in every arm, stated once as the disclosure it is. Data "
         "are "
         "pilot-corpus, unpinned, in-process on one machine; n is 210 per arm and phase after the "
-        "pre-registered warm-up discard."
+        "pre-registered warm-up discard. The gutter groups the arms into the three ladder tiers "
+        "of the authority-surface figure. Colour carries one meaning each and survives greyscale "
+        "by lightness: ink for the point, one blue for the sealed interval, grey for structure."
     )
     import textwrap
 

@@ -791,8 +791,16 @@ labels colliding at 0.14 in per decade; a log axis's automatic minor-tick labels
 title. None of these moved the overflow number. The FIG-1 lesson — a numeric check cannot see two
 blocks overprinting inside the canvas — is now a check.
 
-**Register.** Okabe–Ito blue `#0072B2` is the one hue in the set and appears only on interval bars
-(FIG-L1, FIG-L2); FIG-L3 has no hue. Serif, three type levels, 8 pt floor, no outer frames, ticks
+**Register (colour ruling 2026-08-18: colour permitted, greyscale-safe).** The latency set has
+its own dictionary, one meaning per hue and every hue separated from ink by lightness: **ink** for
+point statistics (medians, deltas); **one blue `#3A6FB5`** for spread statistics — the sealed 95 %
+interval on L1/L2 and the sealed p95 tick on L3 (luma 97, so an ink point on it keeps 71/255 in
+monochrome; the darker `#063C7A` would not); **vermillion `#D55E00`** for the study's one
+falsification threshold, row 1's 20 ms margin on L1 — the meaning it already carries on the state
+board, where it marks a cell that disagreed with the pre-registration; **grey** for structure. The
+Okabe–Ito `#0072B2` is retired from this set. L2 and L3 carry FIG-0's three ladder-tier brackets
+in the gutter (`ARM_GRANT`/`GRANT_LABEL` imported from FIG-0, not retyped), so the four figures read
+as one system. Serif, three type levels, 8 pt floor, no outer frames, ticks
 only where a scale stands behind them, one key per figure in its footer. Greyscale rendered and
 inspected for all three.
 

@@ -15,9 +15,10 @@ Pure presentation (ADR 0048).
 """
 
 from _common import (
-    BLUE,
     FONT_MIN_PT,
     INK,
+    LATENCY_MARGIN,
+    LATENCY_SPREAD,
     MIDGREY,
     PAPER,
     assert_no_text_overlap,
@@ -91,7 +92,9 @@ def main():
     )
 
     # the margin: the study's only equivalence decision
-    ax.axvline(margin, color=INK, lw=0.9, ymin=0.0, ymax=1.0, zorder=2)
+    # The one falsification threshold in the study, in the one colour that
+    # means falsification across the chapter (FIG-1's disagreement mark).
+    ax.axvline(margin, color=LATENCY_MARGIN, lw=1.0, ymin=0.0, ymax=1.0, zorder=2)
     ax.text(
         margin - 0.15,
         2.3,
@@ -106,7 +109,14 @@ def main():
     for y, r in zip((1.3, 0.0), rows):
         # CI bar in the one accent hue; point in ink; the UPPER BOUND as a
         # heavier vertical tick, because that is what the rule reads.
-        ax.plot([r["lo"], r["hi"]], [y, y], color=BLUE, lw=3.0, solid_capstyle="butt", zorder=3)
+        ax.plot(
+            [r["lo"], r["hi"]],
+            [y, y],
+            color=LATENCY_SPREAD,
+            lw=3.0,
+            solid_capstyle="butt",
+            zorder=3,
+        )
         ax.plot([r["point"]], [y], marker="o", ms=4.0, color=INK, zorder=4)
         ax.plot([r["hi"], r["hi"]], [y - 0.28, y + 0.28], color=INK, lw=1.2, zorder=4)
         ax.text(
@@ -146,7 +156,14 @@ def main():
     axm.xaxis.set_major_locator(plt.MaxNLocator(4))
     axm.xaxis.set_major_formatter(plt.FormatStrFormatter("%.3f"))
     for y, r in zip((1.6, 0.0), rows):
-        axm.plot([r["lo"], r["hi"]], [y, y], color=BLUE, lw=3.0, solid_capstyle="butt", zorder=3)
+        axm.plot(
+            [r["lo"], r["hi"]],
+            [y, y],
+            color=LATENCY_SPREAD,
+            lw=3.0,
+            solid_capstyle="butt",
+            zorder=3,
+        )
         axm.plot([r["point"]], [y], marker="o", ms=4.0, color=INK, zorder=4)
         axm.plot([r["hi"], r["hi"]], [y - 0.28, y + 0.28], color=INK, lw=1.2, zorder=4)
         axm.text(
@@ -222,7 +239,10 @@ def main():
         "interval region at a scale where the bars can be read; on the main axis they are narrower "
         "than the point marker. Data are pilot-corpus and unpinned; the G-3 5 ms threshold "
         "governs an "
-        "isolated pinned microbenchmark and is not drawn."
+        "isolated pinned microbenchmark and is not drawn. Colour carries one meaning each and "
+        "survives greyscale by lightness: ink for the point, one blue for the sealed interval, "
+        "vermillion for the margin the interval must not cross, which is the same colour the "
+        "state board reserves for a cell that disagreed with the pre-registration."
     )
     import textwrap
 

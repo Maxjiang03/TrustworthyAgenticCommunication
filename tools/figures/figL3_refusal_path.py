@@ -23,6 +23,7 @@ from _common import (
     ARM_ORDER,
     FONT_MIN_PT,
     INK,
+    LATENCY_SPREAD,
     MIDGREY,
     PAPER,
     PresentationError,
@@ -51,6 +52,8 @@ SPAN_TITLE = {
 }
 PHASE_ROWS = ("warm", "cold")
 SERIES = "refusal_path"
+
+from figL2_span_deltas import draw_tier_brackets  # noqa: E402  (one idiom, one definition)
 
 
 def main():
@@ -88,12 +91,12 @@ def main():
     print_render(ARTEFACT, "axis.plotted_max_ms [M]", hi)
 
     # ---- geometry, in inches ------------------------------------------------
-    gutter = 1.50
+    gutter = 1.72  # tier bracket + arm labels
     iqr_w, gap = 0.38, 0.16
     fig_w = 9.65
     plot_w = (fig_w - gutter - 0.05) / len(SPANS) - iqr_w - gap
     col_w = plot_w + iqr_w + gap
-    top, head_h, row_h, band_gap = 0.50, 0.32, 0.185, 0.18
+    top, head_h, row_h, band_gap = 0.46, 0.32, 0.20, 0.18
     band_h = head_h + len(ARM_ORDER) * row_h
     xtick_h, footer_h = 0.30, 0.34
     fig_h = top + len(PHASE_ROWS) * band_h + band_gap + xtick_h + footer_h
@@ -190,7 +193,7 @@ def main():
                 ax.plot(
                     [d["p95"], d["p95"]],
                     [y - 0.32, y + 0.32],
-                    color=MIDGREY,
+                    color=LATENCY_SPREAD,
                     lw=0.9,
                     solid_capstyle="butt",
                     zorder=3,
@@ -232,6 +235,7 @@ def main():
             color=INK,
             fontweight="bold",
         )
+        draw_tier_brackets(fig, pos, ys, fig_w, fig_h)
         for arm in ARM_ORDER:
             y = pos.y0 + (ys[arm] + 0.5) / len(ARM_ORDER) * pos.height
             fig.text(
@@ -287,7 +291,9 @@ def main():
         "only "
         "the bit-labelled delta does. Warm above, cold below, distinguished by position and marker "
         f"fill; n is {n} per arm and phase after the pre-registered warm-up discard; pilot corpus, "
-        "unpinned, one machine."
+        "unpinned, one machine. The gutter groups the arms into the three ladder tiers of the "
+        "authority-surface figure. Colour carries one meaning each and survives greyscale by "
+        "lightness: ink for the median, one blue for the sealed p95, grey for structure."
     )
     import textwrap
 

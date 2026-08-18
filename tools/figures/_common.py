@@ -93,6 +93,18 @@ OFF_BLOCKED = "#3A6FB5"
 # PAPER, and an INK glyph on it clears 9.68:1.
 LADDER_AT = "#B0C3DC"
 
+# The latency set's dictionary (FIG-L1/L2/L3, Commander ruling 2026-08-18):
+# INK for point statistics (medians, deltas); ONE blue for spread statistics
+# (the sealed 95 % interval, the sealed p95); VERMILLION for the one
+# falsification threshold in the study, row 1's 20 ms margin -- the same
+# meaning it carries on the state board, where it marks a cell that disagreed
+# with the pre-registration and is drawn 0 times; grey for structure. The
+# blue is the OFF_BLOCKED swatch, chosen here for its computed lightness: an
+# INK point on top of a bar of it keeps 71/255 of greyscale separation, which
+# the darker BLOCKED (51) would not.
+LATENCY_SPREAD = "#3A6FB5"
+LATENCY_MARGIN = VERMILLION
+
 
 FONT_MIN_PT = 8  # minimum effective size everywhere (FIGURE_PLAN.md §D)
 
@@ -429,7 +441,7 @@ def draw_key(fig, items, *, x_in=0.10, y_in=0.16, gap_in=0.30, color=INK):
                 Line2D(
                     [(x - 0.06) / fw, (x + 0.12) / fw],
                     [y, y],
-                    color=BLUE,
+                    color=LATENCY_SPREAD,
                     lw=1.8,
                     solid_capstyle="butt",
                     transform=tf,
@@ -441,7 +453,7 @@ def draw_key(fig, items, *, x_in=0.10, y_in=0.16, gap_in=0.30, color=INK):
                 Line2D(
                     [x / fw, x / fw],
                     [(y_in - 0.045) / fh, (y_in + 0.045) / fh],
-                    color=MIDGREY,
+                    color=LATENCY_SPREAD,
                     lw=0.9,
                     transform=tf,
                 )
