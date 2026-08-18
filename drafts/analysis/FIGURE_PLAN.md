@@ -143,7 +143,7 @@ monitor configurations); per family **36 (F4) and 36 (F5) vs 18 (F3)**; full
 single-configuration scenarios contribute **9**; `cf-f1-chain-tamper` **5** and
 `cf-f2-wrong-holder-proof` **3**, the remainder being unscorable-NA [M].
 
-### 0.5 D3 — the latency gate (in force throughout this plan)
+### 0.5 D3 — the latency gate (DISCHARGED 2026-08-18 — see §B.6; text kept as the record of what was required)
 
 FIG-4, FIG-5, FIG-6, TAB-6, TAB-7, TAB-8 are **specifications only** until BOTH
 preconditions hold (they are the Commander's to satisfy):
@@ -735,6 +735,69 @@ the legend row, whose per-character constant was itself already a patch over one
 overlap. **Neither figure now advances by a per-character estimate**; both take
 the width the string actually renders at. This class of defect has cost four
 overprints across the suite and is closed.
+
+### B.6 The latency artefacts — D3 discharged, C1 reconciled, FIG-L1/L2/L3 built, 2026-08-18
+
+**D3's two preconditions now hold for the whole latency layer.** (i) Pre-commitments in
+`DEVIATIONS.md` written and committed BEFORE each run: D-009 (`6da1570`) for the row-1 decision,
+D-014 (`2357964`) for the RQ4 descriptive layer. (ii) The sealed `analysis/latency.py` run over
+`results/raw/latency-pilot.json` with output committed: row-1 decision runs 1 and 2 (`2284837`,
+`a4a3f60`); RQ4 layer runs 1 and 2 (`95945d2`, `943d2b2`). §N.5 no longer prints UNDECIDED.
+
+**What Phase 0 of the 2026-08-18 task found, and what it changed.** The draft chapter's RQ4 numbers
+had no committed source: `0.2284`, `31.0037`, `39.7833`, `22.7360`, the cold-start percentages,
+and forty-five hand-typed pgfplots medians in `drafts/3_8_latency.tex`; `6.4432` was a committed
+number (run 2's B3 measured-segment median) mislabelled as boundary verification alone, and the
+"6.4417 vs 6.4432" gap was B0's measured-segment median (0.0015), not the presentation span. The
+presentation span is not zero: B3's is 0.2435 ms warm, its per-invocation cryptography. After the
+committed RQ4 run, the forty-five medians coincide with the sealed warm benign span reports (D-014
+clause 8: a comparison, not a verification of provenance); the cold-start percentages are a
+cold-versus-warm ratio no sealed function computes and remain unsourced. **The chapter must cite
+the committed artefacts and must replace its absolute end-to-end figure with the delta figure.**
+
+**C1 reconciled by re-specification, not by exception.** §C's FIG-5/TAB-8 specified absolute
+per-arm per-span medians including `end_to_end`, which CLAIMS_LEDGER C1 forbids. The built figures
+supersede that spec: every span is the sealed **delta against B0** from `arm_pair_delta`, the
+plotting layer subtracts nothing and forms no interval, and the one absolute end-to-end value stated
+anywhere is B0's own warm median — 22.736 ms — as the fixed-testbed-overhead disclosure A7
+requires, read from the artefact. A7 and C10 are now carried on the figures themselves (footer:
+substrate, pinning, corpus, fixed overhead). §C's FIG-4/5/6 entries stand as the original
+registration; the artefacts that discharge them are:
+
+| built | discharges | source | shape |
+|---|---|---|---|
+| **FIG-L1** `figL1_decision_strip.py` | FIG-4 | both committed row-1 Decision objects | one strip, two rows (run 2 protocol-compliant above, run 1 the reported verdict under D-009 clause 2), point + sealed 95 % interval (the one accent hue) + the UPPER BOUND as a heavier tick against the 20 ms margin; a detail panel because on the main axis the intervals are narrower than the marker; provenance in the figure. 5.50 × 3.10 in, **portrait-placeable** |
+| **FIG-L2** `figL2_span_deltas.py` | FIG-5 (re-specified under C1) | D-014 run 2, `arm_pair_deltas` | 5 spans × {warm, cold} = 10 panels, 9 arm rows; delta point + sealed interval; IQR width printed (`fmt_ms3`, `<0.001` below the column's resolution); B0 = zero line; B1 = "refused, ADR 0035"; n in every header. 9.65 × 5.52 in, landscape |
+| **FIG-L3** `figL3_refusal_path.py` | FIG-6 | D-014 run 2, `span_reports` under `series = refusal_path` | 4 component spans × {warm, cold}; sealed median, sealed p95 as an open tick, IQR printed; **absolute values, log10**, because `arm_pair_delta` builds from the benign series alone and emits no refusal-path delta; end-to-end panel omitted (C1) and the omission stated. 9.65 × 5.47 in, landscape |
+
+**Departures from the task's FIG-L2 spec, each forced by what the sealed layer emits (task rule:
+"build that figure only in the form the sealed layer supports"):** no p95 tick — a p95 delta would
+be a presentation-layer subtraction; **B1 has no marks** — the sealed layer refuses every pair
+against it (ADR 0035), and the row says so; the axis is **symlog, not log10** — the pre-committed
+rule (D-014: log10 iff every point and bound > 0) fired on two negative interval lower bounds
+(B2-broad-noexchange end to end, both phases). The symlog cost is stated on the figure: intervals
+narrower than the marker lie under it, and the compression near zero makes the one zero-crossing
+interval look widest. **Alternative not taken, for a ruling if wanted:** shared log10 with those two
+lower bounds drawn as clipped arrows at the axis floor and their values printed. It was not taken
+because the rule was fixed before the data and binds hardest when the outcome is unwelcome; changing
+it now is a presentation decision the Commander may make, and it would be recorded in D-014.
+
+**Two guards, both raising, both earned.** `enforce_placement` refuses a canvas over the measured
+text block; `assert_no_text_overlap` walks every Text artist's rendered extent and refuses the
+figure on the first intersection. Across the three figures the overlap guard caught: a detail label
+under a value; a tick label under a provenance line; two panel headers colliding; two symlog tick
+labels colliding at 0.14 in per decade; a log axis's automatic minor-tick labels under a panel
+title. None of these moved the overflow number. The FIG-1 lesson — a numeric check cannot see two
+blocks overprinting inside the canvas — is now a check.
+
+**Register.** Okabe–Ito blue `#0072B2` is the one hue in the set and appears only on interval bars
+(FIG-L1, FIG-L2); FIG-L3 has no hue. Serif, three type levels, 8 pt floor, no outer frames, ticks
+only where a scale stands behind them, one key per figure in its footer. Greyscale rendered and
+inspected for all three.
+
+**Not built, as instructed:** no cost-inversion figure (FIG-L2's end-to-end and
+boundary-verification panels carry the orderings a reader may read it from); no security-versus-
+latency scatter; no G-3 5 ms line anywhere.
 
 ## C. Per-artefact specification
 
