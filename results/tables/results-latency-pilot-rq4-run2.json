@@ -1,0 +1,4610 @@
+{
+  "_what": "The RQ4 descriptive layer of the sealed analysis/latency.py, run ONCE over results/raw/latency-pilot.json by the composition root named in DEVIATIONS D-014: every SpanReport from span_descriptives and every ArmPairDelta from arm_pair_delta against B0, as returned. Nothing here is recomputed, selected, or compared to any margin. Refusals are recorded as the sealed layer states them.",
+  "corpus_root": "fixtures/pilot/golden_thread",
+  "run_mode": "pilot",
+  "corpus": "PILOT (fixtures/pilot/golden_thread) -- NOT the confirmatory corpus (D-006, ADR 0047)",
+  "cpu_pinning": "none; pinning exists only in smoke/g3/spike.py (D-009 / D-014 disclosure)",
+  "substrate": "in-process harness on one machine (ADR 0034); no network hop is implied",
+  "control_arm": "B0",
+  "run": {
+    "index": 2,
+    "reason": "run 1 handed both scenarios' samples to arm_pair_delta and every delta was refused by the sealed benign_span_series; the root now separates the refusal-path scenario with the sealed constant first (D-014 run-1 record, fix 7a77d5f)"
+  },
+  "inputs": {
+    "seed": 4815162342,
+    "resamples": 10000,
+    "warmup_per_batch": 5,
+    "samples_loaded": 40500,
+    "samples_separated_refusal_path_for_deltas": 20250,
+    "samples_discarded_warmup_for_deltas": 1350,
+    "samples_into_deltas": 18900,
+    "plan": {
+      "batches": 3,
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 4815162342,
+      "exclusion_rule": "NONE. No outlier or stall rule is applied. Sighting C has never been observed as a per-operation stall, so a threshold now would be invented for an effect not shown to exist, and a threshold set after seeing data is what pre-registration forbids. Raw values are reported, not discarded.",
+      "kept_after_warmup_per_configuration": 210,
+      "ledger_backed": false,
+      "ledger_note": "the effect ledger is instrument, not mechanism, and ADR 0026 excludes every ledger append from the measured segment by name; `end_to_end` here therefore carries no ledger write",
+      "order": "arms shuffled within each batch from ORDER_SEED + batch",
+      "order_seed": 20260807,
+      "phase_definition": {
+        "cold": "the first invocation of a freshly provisioned arm instance",
+        "warm": "a subsequent invocation of that same instance"
+      },
+      "phases": [
+        "cold",
+        "warm"
+      ],
+      "recorded_per_configuration": 225,
+      "repetitions_per_batch": 75,
+      "source": "docs/PRE_REGISTRATION.md §6, implemented as written and not amended",
+      "warmup_discarded_by": "analysis.latency.discard_warmup (the sealed layer decides)",
+      "warmup_per_batch": 5
+    }
+  },
+  "span_reports": [
+    {
+      "arm": "B-cap",
+      "phase": "cold",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.1457,
+        "p95": 0.2625699999999999,
+        "iqr": 0.09167499999999998
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "cold",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.19340000000000002,
+        "p95": 0.27867499999999995,
+        "iqr": 0.089925
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.9347,
+        "p95": 1.0804149999999997,
+        "iqr": 0.421925
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.94425,
+        "p95": 1.364865,
+        "iqr": 0.05747499999999983
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0111,
+        "p95": 0.013009999999999997,
+        "iqr": 0.002725
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0109,
+        "p95": 0.014619999999999994,
+        "iqr": 0.001299999999999999
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 5.4206,
+        "p95": 6.285114999999999,
+        "iqr": 2.7795999999999994
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 5.15925,
+        "p95": 6.629014999999999,
+        "iqr": 0.4057000000000004
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 32.049549999999996,
+        "p95": 47.05817,
+        "iqr": 16.429275
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 29.69095,
+        "p95": 44.595369999999996,
+        "iqr": 13.6207
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "warm",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.1414,
+        "p95": 0.30721499999999974,
+        "iqr": 0.09902499999999999
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "warm",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.20379999999999998,
+        "p95": 0.2971699999999998,
+        "iqr": 0.096275
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.92875,
+        "p95": 1.4050849999999973,
+        "iqr": 0.466475
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.9456,
+        "p95": 1.4900249999999988,
+        "iqr": 0.0794999999999999
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0114,
+        "p95": 0.014054999999999998,
+        "iqr": 0.004375
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0115,
+        "p95": 0.0164,
+        "iqr": 0.0015750000000000017
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 5.38915,
+        "p95": 6.516829999999999,
+        "iqr": 3.1533499999999997
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 5.2203,
+        "p95": 7.5697449999999975,
+        "iqr": 0.5612000000000004
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 30.49185,
+        "p95": 47.685585,
+        "iqr": 17.104574999999997
+      }
+    },
+    {
+      "arm": "B-cap",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 30.3672,
+        "p95": 45.09991999999998,
+        "iqr": 13.639975000000003
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "cold",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0022,
+        "iqr": 0.0006999999999999999
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "cold",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0008,
+        "p95": 0.0015,
+        "iqr": 0.00027500000000000007
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0021549999999999985,
+        "iqr": 0.0006000000000000001
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.000375
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0006,
+        "p95": 0.0011,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0005,
+        "p95": 0.0006549999999999982,
+        "iqr": 9.999999999999999e-05
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0012,
+        "p95": 0.0019,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 24.445050000000002,
+        "p95": 39.393085,
+        "iqr": 13.5278
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 22.258000000000003,
+        "p95": 40.535665,
+        "iqr": 12.422299999999996
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "warm",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0009,
+        "p95": 0.0017,
+        "iqr": 0.0004000000000000001
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "warm",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0008,
+        "p95": 0.0018549999999999981,
+        "iqr": 0.0004000000000000001
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0005,
+        "p95": 0.0007,
+        "iqr": 9.999999999999999e-05
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0005,
+        "p95": 0.0008,
+        "iqr": 9.999999999999999e-05
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0015,
+        "iqr": 0.0002000000000000001
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 22.736,
+        "p95": 40.65676499999999,
+        "iqr": 12.954224999999997
+      }
+    },
+    {
+      "arm": "B0",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 25.29345,
+        "p95": 40.26782,
+        "iqr": 13.352749999999997
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "cold",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0032500000000000003,
+        "p95": 0.006454999999999999,
+        "iqr": 0.0013999999999999998
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "cold",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0026,
+        "p95": 0.004709999999999996,
+        "iqr": 0.0008000000000000004
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0023,
+        "p95": 0.003,
+        "iqr": 0.0010000000000000002
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0016,
+        "p95": 0.0022,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.001754999999999998,
+        "iqr": 0.0005
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0013549999999999981,
+        "iqr": 0.0002000000000000001
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0057,
+        "p95": 0.007454999999999998,
+        "iqr": 0.0010999999999999994
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0054,
+        "p95": 0.006554999999999998,
+        "iqr": 0.0008000000000000004
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 25.22605,
+        "p95": 41.16041,
+        "iqr": 13.060849999999999
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 25.42975,
+        "p95": 40.062629999999984,
+        "iqr": 14.019724999999998
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "warm",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0027,
+        "p95": 0.0054,
+        "iqr": 0.001
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "warm",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0027,
+        "p95": 0.005654999999999999,
+        "iqr": 0.0008999999999999998
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0016,
+        "p95": 0.0022,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0016,
+        "p95": 0.002454999999999998,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0013549999999999981,
+        "iqr": 0.0002000000000000001
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0013,
+        "iqr": 0.0002000000000000001
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0055,
+        "p95": 0.006654999999999999,
+        "iqr": 0.0011749999999999998
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0054,
+        "p95": 0.0068,
+        "iqr": 0.0010999999999999994
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 22.134999999999998,
+        "p95": 39.71250499999999,
+        "iqr": 12.1892
+      }
+    },
+    {
+      "arm": "B1",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 24.2971,
+        "p95": 37.33968499999999,
+        "iqr": 12.805625
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "cold",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.2565,
+        "p95": 0.44951,
+        "iqr": 0.12477500000000002
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "cold",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.2612,
+        "p95": 0.4692699999999999,
+        "iqr": 0.14182499999999992
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0032500000000000003,
+        "p95": 0.0044,
+        "iqr": 0.001
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0028,
+        "p95": 0.0035549999999999983,
+        "iqr": 0.0007000000000000001
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0086,
+        "p95": 0.0103,
+        "iqr": 0.0014999999999999996
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.008,
+        "p95": 0.0101,
+        "iqr": 0.0009999999999999992
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.33905,
+        "p95": 0.42194999999999994,
+        "iqr": 0.030799999999999994
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.335,
+        "p95": 0.40358499999999997,
+        "iqr": 0.02705000000000002
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 25.39425,
+        "p95": 40.439795,
+        "iqr": 12.905025000000002
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 24.7671,
+        "p95": 39.383635,
+        "iqr": 11.066724999999998
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "warm",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.27115,
+        "p95": 0.4875949999999999,
+        "iqr": 0.13475
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "warm",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.2724,
+        "p95": 0.47597,
+        "iqr": 0.15129999999999996
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0027,
+        "p95": 0.0035,
+        "iqr": 0.0006000000000000003
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0027,
+        "p95": 0.0037549999999999984,
+        "iqr": 0.0007000000000000001
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0085,
+        "p95": 0.009809999999999998,
+        "iqr": 0.001975
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0085,
+        "p95": 0.010054999999999998,
+        "iqr": 0.001174999999999999
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.3379,
+        "p95": 0.429415,
+        "iqr": 0.09077499999999994
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.3363,
+        "p95": 0.41667,
+        "iqr": 0.019025000000000014
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 24.501150000000003,
+        "p95": 40.31509,
+        "iqr": 13.946824999999997
+      }
+    },
+    {
+      "arm": "B2-broad-noexchange",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 24.16005,
+        "p95": 39.34716499999999,
+        "iqr": 12.572974999999996
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "cold",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.6089,
+        "p95": 0.9821799999999998,
+        "iqr": 0.14660000000000006
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "cold",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.6317999999999999,
+        "p95": 1.0145549999999999,
+        "iqr": 0.15332500000000004
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 16.23245,
+        "p95": 26.667564999999996,
+        "iqr": 7.6751000000000005
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 16.05315,
+        "p95": 25.84723,
+        "iqr": 13.1026
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0069,
+        "p95": 0.009309999999999995,
+        "iqr": 0.0013
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0063,
+        "p95": 0.008454999999999999,
+        "iqr": 0.0007000000000000001
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.23004999999999998,
+        "p95": 0.3358299999999999,
+        "iqr": 0.03817499999999996
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.2306,
+        "p95": 0.33511,
+        "iqr": 0.036849999999999994
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 40.147,
+        "p95": 58.93458,
+        "iqr": 16.740299999999998
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 40.158699999999996,
+        "p95": 54.937394999999995,
+        "iqr": 16.334850000000007
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "warm",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.7572000000000001,
+        "p95": 1.2398299999999995,
+        "iqr": 0.17022500000000007
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "warm",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.7591,
+        "p95": 1.2363849999999998,
+        "iqr": 0.14312499999999995
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 16.02915,
+        "p95": 28.375369999999997,
+        "iqr": 14.64455
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 15.6063,
+        "p95": 26.651184999999998,
+        "iqr": 13.928950000000002
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0066,
+        "p95": 0.008764999999999995,
+        "iqr": 0.001
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.00655,
+        "p95": 0.009009999999999997,
+        "iqr": 0.0008000000000000004
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.23035,
+        "p95": 0.3485399999999999,
+        "iqr": 0.03870000000000001
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.22825,
+        "p95": 0.32967499999999994,
+        "iqr": 0.03284999999999999
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 40.40105,
+        "p95": 57.44421,
+        "iqr": 15.832000000000008
+      }
+    },
+    {
+      "arm": "B2-exchange-broad",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 39.4946,
+        "p95": 56.77021,
+        "iqr": 14.699625000000001
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "cold",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.6288,
+        "p95": 1.0580899999999995,
+        "iqr": 0.26115
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "cold",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.6267499999999999,
+        "p95": 1.0757549999999998,
+        "iqr": 0.12682500000000008
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 16.27465,
+        "p95": 28.21743,
+        "iqr": 7.197799999999999
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 14.955549999999999,
+        "p95": 25.960824999999996,
+        "iqr": 12.865974999999999
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.00665,
+        "p95": 0.010619999999999994,
+        "iqr": 0.0014000000000000002
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0058,
+        "p95": 0.0078,
+        "iqr": 0.0007000000000000001
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.2212,
+        "p95": 0.3332449999999999,
+        "iqr": 0.03555
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0034,
+        "p95": 0.005509999999999997,
+        "iqr": 0.0007000000000000001
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 41.42045,
+        "p95": 59.44809,
+        "iqr": 16.124424999999995
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 36.4862,
+        "p95": 55.494209999999995,
+        "iqr": 16.39305
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "warm",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.75595,
+        "p95": 1.2968199999999999,
+        "iqr": 0.27937499999999993
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "warm",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.76085,
+        "p95": 1.2023049999999995,
+        "iqr": 0.15632499999999994
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 15.955,
+        "p95": 27.879094999999992,
+        "iqr": 7.368974999999999
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 15.38625,
+        "p95": 26.288629999999994,
+        "iqr": 7.7353749999999994
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.00655,
+        "p95": 0.009309999999999995,
+        "iqr": 0.001
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0065,
+        "p95": 0.008709999999999997,
+        "iqr": 0.0007000000000000001
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.22185,
+        "p95": 0.34026999999999996,
+        "iqr": 0.04452499999999998
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0034,
+        "p95": 0.0049,
+        "iqr": 0.0007000000000000001
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 39.7833,
+        "p95": 57.380464999999994,
+        "iqr": 14.004275
+      }
+    },
+    {
+      "arm": "B2-exchange-task",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 38.4136,
+        "p95": 51.99243,
+        "iqr": 13.591775000000002
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "cold",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.6472,
+        "p95": 1.0885099999999999,
+        "iqr": 0.17464999999999986
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "cold",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.68025,
+        "p95": 1.1021550000000002,
+        "iqr": 0.1620999999999999
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 16.3076,
+        "p95": 27.278019999999994,
+        "iqr": 6.484349999999996
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 15.2406,
+        "p95": 28.327964999999995,
+        "iqr": 12.458499999999999
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.15005000000000002,
+        "p95": 0.1990699999999999,
+        "iqr": 0.03419999999999998
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0071,
+        "p95": 0.0095,
+        "iqr": 0.001
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.39480000000000004,
+        "p95": 0.6461449999999997,
+        "iqr": 0.062525
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0035,
+        "p95": 0.0049549999999999985,
+        "iqr": 0.0007749999999999996
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 41.102549999999994,
+        "p95": 59.602439999999994,
+        "iqr": 16.071275000000004
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 36.74365,
+        "p95": 52.10312499999999,
+        "iqr": 15.906850000000006
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "warm",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.78345,
+        "p95": 1.332735,
+        "iqr": 0.18730000000000013
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "warm",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.83535,
+        "p95": 1.3655649999999993,
+        "iqr": 0.3285
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 16.16585,
+        "p95": 26.59125499999999,
+        "iqr": 7.028325000000002
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 15.78405,
+        "p95": 26.51265,
+        "iqr": 5.213325000000001
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.14895,
+        "p95": 0.20147499999999996,
+        "iqr": 0.035174999999999984
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0079,
+        "p95": 0.010709999999999997,
+        "iqr": 0.0008999999999999998
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.3902,
+        "p95": 0.6230299999999999,
+        "iqr": 0.06502499999999994
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.0035,
+        "p95": 0.0056,
+        "iqr": 0.0006999999999999997
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 40.58835,
+        "p95": 55.67448499999999,
+        "iqr": 13.628899999999994
+      }
+    },
+    {
+      "arm": "B2-exchange-task-DPoP",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 40.47055,
+        "p95": 57.00462999999997,
+        "iqr": 14.905749999999998
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "cold",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.12185,
+        "p95": 0.23972,
+        "iqr": 0.0827
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "cold",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.1314,
+        "p95": 0.229985,
+        "iqr": 0.07977500000000003
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 1.4343,
+        "p95": 1.824924999999999,
+        "iqr": 0.6635500000000001
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 1.43505,
+        "p95": 1.6358199999999998,
+        "iqr": 0.630825
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.2438,
+        "p95": 0.3047599999999999,
+        "iqr": 0.10654999999999998
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.24615,
+        "p95": 0.3151449999999999,
+        "iqr": 0.107325
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 6.1569,
+        "p95": 6.951979999999999,
+        "iqr": 3.405375
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 5.8071,
+        "p95": 6.52297,
+        "iqr": 3.1540500000000002
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 30.45755,
+        "p95": 46.40074999999999,
+        "iqr": 15.715199999999996
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 28.3998,
+        "p95": 46.617005,
+        "iqr": 13.409975
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "warm",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.13465,
+        "p95": 0.258055,
+        "iqr": 0.09189999999999998
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "warm",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.12885,
+        "p95": 0.2636399999999999,
+        "iqr": 0.08175
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 1.43295,
+        "p95": 1.670275,
+        "iqr": 0.6447000000000002
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 1.4351500000000001,
+        "p95": 1.6644049999999995,
+        "iqr": 0.670625
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.2435,
+        "p95": 0.30258499999999994,
+        "iqr": 0.09592499999999998
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.24635,
+        "p95": 0.32141999999999993,
+        "iqr": 0.10717499999999999
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 6.1953499999999995,
+        "p95": 6.9580649999999995,
+        "iqr": 3.1854
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 5.835100000000001,
+        "p95": 6.627245,
+        "iqr": 3.2815000000000003
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 31.003700000000002,
+        "p95": 47.944935,
+        "iqr": 14.951699999999999
+      }
+    },
+    {
+      "arm": "B3",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 28.050449999999998,
+        "p95": 44.99019,
+        "iqr": 14.719275000000003
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "cold",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.13274999999999998,
+        "p95": 0.24276999999999999,
+        "iqr": 0.096
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "cold",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.15895,
+        "p95": 0.23740999999999995,
+        "iqr": 0.091725
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 1.43295,
+        "p95": 1.663965,
+        "iqr": 0.6639999999999997
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "cold",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 1.4415,
+        "p95": 1.8831049999999998,
+        "iqr": 0.09187499999999993
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.24485,
+        "p95": 0.30777999999999994,
+        "iqr": 0.10547500000000004
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "cold",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.2478,
+        "p95": 0.32433499999999965,
+        "iqr": 0.011225000000000013
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 6.1896,
+        "p95": 7.15884,
+        "iqr": 1.3531250000000004
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 5.8803,
+        "p95": 6.934769999999999,
+        "iqr": 0.42482499999999934
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 31.88525,
+        "p95": 47.69270999999999,
+        "iqr": 14.932549999999992
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "cold",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 30.5303,
+        "p95": 47.354884999999996,
+        "iqr": 16.49615
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "warm",
+      "span": "setup",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.14350000000000002,
+        "p95": 0.26171999999999995,
+        "iqr": 0.08425000000000002
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "warm",
+      "span": "setup",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.14045,
+        "p95": 0.23911499999999997,
+        "iqr": 0.08035
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 1.4318,
+        "p95": 1.6442649999999999,
+        "iqr": 0.62395
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "warm",
+      "span": "delegation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 1.4421,
+        "p95": 1.7749399999999995,
+        "iqr": 0.28862500000000013
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 0.24485,
+        "p95": 0.3064549999999999,
+        "iqr": 0.10442499999999999
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "warm",
+      "span": "presentation",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 0.24819999999999998,
+        "p95": 0.3273899999999999,
+        "iqr": 0.016024999999999984
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 6.214,
+        "p95": 7.178654999999998,
+        "iqr": 3.066125
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 5.842499999999999,
+        "p95": 7.110609999999999,
+        "iqr": 1.7329750000000006
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "benign",
+      "descriptives": {
+        "n": 210,
+        "median": 32.067750000000004,
+        "p95": 48.211124999999996,
+        "iqr": 11.589950000000002
+      }
+    },
+    {
+      "arm": "B3+",
+      "phase": "warm",
+      "span": "end_to_end",
+      "series": "refusal_path",
+      "descriptives": {
+        "n": 210,
+        "median": 28.6548,
+        "p95": 45.018355,
+        "iqr": 14.683550000000004
+      }
+    }
+  ],
+  "arm_pair_deltas": [
+    {
+      "treatment_arm": "B-cap",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.1444,
+      "ci_low_ms": 0.1301,
+      "ci_high_ms": 0.16915,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.1457,
+        "p95": 0.2625699999999999,
+        "iqr": 0.09167499999999998
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0022,
+        "iqr": 0.0006999999999999999
+      }
+    },
+    {
+      "treatment_arm": "B-cap",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.9334,
+      "ci_low_ms": 0.9303,
+      "ci_high_ms": 0.9356,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.9347,
+        "p95": 1.0804149999999997,
+        "iqr": 0.421925
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0021549999999999985,
+        "iqr": 0.0006000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B-cap",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.0105,
+      "ci_low_ms": 0.0103,
+      "ci_high_ms": 0.0107,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.0111,
+        "p95": 0.013009999999999997,
+        "iqr": 0.002725
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0006,
+        "p95": 0.0011,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B-cap",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 5.4194,
+      "ci_low_ms": 5.3549,
+      "ci_high_ms": 5.455151250000001,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 5.4206,
+        "p95": 6.285114999999999,
+        "iqr": 2.7795999999999994
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0012,
+        "p95": 0.0019,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "treatment_arm": "B-cap",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 7.6044999999999945,
+      "ci_low_ms": 4.415897500000001,
+      "ci_high_ms": 10.952338749999996,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 32.049549999999996,
+        "p95": 47.05817,
+        "iqr": 16.429275
+      },
+      "control": {
+        "n": 210,
+        "median": 24.445050000000002,
+        "p95": 39.393085,
+        "iqr": 13.5278
+      }
+    },
+    {
+      "treatment_arm": "B-cap",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.14049999999999999,
+      "ci_low_ms": 0.12735,
+      "ci_high_ms": 0.155,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.1414,
+        "p95": 0.30721499999999974,
+        "iqr": 0.09902499999999999
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0009,
+        "p95": 0.0017,
+        "iqr": 0.0004000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B-cap",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.92775,
+      "ci_low_ms": 0.92345,
+      "ci_high_ms": 0.9304,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.92875,
+        "p95": 1.4050849999999973,
+        "iqr": 0.466475
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B-cap",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.0109,
+      "ci_low_ms": 0.0106,
+      "ci_high_ms": 0.011049999999999999,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.0114,
+        "p95": 0.014054999999999998,
+        "iqr": 0.004375
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0005,
+        "p95": 0.0007,
+        "iqr": 9.999999999999999e-05
+      }
+    },
+    {
+      "treatment_arm": "B-cap",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 5.3881499999999996,
+      "ci_low_ms": 5.3252,
+      "ci_high_ms": 5.4529499999999995,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 5.38915,
+        "p95": 6.516829999999999,
+        "iqr": 3.1533499999999997
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B-cap",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 7.755849999999999,
+      "ci_low_ms": 4.647055000000005,
+      "ci_high_ms": 10.009407499999998,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 30.49185,
+        "p95": 47.685585,
+        "iqr": 17.104574999999997
+      },
+      "control": {
+        "n": 210,
+        "median": 22.736,
+        "p95": 40.65676499999999,
+        "iqr": 12.954224999999997
+      }
+    },
+    {
+      "treatment_arm": "B2-broad-noexchange",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.2552,
+      "ci_low_ms": 0.2502,
+      "ci_high_ms": 0.26899999999999996,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.2565,
+        "p95": 0.44951,
+        "iqr": 0.12477500000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0022,
+        "iqr": 0.0006999999999999999
+      }
+    },
+    {
+      "treatment_arm": "B2-broad-noexchange",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.0019500000000000003,
+      "ci_low_ms": 0.0018,
+      "ci_high_ms": 0.0021,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.0032500000000000003,
+        "p95": 0.0044,
+        "iqr": 0.001
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0021549999999999985,
+        "iqr": 0.0006000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B2-broad-noexchange",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.008,
+      "ci_low_ms": 0.00775,
+      "ci_high_ms": 0.0082,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.0086,
+        "p95": 0.0103,
+        "iqr": 0.0014999999999999996
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0006,
+        "p95": 0.0011,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-broad-noexchange",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.33785000000000004,
+      "ci_low_ms": 0.33605,
+      "ci_high_ms": 0.33940000000000003,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.33905,
+        "p95": 0.42194999999999994,
+        "iqr": 0.030799999999999994
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0012,
+        "p95": 0.0019,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "treatment_arm": "B2-broad-noexchange",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.9491999999999976,
+      "ci_low_ms": -2.2218499999999963,
+      "ci_high_ms": 4.28557125,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 25.39425,
+        "p95": 40.439795,
+        "iqr": 12.905025000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 24.445050000000002,
+        "p95": 39.393085,
+        "iqr": 13.5278
+      }
+    },
+    {
+      "treatment_arm": "B2-broad-noexchange",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.27025,
+      "ci_low_ms": 0.25675,
+      "ci_high_ms": 0.30047249999999964,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.27115,
+        "p95": 0.4875949999999999,
+        "iqr": 0.13475
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0009,
+        "p95": 0.0017,
+        "iqr": 0.0004000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B2-broad-noexchange",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.0017000000000000001,
+      "ci_low_ms": 0.0015999999999999999,
+      "ci_high_ms": 0.0018,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.0027,
+        "p95": 0.0035,
+        "iqr": 0.0006000000000000003
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-broad-noexchange",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.008,
+      "ci_low_ms": 0.0078,
+      "ci_high_ms": 0.008,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.0085,
+        "p95": 0.009809999999999998,
+        "iqr": 0.001975
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0005,
+        "p95": 0.0007,
+        "iqr": 9.999999999999999e-05
+      }
+    },
+    {
+      "treatment_arm": "B2-broad-noexchange",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.3369,
+      "ci_low_ms": 0.33555,
+      "ci_high_ms": 0.33795,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.3379,
+        "p95": 0.429415,
+        "iqr": 0.09077499999999994
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-broad-noexchange",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 1.765150000000002,
+      "ci_low_ms": -1.4325174999999981,
+      "ci_high_ms": 4.244400000000002,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 24.501150000000003,
+        "p95": 40.31509,
+        "iqr": 13.946824999999997
+      },
+      "control": {
+        "n": 210,
+        "median": 22.736,
+        "p95": 40.65676499999999,
+        "iqr": 12.954224999999997
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-broad",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.6076,
+      "ci_low_ms": 0.5954,
+      "ci_high_ms": 0.6282,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.6089,
+        "p95": 0.9821799999999998,
+        "iqr": 0.14660000000000006
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0022,
+        "iqr": 0.0006999999999999999
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-broad",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 16.23115,
+      "ci_low_ms": 15.6329,
+      "ci_high_ms": 16.6284,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 16.23245,
+        "p95": 26.667564999999996,
+        "iqr": 7.6751000000000005
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0021549999999999985,
+        "iqr": 0.0006000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-broad",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.0063,
+      "ci_low_ms": 0.006,
+      "ci_high_ms": 0.0064,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.0069,
+        "p95": 0.009309999999999995,
+        "iqr": 0.0013
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0006,
+        "p95": 0.0011,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-broad",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.22884999999999997,
+      "ci_low_ms": 0.2253,
+      "ci_high_ms": 0.23370125,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.23004999999999998,
+        "p95": 0.3358299999999999,
+        "iqr": 0.03817499999999996
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0012,
+        "p95": 0.0019,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-broad",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 15.701949999999997,
+      "ci_low_ms": 12.703261250000006,
+      "ci_high_ms": 18.203558749999996,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 40.147,
+        "p95": 58.93458,
+        "iqr": 16.740299999999998
+      },
+      "control": {
+        "n": 210,
+        "median": 24.445050000000002,
+        "p95": 39.393085,
+        "iqr": 13.5278
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-broad",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.7563000000000001,
+      "ci_low_ms": 0.7328499999999999,
+      "ci_high_ms": 0.77135,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.7572000000000001,
+        "p95": 1.2398299999999995,
+        "iqr": 0.17022500000000007
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0009,
+        "p95": 0.0017,
+        "iqr": 0.0004000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-broad",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 16.02815,
+      "ci_low_ms": 15.319600000000001,
+      "ci_high_ms": 16.54995,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 16.02915,
+        "p95": 28.375369999999997,
+        "iqr": 14.64455
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-broad",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.0060999999999999995,
+      "ci_low_ms": 0.005900000000000001,
+      "ci_high_ms": 0.006200000000000001,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.0066,
+        "p95": 0.008764999999999995,
+        "iqr": 0.001
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0005,
+        "p95": 0.0007,
+        "iqr": 9.999999999999999e-05
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-broad",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.22935,
+      "ci_low_ms": 0.22569875000000003,
+      "ci_high_ms": 0.23349999999999999,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.23035,
+        "p95": 0.3485399999999999,
+        "iqr": 0.03870000000000001
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-broad",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 17.665049999999997,
+      "ci_low_ms": 14.849900000000002,
+      "ci_high_ms": 20.125670000000003,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 40.40105,
+        "p95": 57.44421,
+        "iqr": 15.832000000000008
+      },
+      "control": {
+        "n": 210,
+        "median": 22.736,
+        "p95": 40.65676499999999,
+        "iqr": 12.954224999999997
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.6275000000000001,
+      "ci_low_ms": 0.6121000000000001,
+      "ci_high_ms": 0.6596000000000001,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.6288,
+        "p95": 1.0580899999999995,
+        "iqr": 0.26115
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0022,
+        "iqr": 0.0006999999999999999
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 16.27335,
+      "ci_low_ms": 15.675,
+      "ci_high_ms": 16.780586249999995,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 16.27465,
+        "p95": 28.21743,
+        "iqr": 7.197799999999999
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0021549999999999985,
+        "iqr": 0.0006000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.00605,
+      "ci_low_ms": 0.0058,
+      "ci_high_ms": 0.0062,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.00665,
+        "p95": 0.010619999999999994,
+        "iqr": 0.0014000000000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0006,
+        "p95": 0.0011,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.22,
+      "ci_low_ms": 0.21664999999999998,
+      "ci_high_ms": 0.2266,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.2212,
+        "p95": 0.3332449999999999,
+        "iqr": 0.03555
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0012,
+        "p95": 0.0019,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 16.9754,
+      "ci_low_ms": 14.04177,
+      "ci_high_ms": 19.34586125,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 41.42045,
+        "p95": 59.44809,
+        "iqr": 16.124424999999995
+      },
+      "control": {
+        "n": 210,
+        "median": 24.445050000000002,
+        "p95": 39.393085,
+        "iqr": 13.5278
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.75505,
+      "ci_low_ms": 0.7347,
+      "ci_high_ms": 0.7737499999999999,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.75595,
+        "p95": 1.2968199999999999,
+        "iqr": 0.27937499999999993
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0009,
+        "p95": 0.0017,
+        "iqr": 0.0004000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 15.954,
+      "ci_low_ms": 15.353447500000001,
+      "ci_high_ms": 16.613049999999998,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 15.955,
+        "p95": 27.879094999999992,
+        "iqr": 7.368974999999999
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.00605,
+      "ci_low_ms": 0.006,
+      "ci_high_ms": 0.006200000000000001,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.00655,
+        "p95": 0.009309999999999995,
+        "iqr": 0.001
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0005,
+        "p95": 0.0007,
+        "iqr": 9.999999999999999e-05
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.22085,
+      "ci_low_ms": 0.2175,
+      "ci_high_ms": 0.22465000000000002,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.22185,
+        "p95": 0.34026999999999996,
+        "iqr": 0.04452499999999998
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 17.047299999999996,
+      "ci_low_ms": 14.387349999999998,
+      "ci_high_ms": 19.05032625,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 39.7833,
+        "p95": 57.380464999999994,
+        "iqr": 14.004275
+      },
+      "control": {
+        "n": 210,
+        "median": 22.736,
+        "p95": 40.65676499999999,
+        "iqr": 12.954224999999997
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task-DPoP",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "htc/holder",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.6459,
+      "ci_low_ms": 0.63424875,
+      "ci_high_ms": 0.6641,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.6472,
+        "p95": 1.0885099999999999,
+        "iqr": 0.17464999999999986
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0022,
+        "iqr": 0.0006999999999999999
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task-DPoP",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "htc/holder",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 16.3063,
+      "ci_low_ms": 15.75095,
+      "ci_high_ms": 16.7028,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 16.3076,
+        "p95": 27.278019999999994,
+        "iqr": 6.484349999999996
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0021549999999999985,
+        "iqr": 0.0006000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task-DPoP",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "htc/holder",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.14945000000000003,
+      "ci_low_ms": 0.1397,
+      "ci_high_ms": 0.1532,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.15005000000000002,
+        "p95": 0.1990699999999999,
+        "iqr": 0.03419999999999998
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0006,
+        "p95": 0.0011,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task-DPoP",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "htc/holder",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.39360000000000006,
+      "ci_low_ms": 0.38615,
+      "ci_high_ms": 0.39840000000000003,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.39480000000000004,
+        "p95": 0.6461449999999997,
+        "iqr": 0.062525
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0012,
+        "p95": 0.0019,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task-DPoP",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "htc/holder",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 16.65749999999999,
+      "ci_low_ms": 13.9400975,
+      "ci_high_ms": 19.210354999999996,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 41.102549999999994,
+        "p95": 59.602439999999994,
+        "iqr": 16.071275000000004
+      },
+      "control": {
+        "n": 210,
+        "median": 24.445050000000002,
+        "p95": 39.393085,
+        "iqr": 13.5278
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task-DPoP",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "htc/holder",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.78255,
+      "ci_low_ms": 0.7669,
+      "ci_high_ms": 0.8183,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.78345,
+        "p95": 1.332735,
+        "iqr": 0.18730000000000013
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0009,
+        "p95": 0.0017,
+        "iqr": 0.0004000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task-DPoP",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "htc/holder",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 16.164849999999998,
+      "ci_low_ms": 15.723650000000001,
+      "ci_high_ms": 16.6346,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 16.16585,
+        "p95": 26.59125499999999,
+        "iqr": 7.028325000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task-DPoP",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "htc/holder",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.14845,
+      "ci_low_ms": 0.1356,
+      "ci_high_ms": 0.15295,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.14895,
+        "p95": 0.20147499999999996,
+        "iqr": 0.035174999999999984
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0005,
+        "p95": 0.0007,
+        "iqr": 9.999999999999999e-05
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task-DPoP",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "htc/holder",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.3892,
+      "ci_low_ms": 0.3791,
+      "ci_high_ms": 0.39705,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.3902,
+        "p95": 0.6230299999999999,
+        "iqr": 0.06502499999999994
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B2-exchange-task-DPoP",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "htc/holder",
+        "contain",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 17.852349999999998,
+      "ci_low_ms": 15.326785000000003,
+      "ci_high_ms": 20.595681250000002,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 40.58835,
+        "p95": 55.67448499999999,
+        "iqr": 13.628899999999994
+      },
+      "control": {
+        "n": 210,
+        "median": 22.736,
+        "p95": 40.65676499999999,
+        "iqr": 12.954224999999997
+      }
+    },
+    {
+      "treatment_arm": "B3",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.12055,
+      "ci_low_ms": 0.1171,
+      "ci_high_ms": 0.1346,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.12185,
+        "p95": 0.23972,
+        "iqr": 0.0827
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0022,
+        "iqr": 0.0006999999999999999
+      }
+    },
+    {
+      "treatment_arm": "B3",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 1.4329999999999998,
+      "ci_low_ms": 1.42695,
+      "ci_high_ms": 1.4379,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 1.4343,
+        "p95": 1.824924999999999,
+        "iqr": 0.6635500000000001
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0021549999999999985,
+        "iqr": 0.0006000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.2432,
+      "ci_low_ms": 0.2423,
+      "ci_high_ms": 0.2445,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.2438,
+        "p95": 0.3047599999999999,
+        "iqr": 0.10654999999999998
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0006,
+        "p95": 0.0011,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B3",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 6.1557,
+      "ci_low_ms": 6.101397500000001,
+      "ci_high_ms": 6.1968000000000005,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 6.1569,
+        "p95": 6.951979999999999,
+        "iqr": 3.405375
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0012,
+        "p95": 0.0019,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "treatment_arm": "B3",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 6.012499999999999,
+      "ci_low_ms": 2.9231874999999947,
+      "ci_high_ms": 8.82905375,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 30.45755,
+        "p95": 46.40074999999999,
+        "iqr": 15.715199999999996
+      },
+      "control": {
+        "n": 210,
+        "median": 24.445050000000002,
+        "p95": 39.393085,
+        "iqr": 13.5278
+      }
+    },
+    {
+      "treatment_arm": "B3",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.13374999999999998,
+      "ci_low_ms": 0.12519999999999998,
+      "ci_high_ms": 0.15159999999999998,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.13465,
+        "p95": 0.258055,
+        "iqr": 0.09189999999999998
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0009,
+        "p95": 0.0017,
+        "iqr": 0.0004000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 1.43195,
+      "ci_low_ms": 1.4244500000000002,
+      "ci_high_ms": 1.43675,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 1.43295,
+        "p95": 1.670275,
+        "iqr": 0.6447000000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B3",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.243,
+      "ci_low_ms": 0.2424,
+      "ci_high_ms": 0.24405,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.2435,
+        "p95": 0.30258499999999994,
+        "iqr": 0.09592499999999998
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0005,
+        "p95": 0.0007,
+        "iqr": 9.999999999999999e-05
+      }
+    },
+    {
+      "treatment_arm": "B3",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 6.194349999999999,
+      "ci_low_ms": 6.1293999999999995,
+      "ci_high_ms": 6.21925,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 6.1953499999999995,
+        "p95": 6.9580649999999995,
+        "iqr": 3.1854
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B3",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 8.267700000000001,
+      "ci_low_ms": 5.395220000000003,
+      "ci_high_ms": 10.945338749999996,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 31.003700000000002,
+        "p95": 47.944935,
+        "iqr": 14.951699999999999
+      },
+      "control": {
+        "n": 210,
+        "median": 22.736,
+        "p95": 40.65676499999999,
+        "iqr": 12.954224999999997
+      }
+    },
+    {
+      "treatment_arm": "B3+",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "jti",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.13144999999999998,
+      "ci_low_ms": 0.12190000000000001,
+      "ci_high_ms": 0.1436,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.13274999999999998,
+        "p95": 0.24276999999999999,
+        "iqr": 0.096
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0022,
+        "iqr": 0.0006999999999999999
+      }
+    },
+    {
+      "treatment_arm": "B3+",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "jti",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 1.4316499999999999,
+      "ci_low_ms": 1.4277,
+      "ci_high_ms": 1.43705,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 1.43295,
+        "p95": 1.663965,
+        "iqr": 0.6639999999999997
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0013,
+        "p95": 0.0021549999999999985,
+        "iqr": 0.0006000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3+",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "jti",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.24425000000000002,
+      "ci_low_ms": 0.24295,
+      "ci_high_ms": 0.2454,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.24485,
+        "p95": 0.30777999999999994,
+        "iqr": 0.10547500000000004
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0006,
+        "p95": 0.0011,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B3+",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "jti",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 6.188400000000001,
+      "ci_low_ms": 6.1494,
+      "ci_high_ms": 6.2383,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 6.1896,
+        "p95": 7.15884,
+        "iqr": 1.3531250000000004
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0012,
+        "p95": 0.0019,
+        "iqr": 0.00039999999999999996
+      }
+    },
+    {
+      "treatment_arm": "B3+",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "cold",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "jti",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 7.440199999999997,
+      "ci_low_ms": 4.2425999999999995,
+      "ci_high_ms": 9.69623,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 31.88525,
+        "p95": 47.69270999999999,
+        "iqr": 14.932549999999992
+      },
+      "control": {
+        "n": 210,
+        "median": 24.445050000000002,
+        "p95": 39.393085,
+        "iqr": 13.5278
+      }
+    },
+    {
+      "treatment_arm": "B3+",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "jti",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.1426,
+      "ci_low_ms": 0.1299,
+      "ci_high_ms": 0.1518,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.14350000000000002,
+        "p95": 0.26171999999999995,
+        "iqr": 0.08425000000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0009,
+        "p95": 0.0017,
+        "iqr": 0.0004000000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3+",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "jti",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 1.4308,
+      "ci_low_ms": 1.4276000000000002,
+      "ci_high_ms": 1.4372,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 1.4318,
+        "p95": 1.6442649999999999,
+        "iqr": 0.62395
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B3+",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "jti",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 0.24435,
+      "ci_low_ms": 0.24335,
+      "ci_high_ms": 0.24595,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 0.24485,
+        "p95": 0.3064549999999999,
+        "iqr": 0.10442499999999999
+      },
+      "control": {
+        "n": 210,
+        "median": 0.0005,
+        "p95": 0.0007,
+        "iqr": 9.999999999999999e-05
+      }
+    },
+    {
+      "treatment_arm": "B3+",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "jti",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 6.213,
+      "ci_low_ms": 6.16785,
+      "ci_high_ms": 6.2642999999999995,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 6.214,
+        "p95": 7.178654999999998,
+        "iqr": 3.066125
+      },
+      "control": {
+        "n": 210,
+        "median": 0.001,
+        "p95": 0.0014,
+        "iqr": 0.00030000000000000003
+      }
+    },
+    {
+      "treatment_arm": "B3+",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "warm",
+      "label": "composite-delta",
+      "differing_bits": [
+        "oauth",
+        "crypto_chain",
+        "authorizer",
+        "htc/holder",
+        "invoke",
+        "contain",
+        "context",
+        "approval",
+        "jti",
+        "audit"
+      ],
+      "mechanism": null,
+      "unmodelled": [],
+      "point_estimate_ms": 9.331750000000003,
+      "ci_low_ms": 6.505849999999999,
+      "ci_high_ms": 11.620576249999997,
+      "confidence": 0.95,
+      "resamples": 10000,
+      "treatment": {
+        "n": 210,
+        "median": 32.067750000000004,
+        "p95": 48.211124999999996,
+        "iqr": 11.589950000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 22.736,
+        "p95": 40.65676499999999,
+        "iqr": 12.954224999999997
+      }
+    }
+  ],
+  "refusals": [
+    {
+      "treatment_arm": "B1",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "cold",
+      "refused": true,
+      "sealed_message": "a pair involving B1 is refused: §E.5's ten columns carry no bit for B1's static shared secret — its row is 0…0 1, `audit` alone (ADR 0035) — so the one authentication mechanism it has is invisible to the bitmask and no bit difference can describe what actually changes against it"
+    },
+    {
+      "treatment_arm": "B1",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "cold",
+      "refused": true,
+      "sealed_message": "a pair involving B1 is refused: §E.5's ten columns carry no bit for B1's static shared secret — its row is 0…0 1, `audit` alone (ADR 0035) — so the one authentication mechanism it has is invisible to the bitmask and no bit difference can describe what actually changes against it"
+    },
+    {
+      "treatment_arm": "B1",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "cold",
+      "refused": true,
+      "sealed_message": "a pair involving B1 is refused: §E.5's ten columns carry no bit for B1's static shared secret — its row is 0…0 1, `audit` alone (ADR 0035) — so the one authentication mechanism it has is invisible to the bitmask and no bit difference can describe what actually changes against it"
+    },
+    {
+      "treatment_arm": "B1",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "cold",
+      "refused": true,
+      "sealed_message": "a pair involving B1 is refused: §E.5's ten columns carry no bit for B1's static shared secret — its row is 0…0 1, `audit` alone (ADR 0035) — so the one authentication mechanism it has is invisible to the bitmask and no bit difference can describe what actually changes against it"
+    },
+    {
+      "treatment_arm": "B1",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "cold",
+      "refused": true,
+      "sealed_message": "a pair involving B1 is refused: §E.5's ten columns carry no bit for B1's static shared secret — its row is 0…0 1, `audit` alone (ADR 0035) — so the one authentication mechanism it has is invisible to the bitmask and no bit difference can describe what actually changes against it"
+    },
+    {
+      "treatment_arm": "B1",
+      "control_arm": "B0",
+      "span": "setup",
+      "phase": "warm",
+      "refused": true,
+      "sealed_message": "a pair involving B1 is refused: §E.5's ten columns carry no bit for B1's static shared secret — its row is 0…0 1, `audit` alone (ADR 0035) — so the one authentication mechanism it has is invisible to the bitmask and no bit difference can describe what actually changes against it"
+    },
+    {
+      "treatment_arm": "B1",
+      "control_arm": "B0",
+      "span": "delegation",
+      "phase": "warm",
+      "refused": true,
+      "sealed_message": "a pair involving B1 is refused: §E.5's ten columns carry no bit for B1's static shared secret — its row is 0…0 1, `audit` alone (ADR 0035) — so the one authentication mechanism it has is invisible to the bitmask and no bit difference can describe what actually changes against it"
+    },
+    {
+      "treatment_arm": "B1",
+      "control_arm": "B0",
+      "span": "presentation",
+      "phase": "warm",
+      "refused": true,
+      "sealed_message": "a pair involving B1 is refused: §E.5's ten columns carry no bit for B1's static shared secret — its row is 0…0 1, `audit` alone (ADR 0035) — so the one authentication mechanism it has is invisible to the bitmask and no bit difference can describe what actually changes against it"
+    },
+    {
+      "treatment_arm": "B1",
+      "control_arm": "B0",
+      "span": "boundary_verification",
+      "phase": "warm",
+      "refused": true,
+      "sealed_message": "a pair involving B1 is refused: §E.5's ten columns carry no bit for B1's static shared secret — its row is 0…0 1, `audit` alone (ADR 0035) — so the one authentication mechanism it has is invisible to the bitmask and no bit difference can describe what actually changes against it"
+    },
+    {
+      "treatment_arm": "B1",
+      "control_arm": "B0",
+      "span": "end_to_end",
+      "phase": "warm",
+      "refused": true,
+      "sealed_message": "a pair involving B1 is refused: §E.5's ten columns carry no bit for B1's static shared secret — its row is 0…0 1, `audit` alone (ADR 0035) — so the one authentication mechanism it has is invisible to the bitmask and no bit difference can describe what actually changes against it"
+    }
+  ],
+  "counts": {
+    "span_reports": 180,
+    "span_reports_distinct_n": [
+      210
+    ],
+    "arm_pair_deltas": 70,
+    "refusals": 10
+  }
+}

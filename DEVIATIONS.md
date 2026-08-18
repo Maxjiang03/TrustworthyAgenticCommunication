@@ -29,7 +29,7 @@ should expect from the sealed record.
 
 ## D-014 — Pre-commitment: reporting the RQ4 descriptive layer (span descriptives and arm-pair deltas)
 
-**Status:** OPEN — written BEFORE the analysis is run.
+**Status:** CLOSED — run twice (run 1 defective in the composition root, kept; run 2 as reported); no further run.
 **Date:** 2026-08-18
 **Authority:** Commander task 2026-08-18 ("RQ4 overhead analysis and figures"), continued after the
 Phase 0 STOP; D3(i); frozen_parameters row 1 (sampling clause); ADR 0041; ADR 0047; ADR 0048
@@ -154,6 +154,49 @@ and reported on exit; a difference would be reported as the finding it would be.
 **Pre-commitment for run 2, written before it runs.** Every delta returned is reported as
 returned; the ten `B1 vs B0` refusals are expected to recur and are reported as refusals; any
 other refusal is reported with its sealed message and is not worked around.
+
+### RUN 2 — executed at clean-tree commit `7a77d5f`; artefact `results/tables/results-latency-pilot-rq4-run2.json`. CLOSED.
+
+**As returned.** `span_descriptives`: **180 reports, every `n = 210`, byte-identical to run 1's**
+(checked by serialising both arrays with sorted keys; equal). `arm_pair_delta` against `B0`:
+**70 deltas** (7 arms × 2 phases × 5 spans) and **10 refusals**, exactly the pre-committed
+`B1 vs B0` set, one per span per phase, each carrying the sealed ADR 0035 message. No other
+refusal. Refusal-path separation: 20 250 samples set aside with the sealed constant; warm-up
+discard: 1 350 dropped; 18 900 into the deltas — the same three counts run 2 of D-009 reports for
+the same input, which is what they should be.
+
+**Every one of the 70 deltas is a `composite-delta` with `mechanism = None` and `unmodelled`
+empty** — no pair against `B0` differs by a single §E.5 bit, so no delta on this artefact is, or
+is labelled as, a mechanism cost. Every delta is a configuration difference (ADR 0041).
+
+**The pre-committed axis rule fires `symlog`.** Two plotted values are not strictly positive:
+the 95 % interval lower bounds of `B2-broad-noexchange` end-to-end, cold (−2.2218 ms) and warm
+(−1.4325 ms). Every other point and bound is positive. The rule was written before this was seen
+and is applied as written.
+
+**A7's fixed testbed overhead, read from this artefact and not from prose:** `B0` warm benign
+`end_to_end` median **22.736 ms** (n = 210, p95 40.6568, IQR 12.9542); cold 24.4451 ms. It is the
+one absolute end-to-end value any figure states.
+
+**Comparison with the draft chapter (clause 8 — a comparison, not a verification of provenance).**
+The forty-five warm medians hand-typed into `drafts/3_8_latency.tex:98-108` coincide, span for
+span and arm for arm, with this run's warm benign `span_reports` medians (setup, delegation,
+presentation, boundary_verification, end_to_end), and `31.0037`, `39.7833`, `22.7360` are that
+figure's end-to-end column. They were therefore, in all likelihood, produced by an earlier
+UNCOMMITTED, un-pre-committed execution of the same sealed function; that agreement establishes
+what they are, and does not make the chapter's citation of them proper — the chapter must cite this
+artefact. Two chapter numbers remain outside anything the sealed layer emits: **`6.4432` and
+`0.2284` are measured-segment (presentation + boundary_verification) medians labelled as boundary
+verification alone** — for `B3` the true boundary_verification warm median is 6.1953 and the
+presentation span it hides is 0.2435 ms — and **the cold-start percentages (4.12 / 5.11 / 7.52 %)
+are a cold-versus-warm ratio no sealed function computes**; they have no committed source, cannot
+acquire one without presentation-layer arithmetic, and are not reproduced by any artefact here.
+Every absolute end-to-end value in that chapter figure is, in addition, what C1 forbids plotting;
+the figure is superseded by the delta figures this entry governs.
+
+**Counts on exit, as clause "On exit" requires:** run commit `7a77d5f`; artefact
+`results/tables/results-latency-pilot-rq4-run2.json`; 180 span reports; 70 deltas; 10 refusals;
+every kept `n` = 210. Run 1's artefact stands unedited beside it. **No further run.**
 
 ---
 
