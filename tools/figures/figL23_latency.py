@@ -211,10 +211,13 @@ def main():
     y2_top = y1_bot - xt_h - band_gap - blab_h
     y2_bot = y2_top - band_h
 
-    # ---- shared span headers, once ----------------------------------------
+    # ---- shared span headers, once. The first and last are nudged right
+    # (Commander, 2026-08-19): "setup" otherwise hangs at the band label's
+    # left edge and "end to end" at the canvas edge.
+    hdr_dx = {"setup": 0.15, "end_to_end": 0.15}
     for col, span in enumerate(SPANS):
         fig.text(
-            (gutter + col * col_w) / fig_w,
+            (gutter + col * col_w + hdr_dx.get(span, 0.0)) / fig_w,
             (y_hdr + 0.06) / fig_h,
             SPAN_TITLE[span],
             ha="left",
@@ -224,8 +227,8 @@ def main():
             fontweight="bold",
         )
 
-    def band_label(y_bot, bold, rest):
-        t = fig.text(
+    def band_label(y_bot, bold):
+        fig.text(
             (gutter - 1.40) / fig_w,
             (y_bot + band_h + 0.05) / fig_h,
             bold,
@@ -234,17 +237,6 @@ def main():
             fontsize=FONT_MIN_PT,
             color=INK,
             fontweight="bold",
-        )
-        fig.canvas.draw()
-        w = t.get_window_extent(renderer=fig.canvas.get_renderer()).width / fig.dpi
-        fig.text(
-            (gutter - 1.40 + w + 0.10) / fig_w,
-            (y_bot + band_h + 0.05) / fig_h,
-            rest,
-            ha="left",
-            va="bottom",
-            fontsize=FONT_MIN_PT,
-            color=MIDGREY,
         )
 
     def style_axis(ax):
@@ -259,11 +251,7 @@ def main():
         ax.tick_params(axis="x", which="minor", colors=INK, length=1.4, width=0.4)
 
     # ---- band 1: benign deltas against B0 ----------------------------------
-    band_label(
-        y1_bot,
-        f"benign path — median(arm) − median({control}), ms",
-        f"{'log10' if use_log else 'symlog'}, linear within ±{linthresh:g} ms",
-    )
+    band_label(y1_bot, f"benign path — median(arm) − median({control}), ms")
     ticks1, labels1 = [-1, 0, 0.1, 10], ["−1", "0", "0.1", "10"]
     minor1 = [-0.1, -0.01, -0.001, 0.001, 0.01, 1]
     for col, span in enumerate(SPANS):
@@ -326,7 +314,7 @@ def main():
                 if arm == control:
                     lab, c = f"{arm}   baseline, 0", INK
                 elif arm in refused_arms:
-                    lab, c = f"{arm}  refused, ADR 0035", MIDGREY
+                    lab, c = f"{arm}  refused", MIDGREY
                 else:
                     lab, c = arm, INK
                 fig.text(
@@ -340,11 +328,7 @@ def main():
                 )
 
     # ---- band 2: the refusal path, absolute --------------------------------
-    band_label(
-        y2_bot,
-        "refusal path (chain-tamper) — absolute span latency, ms",
-        "log10 · its own series, never pooled with the benign path",
-    )
+    band_label(y2_bot, "refusal path (chain-tamper) — absolute span latency, ms")
     decades = list(range(dec_lo, dec_hi + 1))
     ticks2 = [10**k for k in decades if (k - dec_lo) % 2 == 1]
     labels2 = [f"{t:g}" for t in ticks2]
@@ -406,7 +390,7 @@ def main():
     fig.text(
         (gutter + 4 * col_w + plot_w / 2) / fig_w,
         (y2_bot + band_h / 2) / fig_h,
-        "not drawn (C1)",
+        "not drawn",
         ha="center",
         va="center",
         fontsize=FONT_MIN_PT,
@@ -428,7 +412,7 @@ def main():
     fig.text(
         (fig_w - 0.05) / fig_w,
         0.13 / fig_h,
-        f"n = {n} per arm, phase and span  ·  PILOT corpus  ·  CPU unpinned  ·  in-process",
+        f"n = {n} per arm, phase and span",
         ha="right",
         va="center",
         fontsize=FONT_MIN_PT,
@@ -443,7 +427,8 @@ def main():
         "row (warm above the row centre; filled and open markers). UPPER BAND: the point is the "
         f"sealed median difference against {control} and the bar its 95 per cent bootstrap "
         "interval, read from the committed arm-pair record and never subtracted here; the axis is "
-        "symlog rather than log because two interval lower bounds, B2-broad-noexchange end to end "
+        f"symlog rather than log, linear within ±{linthresh:g} ms of zero, because two interval "
+        "lower bounds, B2-broad-noexchange end to end "
         "in both phases, are negative -- the rule choosing between the two was fixed before the "
         "data were seen; intervals narrower than the marker lie under it, and the symlog "
         "compression near zero makes the one interval that crosses zero look widest. "
