@@ -273,30 +273,15 @@ for run, art in ((1, row1_r1), (2, row1_r2)):
         check(ok, f"C: L1 run{run}.{k} rendered {g} vs artefact {v}")
 print(f"   L1: {len(got)} rendered fields checked")
 
-# L2
-lines = render_lines("figL2_span_deltas.py")
-n_l2 = 0
+# L23 -- the merged two-band figure: deltas (no IQR is drawn; the widths stand
+# verbatim in the committed artefact) and the refusal path (median, p95, n).
+lines = render_lines("figL23_latency.py")
 by = {(d["treatment_arm"], d["phase"], d["span"]): d for d in rq4["arm_pair_deltas"]}
-for ln in lines:
-    m = re.match(
-        r"RENDER FIG-L2 \| delta\.(.+?)\.(warm|cold)\.(\w+) \[M\] = ([-\d.]+) "
-        r"\[([-\d.]+), ([-\d.]+)\] iqr=([\d.]+) (\S+)$",
-        ln,
-    )
-    if not m:
-        continue
-    arm, phase, span, pe, lo, hi, iqr, label = m.groups()
-    d = by[(arm, phase, span)]
-    ok = (
-        math.isclose(float(pe), d["point_estimate_ms"], abs_tol=5.01e-5)
-        and math.isclose(float(lo), d["ci_low_ms"], abs_tol=5.01e-5)
-        and math.isclose(float(hi), d["ci_high_ms"], abs_tol=5.01e-5)
-        and math.isclose(float(iqr), d["treatment"]["iqr"], abs_tol=5.01e-5)
-        and label == d["label"]
-    )
-    check(ok, f"C: L2 {arm} {phase} {span} rendered {pe} [{lo},{hi}] {iqr} vs artefact")
-    n_l2 += 1
-a7 = [ln for ln in lines if "A7.fixed_overhead" in ln][0].split("= ")[1]
+byr = {
+    (r["arm"], r["phase"], r["span"]): r["descriptives"]
+    for r in rq4["span_reports"]
+    if r["series"] == "refusal_path"
+}
 b0e2e = [
     r
     for r in rq4["span_reports"]
@@ -305,38 +290,49 @@ b0e2e = [
     and r["span"] == "end_to_end"
     and r["series"] == "benign"
 ][0]["descriptives"]["median"]
-check(float(a7) == b0e2e, f"C: L2 A7 {a7} vs {b0e2e}")
-print(f"   L2: {n_l2} deltas checked (70 expected); A7 = {a7} == artefact {b0e2e}")
-check(n_l2 == 70, "C: L2 rendered fewer than 70 deltas")
-
-# L3
-lines = render_lines("figL3_refusal_path.py")
-n_l3 = 0
-byr = {
-    (r["arm"], r["phase"], r["span"]): r["descriptives"]
-    for r in rq4["span_reports"]
-    if r["series"] == "refusal_path"
-}
+n_l23 = 0
 for ln in lines:
     m = re.match(
-        r"RENDER FIG-L3 \| refusal\.(.+?)\.(warm|cold)\.(\w+) \[M\] = median=([\d.]+) "
-        r"p95=([\d.]+) iqr=([\d.]+) n=(\d+)$",
+        r"RENDER FIG-L23 \| delta\.(.+?)\.(warm|cold)\.(\w+) \[M\] = ([-\d.]+) "
+        r"\[([-\d.]+), ([-\d.]+)\] (\S+)$",
         ln,
     )
     if not m:
         continue
-    arm, phase, span, med, p95, iqr, n = m.groups()
+    arm, phase, span, pe, lo, hi, label = m.groups()
+    d = by[(arm, phase, span)]
+    ok = (
+        math.isclose(float(pe), d["point_estimate_ms"], abs_tol=5.01e-5)
+        and math.isclose(float(lo), d["ci_low_ms"], abs_tol=5.01e-5)
+        and math.isclose(float(hi), d["ci_high_ms"], abs_tol=5.01e-5)
+        and label == d["label"]
+    )
+    check(ok, f"C: L23 {arm} {phase} {span} rendered {pe} [{lo},{hi}] vs artefact")
+    n_l23 += 1
+n_l23_r = 0
+for ln in lines:
+    m = re.match(
+        r"RENDER FIG-L23 \| refusal\.(.+?)\.(warm|cold)\.(\w+) \[M\] = median=([\d.]+) "
+        r"p95=([\d.]+) n=(\d+)$",
+        ln,
+    )
+    if not m:
+        continue
+    arm, phase, span, med, p95, n = m.groups()
     d = byr[(arm, phase, span)]
     ok = (
         math.isclose(float(med), d["median"], abs_tol=5.01e-5)
         and math.isclose(float(p95), d["p95"], abs_tol=5.01e-5)
-        and math.isclose(float(iqr), d["iqr"], abs_tol=5.01e-5)
         and int(n) == d["n"]
     )
-    check(ok, f"C: L3 {arm} {phase} {span} rendered vs artefact")
-    n_l3 += 1
-print(f"   L3: {n_l3} refusal-path rows checked (72 expected: 4 spans x 9 arms x 2 phases)")
-check(n_l3 == 72, "C: L3 rendered rows != 72")
+    check(ok, f"C: L23 refusal {arm} {phase} {span} rendered vs artefact")
+    n_l23_r += 1
+a7_l23 = [ln for ln in lines if "A7.fixed_overhead" in ln][0].split("= ")[1]
+check(float(a7_l23) == b0e2e, f"C: L23 A7 {a7_l23} vs {b0e2e}")
+print(f"   L23: {n_l23} deltas (70 expected) + {n_l23_r} refusal rows (72 expected); A7 = {a7_l23}")
+check(n_l23 == 70, "C: L23 rendered fewer than 70 deltas")
+check(n_l23_r == 72, "C: L23 rendered refusal rows != 72")
+
 
 # ---------------------------------------------------------------- D. ticks
 print("D. TICKS: label text == formatted position; data values land where the scale says")
@@ -359,8 +355,7 @@ import importlib  # noqa: E402
 
 for mod, stem in (
     ("figL1_decision_strip", "L1"),
-    ("figL2_span_deltas", "L2"),
-    ("figL3_refusal_path", "L3"),
+    ("figL23_latency", "L23"),
 ):
     m = importlib.import_module(mod)
     m.save = grab(stem)
@@ -392,27 +387,33 @@ for stem, fig in figs.items():
         n_axes += 1
     print(f"   {stem}: {n_axes} axes, tick labels consistent with positions")
 
-# symlog specifics on L2: known values must sit in the right decade
-ax = figs["L2"].axes[0]
+# L23: axes[0] is the delta band (symlog); axes[5] the refusal band (log10)
+ax = figs["L23"].axes[0]
 
 
-def frac(v):
+def frac23(v):
     return ax.transAxes.inverted().transform(ax.transData.transform((v, 0)))[0]
 
 
-check(frac(0.001) < frac(0.01) < frac(0.1) < frac(1) < frac(10), "D: L2 symlog ordering")
-check(abs((frac(1) - frac(0.1)) - (frac(10) - frac(1))) < 1e-9, "D: L2 symlog decades equal width")
-check(abs(frac(0.001) + frac(-0.001) - 2 * frac(0)) < 1e-9, "D: L2 symlog symmetric about 0")
-print("   L2 symlog: decades equal width, symmetric about zero, ordered")
-ax = figs["L3"].axes[0]
+check(frac23(0.001) < frac23(0.01) < frac23(0.1) < frac23(1) < frac23(10), "D: L23 symlog ordering")
+check(
+    abs((frac23(1) - frac23(0.1)) - (frac23(10) - frac23(1))) < 1e-9,
+    "D: L23 symlog decades equal width",
+)
+check(abs(frac23(0.001) + frac23(-0.001) - 2 * frac23(0)) < 1e-9, "D: L23 symlog symmetric about 0")
+print("   L23 symlog: decades equal width, symmetric about zero, ordered")
+ax = figs["L23"].axes[5]
 
 
-def frac3(v):
+def frac23l(v):
     return ax.transAxes.inverted().transform(ax.transData.transform((v, 0)))[0]
 
 
-check(abs((frac3(1) - frac3(0.1)) - (frac3(10) - frac3(1))) < 1e-9, "D: L3 log decades equal width")
-print("   L3 log10: decades equal width")
+check(
+    abs((frac23l(1) - frac23l(0.1)) - (frac23l(10) - frac23l(1))) < 1e-9,
+    "D: L23 log decades equal width",
+)
+print("   L23 log10: decades equal width")
 
 print()
 if problems:

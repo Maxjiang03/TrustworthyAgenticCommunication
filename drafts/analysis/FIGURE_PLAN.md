@@ -791,6 +791,22 @@ labels colliding at 0.14 in per decade; a log axis's automatic minor-tick labels
 title. None of these moved the overflow number. The FIG-1 lesson — a numeric check cannot see two
 blocks overprinting inside the canvas — is now a check.
 
+**Merged, 2026-08-19 (Commander ruling: one figure, publication register).** FIG-L2 and FIG-L3
+are superseded by **FIG-L23** (`figL23_latency.py`, 9.65 × 5.32 in, landscape): two bands over five
+shared span columns — benign deltas against B0 above (symlog, sealed interval bars), the refusal
+path below (absolute median + p95, log10, its own axis, end-to-end slot empty and labelled "not
+drawn (C1)"). The bands are never summed or overlaid; each names its quantity and scale on its own
+band label, and the shared columns let a span be read down one column across the two conditions.
+Changes that bought the one-page fit and the register: the **IQR text columns leave the canvas**
+(the widths stand verbatim in the committed artefact; drawing an arm's absolute IQR on a delta
+axis was a unit hazard in any case) — this amends, by dated Commander ruling, the D-014 R4 line
+that put them on FIG-L2, with the DEVIATIONS text itself unedited; **n is stated once** in the
+provenance line instead of ten panel headers; **grey structural lines become ink** (spines, ticks,
+zero line, tier brackets) with grey kept for de-emphasis only; the freed IQR width goes to the
+panels (1.51 in each, up from 1.05). The verifier now checks the merged script: 70 delta lines +
+72 refusal lines against the artefact, 9 axes, both scale probes. The two superseded scripts are
+removed; §C's FIG-5/FIG-6 registrations continue to be discharged, now by one artefact.
+
 **Layout, revised 2026-08-18.** L2 and L3 stacked warm and cold as two bands of nine arm rows.
 That repeated the arm labels, the tier brackets, the panel headers and the IQR headers twice, and
 put ~2.5 in between an arm's warm mark and its cold one — which is the comparison the cold-start

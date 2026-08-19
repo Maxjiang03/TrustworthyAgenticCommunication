@@ -34,8 +34,9 @@ AUTHORISED = (
     # committed. Each reads only results/tables/ and RAISES on placement or
     # text overlap.
     "figL1_decision_strip.py",
-    "figL2_span_deltas.py",
-    "figL3_refusal_path.py",
+    # Commander ruling 2026-08-19: FIG-L2 and FIG-L3 merge into one two-band
+    # figure; the two scripts they replace are removed.
+    "figL23_latency.py",
 )
 
 
