@@ -725,6 +725,16 @@ caption says so outright: a solid cell on FIG-0 is authority admitted beyond the
 task grant, not a request the boundary stopped. Tokens are named for their own
 figure's role (`LADDER_AT`, not a reused `OFF_BLOCKED`) for the same reason.
 
+**Crispness pass, 2026-08-19 (Commander: grey leaves the figure; the grid is drawn, not
+implied).** Header labels all ink — the ●/○ marker alone carries probed-versus-not; counts all
+ink, zeros included; tier brackets and labels ink. The grid takes FIG-1's treatment: empty cells
+carry a 0.35 pt ink hairline in place of the near-invisible #dddddd, paper rules cut the runs of
+solid and tint cells, each panel closes with an ink frame, and the three ladder tiers are ruled
+off across the panel. One regression caught on the first render and fixed: the paper grid rules
+(zorder 3) erased the narrowed cells' blue outline, which sits exactly on the boundary the rules
+repaint — the outline now draws at zorder 3.6 with glyphs above it, and the greyscale render
+confirms all four states separable (near-black / light grey / outlined white / hairline white).
+
 **The header band is measured now.** Panel titles sat above a remembered
 constant — "about 1.29 in of header reach" — and the longest element label
 outgrew it, putting a rotated header through "F3" in Configuration I's title.

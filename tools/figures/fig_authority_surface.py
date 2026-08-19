@@ -38,7 +38,6 @@ from _common import (
     INK,
     LADDER_AT,
     LANDSCAPE,
-    MIDGREY,
     PAPER,
     PORTRAIT,
     REPO_ROOT,
@@ -183,11 +182,15 @@ def draw_cell(ax, x, y, w, h, state):
         ax.add_patch(Rectangle((x, y), w, h, facecolor=LADDER_AT, edgecolor=LADDER_AT, lw=0.5))
         glyph_colour = INK
     elif state == S_NARROWED:
-        ax.add_patch(Rectangle((x, y), w, h, facecolor=PAPER, edgecolor=LADDER_TOP, lw=0.7))
+        # Above the paper grid rules (zorder 3), or they erase this border --
+        # the outline sits exactly on the cell boundary the rules repaint.
+        ax.add_patch(
+            Rectangle((x, y), w, h, facecolor=PAPER, edgecolor=LADDER_TOP, lw=0.7, zorder=3.6)
+        )
         glyph_colour = LADDER_TOP
     else:
-        ax.add_patch(Rectangle((x, y), w, h, facecolor=PAPER, edgecolor="#dddddd", lw=0.5))
-        glyph_colour = MIDGREY
+        ax.add_patch(Rectangle((x, y), w, h, facecolor=PAPER, edgecolor=INK, lw=0.35))
+        glyph_colour = INK  # unused: the outside state has no glyph
     if GLYPH[state]:
         ax.text(
             x + w / 2,
@@ -198,6 +201,7 @@ def draw_cell(ax, x, y, w, h, state):
             fontsize=FONT_MIN_PT,
             color=glyph_colour,
             fontweight="bold",
+            zorder=4,
         )
 
 
@@ -285,7 +289,7 @@ def main():
                 f"tier label {label!r} needs {need:.2f} in but its tier is "
                 f"{y1 - y0:.2f} in tall; shorten the label, never the type"
             )
-        ax.plot([0.10, 0.10], [y0 + 0.03, y1 - 0.03], color=MIDGREY, lw=0.8)
+        ax.plot([0.10, 0.10], [y0 + 0.03, y1 - 0.03], color=INK, lw=0.8)
         ax.text(
             0.06,
             (y0 + y1) / 2,
@@ -294,7 +298,7 @@ def main():
             va="center",
             rotation=90,
             fontsize=FONT_MIN_PT,
-            color=MIDGREY,
+            color=INK,
         )
         print_render(ARTEFACT, f"tier.{tier}.arms", len(rows))
 
@@ -343,7 +347,7 @@ def main():
                 ha="left",
                 va="bottom",
                 fontsize=FONT_MIN_PT,
-                color=INK if el in probed else MIDGREY,
+                color=INK,
             )
         for k, head in enumerate(("amplified [D]", "narrowed [D]")):
             ax.text(
@@ -374,8 +378,8 @@ def main():
                         cnt_w - 0.06,
                         rh,
                         facecolor=PAPER,
-                        edgecolor="#dddddd",
-                        lw=0.5,
+                        edgecolor=INK,
+                        lw=0.35,
                     )
                 )
                 ax.text(
@@ -385,13 +389,62 @@ def main():
                     ha="center",
                     va="center",
                     fontsize=FONT_MIN_PT,
-                    color=INK if val else MIDGREY,
+                    color=INK,
                     fontweight="bold" if val else "normal",
                 )
             print_render(ARTEFACT, f"config{key}.{arm}.admitted_size [D]", len(admitted))
             print_render(ARTEFACT, f"config{key}.{arm}.amplified [D admitted minus U_task]", amp)
             print_render(
                 ARTEFACT, f"config{key}.{arm}.narrowed [D U_task minus admitted]", narrowed
+            )
+
+        # Grid rules over the element block (FIG-1's idiom): PAPER hairlines cut
+        # runs of solid and tint cells that would otherwise merge; empty cells
+        # already carry their own ink hairline, which the paper lines cannot
+        # erase because paper on paper is invisible. Then the panel is closed
+        # with an ink frame and the three ladder tiers are ruled off, so the
+        # table structure is drawn rather than implied.
+        block_top, block_bot = row_y(0) + rh, row_y(len(ARM_ORDER) - 1)
+        for j in range(1, ncol):
+            ax.plot(
+                [x0 + j * cw] * 2,
+                [block_bot, block_top],
+                color=PAPER,
+                lw=0.7,
+                zorder=3,
+                solid_capstyle="butt",
+            )
+        for i in range(1, len(ARM_ORDER)):
+            ax.plot(
+                [x0, x0 + ncol * cw],
+                [row_y(i - 1)] * 2,
+                color=PAPER,
+                lw=0.7,
+                zorder=3,
+                solid_capstyle="butt",
+            )
+        ax.add_patch(
+            Rectangle(
+                (x0, block_bot),
+                ncol * cw,
+                len(ARM_ORDER) * rh,
+                facecolor="none",
+                edgecolor=INK,
+                lw=0.8,
+                zorder=4,
+            )
+        )
+        tier_last = {}
+        for i, arm in enumerate(ARM_ORDER):
+            tier_last[ARM_GRANT[arm]] = i
+        for tier_end in sorted(tier_last.values())[:-1]:
+            ax.plot(
+                [x0, x0 + ncol * cw],
+                [row_y(tier_end)] * 2,
+                color=INK,
+                lw=0.8,
+                zorder=4,
+                solid_capstyle="butt",
             )
 
         # C4 -- B3 / B3+ carry identical authority BY CONSTRUCTION. Bracketed on
