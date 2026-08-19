@@ -734,6 +734,9 @@ off across the panel. One regression caught on the first render and fixed: the p
 (zorder 3) erased the narrowed cells' blue outline, which sits exactly on the boundary the rules
 repaint — the outline now draws at zorder 3.6 with glyphs above it, and the greyscale render
 confirms all four states separable (near-black / light grey / outlined white / hairline white).
+Second ruling, same day: ONE grid — every cell, filled or not, carries the same 0.35 pt ink
+hairline as its own edge (the legend swatches inherit it), and paper separators survive only on
+the shared edge of two adjacent solid cells, where a dark line on a dark fill would vanish.
 
 **The header band is measured now.** Panel titles sat above a remembered
 constant — "about 1.29 in of header reach" — and the longest element label

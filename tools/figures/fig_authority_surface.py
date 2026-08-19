@@ -176,10 +176,10 @@ def draw_cell(ax, x, y, w, h, state):
     weight -- which is why every state on this figure carries a glyph at all.
     """
     if state == S_AMP:
-        ax.add_patch(Rectangle((x, y), w, h, facecolor=LADDER_TOP, edgecolor=LADDER_TOP, lw=0.6))
+        ax.add_patch(Rectangle((x, y), w, h, facecolor=LADDER_TOP, edgecolor=INK, lw=0.35))
         glyph_colour = PAPER
     elif state == S_AT:
-        ax.add_patch(Rectangle((x, y), w, h, facecolor=LADDER_AT, edgecolor=LADDER_AT, lw=0.5))
+        ax.add_patch(Rectangle((x, y), w, h, facecolor=LADDER_AT, edgecolor=INK, lw=0.35))
         glyph_colour = INK
     elif state == S_NARROWED:
         # Above the paper grid rules (zorder 3), or they erase this border --
@@ -361,12 +361,14 @@ def main():
                 color=INK,
             )
 
+        grid_states = {}
         for i, arm in enumerate(ARM_ORDER):
             admitted = admitted_by_tier[ARM_GRANT[arm]]
             y = row_y(i)
             amp = narrowed = 0
             for j, el in enumerate(omega):
                 st = state_of(el, admitted, required)
+                grid_states[(i, j)] = st
                 draw_cell(ax, x0 + j * cw, y, cw, rh, st)
                 amp += st == S_AMP
                 narrowed += st == S_NARROWED
@@ -404,25 +406,28 @@ def main():
         # erase because paper on paper is invisible. Then the panel is closed
         # with an ink frame and the three ladder tiers are ruled off, so the
         # table structure is drawn rather than implied.
-        block_top, block_bot = row_y(0) + rh, row_y(len(ARM_ORDER) - 1)
-        for j in range(1, ncol):
-            ax.plot(
-                [x0 + j * cw] * 2,
-                [block_bot, block_top],
-                color=PAPER,
-                lw=0.7,
-                zorder=3,
-                solid_capstyle="butt",
-            )
-        for i in range(1, len(ARM_ORDER)):
-            ax.plot(
-                [x0, x0 + ncol * cw],
-                [row_y(i - 1)] * 2,
-                color=PAPER,
-                lw=0.7,
-                zorder=3,
-                solid_capstyle="butt",
-            )
+        block_bot = row_y(len(ARM_ORDER) - 1)
+        for (i, j), st in grid_states.items():
+            if st != S_AMP:
+                continue
+            if grid_states.get((i, j + 1)) == S_AMP:
+                ax.plot(
+                    [x0 + (j + 1) * cw] * 2,
+                    [row_y(i), row_y(i) + rh],
+                    color=PAPER,
+                    lw=0.7,
+                    zorder=2,
+                    solid_capstyle="butt",
+                )
+            if grid_states.get((i + 1, j)) == S_AMP:
+                ax.plot(
+                    [x0 + j * cw, x0 + (j + 1) * cw],
+                    [row_y(i)] * 2,
+                    color=PAPER,
+                    lw=0.7,
+                    zorder=2,
+                    solid_capstyle="butt",
+                )
         ax.add_patch(
             Rectangle(
                 (x0, block_bot),
