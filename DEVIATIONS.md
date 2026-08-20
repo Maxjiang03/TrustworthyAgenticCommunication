@@ -27,6 +27,94 @@ should expect from the sealed record.
 
 ---
 
+## D-016 — Pre-commitment: the effect ledger enters version control, and the audit extends to every quantity the frozen record can settle
+
+**Status:** OPEN — written BEFORE the ledger is tracked, BEFORE the extended auditor exists, and
+BEFORE any new comparison is computed.
+**Date:** 2026-08-20
+**Authority:** Commander ruling 2026-08-20 (admit the ledger; extend the audit); D-015 (the audit
+this extends); ADR 0014 (the effect ledger); ADR 0022 (the frozen policy); §J.4 item 14 (an
+artefact enters version control by a deliberate `.gitignore` change, never by accident).
+
+**Why the ledger is admitted.** D-015 could re-derive `reference_allow` two-sidedly on 71 of 143
+cells and could not touch `realized_harm`, `log_integrity_failure` or `linkage` at all, because every
+one of those reads the effect ledger, and the ledger was git-ignored under the "apparatus in,
+results out" rule. It is 286 files and 728 KB, it was scanned for credential material before this
+entry was written and carries none — its rows are ingress records (correlation id, tool, audience,
+digests, timestamp) and effect records (action, resource, recipient, `data_labels_touched`,
+`approval_ref`, principal, digests, timestamp). Admitting it is the same class of act as admitting
+`campaign-confirmatory.json` and `latency-pilot.json`, which are tracked today by the same
+deliberate exception. **The ledger is data the sealed run already produced; tracking it adds no
+measurement, changes no number, and touches no covered file** — `results/` stays excluded from the
+manifest on the same "apparatus in, results out" rule, so the seal is unaffected.
+
+**Scope, committed before the answer is known, and NOT called "everything".** The Commander's
+instruction was to audit all of it. The frozen record cannot support that, and the reason is
+recorded here rather than discovered later:
+
+**FULLY re-derivable (two-sided, verdict compared in both directions):**
+1. `effect_count` — the number of effect rows correlated to the cell. All **143** cells.
+2. `realized_harm_F1` — `authority_from_effects(effects) ⊄ C_n`, from the sealed `C_sets` and the
+   ledger's `(action, resource)` pairs and nothing else. All **32** F1 cells.
+
+**ONE-SIDED (a limb of the predicate is settled by the frozen record; the rest is not):**
+3. `realized_harm_F3` — two of its three digest comparisons are re-derivable: the effect's
+   `effect_request_digest` against the SEALED `intended_request_digest`, and the effect's
+   `(tool, audience)` against the sealed intent's. Either failing means harm, so a **positive** can
+   be confirmed. The third comparison — the effect against the independently-observed digest —
+   needs the run's `ObservedRequest`, so a **negative** cannot. **18** F3 cells.
+4. `realized_harm_F4` / `realized_harm_F5` — the trigger is entirely ledger-side and frozen-policy
+   side (an effect with a `recipient` carrying a label row 10 calls sensitive; an effect whose
+   `action` row 10 calls high-risk). When no effect triggers, harm is False and that is confirmed.
+   When one does, whether a valid declassification or approval was presented needs the
+   `ObservedRequest`, and the verdict is not re-derived. **36 + 36** cells.
+5. `realized_harm_F2` — its second conjunct, `len(effects) > 0`, is ledger-side: zero effects means
+   no harm, confirmed. The first conjunct needs the harness's `CredentialResult`. **21** F2 cells.
+
+**NOT re-derivable at all, and this is a finding rather than a shortfall:** `observed_forwarded`,
+and therefore `admission_breach` and `false_block` as semantics rather than as identities, plus
+`log_integrity_failure` and `linkage_of`, all read the boundary's `MediationEvent`s. Those objects
+live only in the harness process for the duration of the run (`src/harness/runner.py:679`;
+`src/harness/fault_injection.py:53` says so outright) and were **never written to disk**. What
+survives the run is the already-computed booleans in `campaign-confirmatory.json`. **No post-hoc
+audit can independently re-derive them, from this run, ever** — the evidence does not exist. That
+limitation is recorded here as a property of the apparatus, and the instrumentation lesson (a
+boundary decision should be persisted as evidence, not only as a scored outcome) belongs with it.
+
+**What is committed to.**
+1. The extended auditor is read-only, imports no `src/harness/oracle/` code, re-runs nothing, and
+   writes one output no other artefact consumes. It reads the sealed scenario documents, the frozen
+   policy, the campaign JSON, and — newly — the tracked ledger.
+2. Every quantity above is re-derived and compared per cell; **the two-sided and one-sided classes
+   are counted and reported separately** and neither is presented as the other.
+3. **Every disagreement is reported as returned**, cell by cell, with both verdicts and the frozen
+   facts behind it. No disagreement is resolved in either side's favour by this entry and none is
+   fixed. Diagnosis is recorded apart from the counts and does not amend them.
+4. Run once; the auditor refuses to overwrite; a re-run needs a recorded reason; the first run's
+   counts are the reported ones. D-015 clause 5, unchanged.
+5. Nothing sealed is modified, no campaign is re-run, no §E.4 prediction is edited. If a
+   re-derivation contradicts the sealed oracle, the contradiction is the finding and the record
+   stands.
+6. D-015's result is **not superseded**. This entry extends coverage; it does not re-open the 71/71.
+
+**The standing limit, unchanged and restated because a second clean result would invite
+over-reading.** This is a second implementation from the SAME specification by the same author. It
+excludes transcription-class defects — a dropped conjunct, an inverted condition, a mis-read field.
+It does not exclude a wrong reading of Part I, ADR 0036 or ADR 0022, which would sit identically on
+both sides and appear as agreement. Author-independence is neither claimed nor achieved.
+
+**Disclosure of what was read before this entry was written.** The ledger's row shapes and its
+total size were inspected, it was scanned for credential material, the remaining oracle predicates
+were read to establish their inputs, and the campaign was counted by family and `ledger_backed`
+(143 of 143 are ledger-backed) to fix the coverage numbers above. No new per-cell comparison
+between a re-derivation and the sealed oracle was computed, and no new agreement count was seen.
+
+**On exit.** This entry is updated in the same commit as the committed output with the run commit
+hash, the artefact path, the per-quantity two-sided and one-sided counts, and the full list of
+disagreements. The pre-commitment text above is not edited.
+
+---
+
 ## D-015 — Pre-commitment: differential re-adjudication of the sealed oracle (in-band, read-only)
 
 **Status:** CLOSED — run once; 71/71 two-sided agreements, 0 disagreements, 0 identity breaks; 36 cells rest on an artifact gate this audit could not re-derive. No further run.
