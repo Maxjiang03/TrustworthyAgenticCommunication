@@ -29,7 +29,7 @@ should expect from the sealed record.
 
 ## D-015 — Pre-commitment: differential re-adjudication of the sealed oracle (in-band, read-only)
 
-**Status:** OPEN — written BEFORE the auditor exists and BEFORE any per-cell comparison is made.
+**Status:** CLOSED — run once; 71/71 two-sided agreements, 0 disagreements, 0 identity breaks; 36 cells rest on an artifact gate this audit could not re-derive. No further run.
 **Date:** 2026-08-19
 **Authority:** Commander ruling 2026-08-19 (the in-band validation class approved); G-12's own scope
 statement; ADR 0036 (the credential gate); ADR 0022 (the frozen label/approval policy); D-009 and
@@ -100,6 +100,69 @@ between a re-derivation and the sealed oracle was computed, and no agreement cou
 **On exit.** When the run completes, this entry is updated in the same commit as the committed output
 with the run commit hash, the artefact path, the two-sided and one-sided agreement counts, the full
 list of disagreements, and the identity-check results. The pre-commitment text above is not edited.
+
+### CLOSED — run 1, the counts as returned
+
+**Run commit:** `f639616` (tree clean at run time; the auditor was committed before any output
+existed). **Output artefact:** `results/validation/oracle-audit.json`. **Invocation:**
+`tools/verify/differential_oracle_audit.py`, read-only, importing no oracle code.
+
+| | as returned |
+|---|---|
+| scored cells re-adjudicated | 143 |
+| **two-sided** (verdict fully re-derived) | **71** |
+| two-sided agreements | **71** |
+| two-sided disagreements | **0** |
+| **one-sided** (an artifact gate the auditor cannot see) | **72** |
+| — sealed allow, agreeing with every limb the auditor can read | 36 |
+| — sealed refuse, resting on the unseen gate alone | 36 |
+| definitional identity checks (`admission_breach`, `false_block`) | 286 |
+| identity breaks | **0** |
+
+**What the 71 buy.** For every cell whose reference decision is settled by containment
+(`R ⊆ C_n`) and ADR 0036's credential gate, a second implementation written from the specification
+and the sealed record — importing none of `src/harness/oracle/` — reaches the same verdict. That is
+the transcription-class check no existing gate performs: G-12 proves the oracle does not read the
+SUT, and says nothing about whether its predicate encodes Part I correctly. It does now, for these
+cells, by a second route.
+
+**What the 286 buy.** `admission_breach ≡ forwarded ∧ ¬reference_allow` and
+`false_block ≡ is_benign ∧ reference_allow ∧ ¬forwarded` hold on every scored cell, with
+`is_benign` read from the sealed document. This is internal consistency of the recorded record, not
+semantics, and is reported as such: it would catch a scoring-time bookkeeping error, not a wrong
+reading of Part I.
+
+**The 36 that rest on an unseen gate, named rather than left as a number.** The one-sided set falls
+out along exactly the line the corpus draws, and the split is worth stating because it bounds this
+audit precisely:
+
+- **sealed allow, 36 cells** — `cf-f4-declassified` (18) and `cf-f5-approved` (18), the two benign
+  controls. Every limb the auditor can read agrees with the allow; whether the presented
+  declassification and approval artifacts actually verified is what it cannot see.
+- **sealed refuse, 36 cells** — `cf-f4-sensitive-egress` (18) and `cf-f5-unapproved-high-risk` (18),
+  the two F4/F5 attacks. These refusals rest **entirely** on the artifact gate: containment and the
+  credential gate both say allow, so the whole refusal is carried by the limb this audit could not
+  re-derive.
+
+That last row is the honest residual. The F4 declassification and F5 approval gates — signature
+verification, window, and binding of a presented artifact — are **not** covered by this audit, and
+for 36 cells they are the sole reason the reference refuses. Re-deriving them needs the run-time
+observation, which lives in `results/_ledger/`, git-ignored under the "apparatus in, results out"
+rule and therefore absent from a fresh clone. Extending the audit to those gates would require
+either admitting the ledger to version control or re-deriving artifact validity from the sealed
+record alone, which would be re-deriving what the run observed rather than checking it. Neither is
+done here, and the gap is reported rather than closed.
+
+**Reported as committed.** Zero disagreements is the count as returned, not a target; the auditor
+would have listed each disagreeing cell with both verdicts and the sealed facts behind it, and
+D-015 clause 4 forbids resolving one in either side's favour. No sealed artefact was modified, no
+campaign was re-run, and no reported number changed. **No further run.**
+
+**Standing limit, restated because a zero invites over-reading.** This is a second implementation
+from the SAME specification by the same author. The 71 agreements exclude a transcription defect —
+a dropped conjunct, an inverted condition, a mis-read field. They do not exclude a defect in the
+reading of Part I or of ADR 0036, which would sit identically on both sides and appear here as
+agreement. Author-independence is not claimed and was not achieved.
 
 ---
 

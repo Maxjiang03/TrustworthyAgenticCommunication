@@ -1,0 +1,31 @@
+{
+  "_what": "A second re-derivation of the sealed oracle's per-cell predicates, from the sealed scenario documents and the frozen policy, compared cell by cell against results/raw/campaign-confirmatory.json. Read-only; imports no oracle code; re-runs nothing; changes no reported number. Governed by DEVIATIONS D-015.",
+  "not_established": "A second implementation from the SAME specification by the same author. It catches transcription-class defects; it cannot catch an error in the specification reading, which would appear identically on both sides and show as agreement. Author-independence is not claimed.",
+  "run": {
+    "index": 1,
+    "reason": "(first run)"
+  },
+  "inputs": {
+    "sealed_scenarios": 13,
+    "scored_cells": 143,
+    "policy": "src/harness/policy/label_approval_v1.json",
+    "sensitive_labels": [
+      "sensitive"
+    ]
+  },
+  "coverage": {
+    "two_sided_cells": 71,
+    "one_sided_cells": 72,
+    "one_sided_note": "an F4/F5 artifact gate applies; whether a valid signed artifact was presented is a run-time observation in the git-ignored ledger, so an allow can be refuted but not confirmed"
+  },
+  "results": {
+    "two_sided_agreements": 71,
+    "two_sided_disagreements": 0,
+    "one_sided_sealed_allow": 36,
+    "one_sided_sealed_refuse_resting_on_unseen_gate": 36,
+    "identity_checks": 286,
+    "identity_breaks": 0
+  },
+  "disagreements": [],
+  "identity_break_detail": []
+}
