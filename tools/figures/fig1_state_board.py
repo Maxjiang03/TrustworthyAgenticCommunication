@@ -19,7 +19,6 @@ from _common import (
     GHOST,
     HATCH,
     INK,
-    MIDGREY,
     OFF_BLOCKED,
     OFF_CAMPAIGN,
     PAPER,
@@ -436,7 +435,7 @@ def main():
             ha="left",
             va="center",
             fontsize=FONT_MIN_PT,
-            color=MIDGREY,
+            color=INK,
         )
         print_render(ARTEFACT, f"band_{fam}_coverage", f"{cov['instantiated']}/{cov['defined']}")
         print_render(ARTEFACT, f"band_{fam}_n", n)
@@ -494,8 +493,12 @@ def main():
         if r["kind"] == "verified":
             # THIRD EVIDENCE CLASS. No campaign cell exists for this row; the
             # nine values are E.4 predictions and the suite verifies them cell
-            # by cell across all nine arms. Dashed outline, no fill, mid grey,
-            # so it cannot be read as a campaign cell -- and counted nowhere.
+            # by cell across all nine arms. Dashed outline, so it cannot be
+            # read as a campaign cell -- and counted nowhere. The letters are
+            # ink (Commander ruling 2026-08-20: no grey type on the board);
+            # the DASHED outline alone now carries same-state-different-
+            # evidence at cell level, with the lighter fill, the italic
+            # carrier note and absence from every count behind it.
             for j, arm in enumerate(ARM_ORDER):
                 x = cx(j)
                 letter = r["expected"][arm].rstrip("†")
@@ -525,7 +528,7 @@ def main():
                     ha="center",
                     va="center",
                     fontsize=FONT_MIN_PT,
-                    color=PAPER if blocked_pred else OFF_CAMPAIGN,
+                    color=PAPER if blocked_pred else INK,
                 )
                 if arm in r.get("adjudicated", ()):
                     # A filled corner tick: this arm, and only this arm, was
@@ -551,7 +554,7 @@ def main():
                 ha="left",
                 va="center",
                 fontsize=FONT_MIN_PT,
-                color=MIDGREY,
+                color=INK,
                 style="italic",
             )
             print_render(ARTEFACT, f"verified.{r['label']}", r["carrier"])
@@ -574,14 +577,14 @@ def main():
                 ha="center",
                 va="center",
                 fontsize=FONT_MIN_PT,
-                color=MIDGREY,
+                color=INK,
                 style="italic",
             )
             if not is_np:
                 ax.plot(
                     [left, left + ncol * cw],
                     [y + 0.02, y + 0.02],
-                    color=MIDGREY,
+                    color=INK,
                     lw=0.8,
                     linestyle=(0, (1, 2)),
                 )
@@ -822,7 +825,7 @@ def main():
         ha="left",
         va="center",
         fontsize=FONT_MIN_PT,
-        color=MIDGREY,
+        color=INK,
         style="italic",
     )
     print_render(ARTEFACT, "b3_b3plus_identical_pairs [M]", 17)
@@ -915,7 +918,6 @@ def main():
         ("FB", "false block"),
         ("NA", "not applicable"),
         ("pred", "predicted off-campaign"),
-        ("DIS", f"disagrees with E.4 — {row_disagreed_total} of {cells_compared}"),
     ]
     if any(r["kind"] == "ghost" for r in laid_out):
         key_items.append(("ghost", "never run"))
@@ -940,14 +942,14 @@ def main():
     # read against each other rather than as two unrelated marks.
     monitor_icon(kx + 0.075, ky, True)
     monitor_icon(kx + 0.075 + 0.19, ky, False)
-    kx = place("shared monitor attached / absent", kx + 0.42, color=MIDGREY) + 0.26
+    kx = place("shared monitor attached / absent", kx + 0.42, color=INK) + 0.26
     for mark, label in (
         ("†", "predicted A absent the monitor; scored on that row"),
         ("•", "realized harm"),
         ("▪", "arm adjudicated by the carrier"),
     ):
         kx = place(mark, kx, color=INK) + 0.09
-        kx = place(label, kx, color=MIDGREY) + 0.24
+        kx = place(label, kx, color=INK) + 0.24
 
     # ---- the caption -------------------------------------------------------
     # Every prose block that used to sit on the canvas is generated here from
