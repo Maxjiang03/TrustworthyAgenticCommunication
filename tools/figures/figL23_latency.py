@@ -13,7 +13,7 @@ series, never pooled with the benign path: on that scenario the exchange arms
 perform a FAILED AS round trip, which lands in delegation, while the capability
 arms do purely local work. No delta exists for this band because the sealed
 arm_pair_delta builds from the benign series alone; none is computed here. Its
-end-to-end panel is not drawn (C1) and the empty slot says so. B1 appears here
+end-to-end panel is not drawn (C1). B1 appears here
 because the descriptive layer does not refuse it; only the bit-labelled delta
 does.
 
@@ -55,8 +55,8 @@ from _common import (
     FONT_MIN_PT,
     INK,
     LATENCY_SPREAD,
-    MIDGREY,
     PAPER,
+    VERMILLION,
     PresentationError,
     assert_no_text_overlap,
     draw_key,
@@ -234,17 +234,19 @@ def main():
     col_w = plot_w + col_gap
     row_h = 0.21
     band_h = len(ARM_ORDER) * row_h
-    top, hdr_h, blab_h, xt_h, band_gap, key_h = 0.06, 0.24, 0.20, 0.24, 0.10, 0.26
-    fig_h = top + hdr_h + blab_h + band_h + xt_h + band_gap + blab_h + band_h + xt_h + key_h
+    top, hdr_h, blab_h, xt_h, band_gap, key_h = 0.05, 0.24, 0.20, 0.24, 0.08, 0.20
+    glyph_h = 0.13  # the column-header line: a filled dot over warm, an open dot over cold
+    band_block = blab_h + glyph_h + band_h + xt_h
+    fig_h = top + hdr_h + band_block + band_gap + band_block + key_h
     fig = plt.figure(figsize=(fig_w, fig_h))
     fig.patch.set_facecolor(PAPER)
     print_render(ARTEFACT, "geometry.fig_in [D]", f"{fig_w:.2f} x {fig_h:.2f}")
 
     ys = {arm: len(ARM_ORDER) - 1 - i for i, arm in enumerate(ARM_ORDER)}
     y_hdr = fig_h - top - hdr_h
-    y1_top = y_hdr - blab_h
+    y1_top = y_hdr - blab_h - glyph_h
     y1_bot = y1_top - band_h
-    y2_top = y1_bot - xt_h - band_gap - blab_h
+    y2_top = y1_bot - xt_h - band_gap - blab_h - glyph_h
     y2_bot = y2_top - band_h
 
     # ---- shared span headers, once. The first and last are nudged right
@@ -266,7 +268,7 @@ def main():
     def band_label(y_bot, bold):
         fig.text(
             (gutter - 1.40) / fig_w,
-            (y_bot + band_h + 0.05) / fig_h,
+            (y_bot + band_h + glyph_h + 0.04) / fig_h,
             bold,
             ha="left",
             va="bottom",
@@ -312,6 +314,28 @@ def main():
             f"columns.{span} [D]",
             f"col_w={num_w[span]:.2f} in (measured), ax_w={ax_w[span]:.2f} in",
         )
+
+    def column_glyphs(span, col, y_bot):
+        """The column headers: a filled dot over the warm column, open over cold."""
+        from matplotlib.lines import Line2D
+
+        x_warm = gutter + col * col_w + ax_w[span] + COL_ML + num_w[span]
+        x_cold = x_warm + COL_GAP + num_w[span]
+        y = (y_bot + band_h + glyph_h / 2) / fig_h
+        for x, face in ((x_warm, INK), (x_cold, PAPER)):
+            fig.add_artist(
+                Line2D(
+                    [(x - num_w[span] / 2) / fig_w],
+                    [y],
+                    marker="o",
+                    ms=2.9,
+                    markerfacecolor=face,
+                    markeredgecolor=INK,
+                    markeredgewidth=0.8,
+                    linestyle="none",
+                    transform=fig.transFigure,
+                )
+            )
 
     def value_columns(span, col, y_bot, values):
         """One panel's two columns: (arm -> (warm, cold)) at each row centre."""
@@ -371,7 +395,7 @@ def main():
                     [d["point_estimate_ms"]],
                     [y],
                     marker="o",
-                    ms=3.4,
+                    ms=2.6,
                     markerfacecolor=INK if filled else PAPER,
                     markeredgecolor=INK,
                     markeredgewidth=0.8,
@@ -384,6 +408,7 @@ def main():
                     f"{d['point_estimate_ms']:.4f} [{d['ci_low_ms']:.4f}, "
                     f"{d['ci_high_ms']:.4f}] {d['label']}",
                 )
+        column_glyphs(span, col, y1_bot)
         value_columns(
             span,
             col,
@@ -401,7 +426,7 @@ def main():
                 if arm == control:
                     lab, c = f"{arm}   baseline, 0", INK
                 elif arm in refused_arms:
-                    lab, c = f"{arm}  refused", MIDGREY
+                    lab, c = f"{arm}  refused", VERMILLION
                 else:
                     lab, c = arm, INK
                 fig.text(
@@ -444,9 +469,9 @@ def main():
                 d = by_ref[(arm, phase, span)]
                 ax.plot(
                     [d["p95"], d["p95"]],
-                    [y - 0.14, y + 0.14],
+                    [y - 0.17, y + 0.17],
                     color=LATENCY_SPREAD,
-                    lw=1.0,
+                    lw=1.2,
                     solid_capstyle="butt",
                     zorder=3,
                 )
@@ -454,7 +479,7 @@ def main():
                     [d["median"]],
                     [y],
                     marker="o",
-                    ms=3.4,
+                    ms=2.6,
                     markerfacecolor=INK if filled else PAPER,
                     markeredgecolor=INK,
                     markeredgewidth=0.8,
@@ -466,6 +491,7 @@ def main():
                     f"refusal.{arm}.{phase}.{span} [M]",
                     f"median={d['median']:.4f} p95={d['p95']:.4f} n={d['n']}",
                 )
+        column_glyphs(span, col, y2_bot)
         value_columns(
             span,
             col,
@@ -488,16 +514,7 @@ def main():
                     fontsize=FONT_MIN_PT,
                     color=INK,
                 )
-    # the fifth column of this band is deliberately empty
-    fig.text(
-        (gutter + 4 * col_w + plot_w / 2) / fig_w,
-        (y2_bot + band_h / 2) / fig_h,
-        "not drawn",
-        ha="center",
-        va="center",
-        fontsize=FONT_MIN_PT,
-        color=MIDGREY,
-    )
+    # the fifth column of this band is deliberately empty (C1); the caption says why
 
     print_render(ARTEFACT, "labels.count [D]", 2 * (len(SPANS) * 7 + len(REF_SPANS) * 9))
     print_render(ARTEFACT, "labels.value", "the dot -- delta point estimate above, median below")
@@ -520,16 +537,16 @@ def main():
             ("tick", "p95"),
         ),
         x_in=0.10,
-        y_in=0.13,
+        y_in=0.10,
     )
     fig.text(
         (fig_w - 0.05) / fig_w,
-        0.13 / fig_h,
-        f"value columns: warm, then cold, three-decimal ms · n = {n} per arm, phase and span",
+        0.10 / fig_h,
+        f"n = {n} per arm, phase and span",
         ha="right",
         va="center",
         fontsize=FONT_MIN_PT,
-        color=MIDGREY,
+        color=INK,
     )
     print_render(ARTEFACT, "key.end_x_in [D]", f"{x_end:.2f}")
 
@@ -547,7 +564,8 @@ def main():
         "compression near zero makes the one interval that crosses zero look widest. "
         f"{control} is the zero line. B1 has no marks because the sealed layer "
         "refuses every pair involving it, its static shared secret being invisible to the E.5 "
-        "bitmask (ADR 0035); the row says so rather than approximating. Every delta is a composite "
+        "bitmask (ADR 0035); the row says so in vermillion rather than approximating. Every delta "
+        "is a composite "
         "configuration difference: no pair against the baseline differs by one E.5 bit, so no "
         "delta is a mechanism cost and none is named as one (ADR 0041). LOWER BAND: the refusal "
         "path on the chain-tamper scenario, reported as its own series and never pooled with the "
