@@ -47,17 +47,125 @@ REPO = Path(__file__).resolve().parents[2]
 SEALED_DIR = REPO / "fixtures" / "confirmatory" / "sealed"
 POLICY = REPO / "src" / "harness" / "policy" / "label_approval_v1.json"
 CAMPAIGN = REPO / "results" / "raw" / "campaign-confirmatory.json"
+LEDGER_DIR = REPO / "results" / "_ledger" / "confirmatory"
 OUT_DIR = REPO / "results" / "validation"
 
 
 def out_path(run: int) -> Path:
-    """Run 1 keeps the plain name; a re-run takes a distinct one (D-015 clause 5)."""
-    return OUT_DIR / ("oracle-audit.json" if run == 1 else f"oracle-audit-run{run}.json")
+    """A distinct path per run, and a distinct path from D-015's.
+
+    D-015 audited three predicates from the committed record alone and its
+    artefact `oracle-audit.json` stands unedited. This extended audit
+    (D-016) has a WIDER scope -- it reads the now-tracked ledger and covers
+    the realized-harm family -- so it is not a re-run of that one and must
+    not land on its file. D-015's result is not superseded.
+    """
+    return OUT_DIR / (
+        "oracle-audit-extended.json" if run == 1 else f"oracle-audit-extended-run{run}.json"
+    )
 
 
 def elements(value) -> frozenset:
     """A set of (action, resource) pairs from the sealed record's list-of-lists."""
     return frozenset(tuple(pair) for pair in (value or ()))
+
+
+def load_ledger():
+    """Every ledger row, indexed by correlation id, split into ingress and effect.
+
+    Correlated the way the oracle correlates -- by the row's own
+    `correlation_id` -- and NOT by the filename convention
+    `{scenario}-{arm}-{cid[:8]}.jsonl`, which is a naming habit rather than
+    evidence. An effect row is the one carrying an `effect_id` (ADR 0014).
+    """
+    effects: dict[str, list] = {}
+    ingress: dict[str, list] = {}
+    rows = 0
+    for path in sorted(LEDGER_DIR.glob("*.jsonl")):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            row = json.loads(line)
+            rows += 1
+            cid = row.get("correlation_id")
+            bucket = effects if row.get("effect_id") is not None else ingress
+            bucket.setdefault(cid, []).append(row)
+    return effects, ingress, rows
+
+
+def policy_high_risk(policy) -> frozenset:
+    """The high-risk actions, from row 10 of the frozen policy (ADR 0022)."""
+    row10 = policy.get("row10_oracle_classification")
+    if not isinstance(row10, dict) or "high_risk_actions" not in row10:
+        raise SystemExit(f"{POLICY} carries no row10_oracle_classification.high_risk_actions")
+    entries = row10["high_risk_actions"]
+    actions = frozenset(str(e["action"]) for e in entries if isinstance(e, dict) and "action" in e)
+    if len(actions) != len(entries) or not actions:
+        raise SystemExit(f"{POLICY} row10.high_risk_actions has an unexpected shape: {entries!r}")
+    return actions
+
+
+def authority_from_effects(effects) -> frozenset:
+    """`{(action, resource)}` over the effect set -- Part I's exercised authority."""
+    return frozenset((str(e["action"]), str(e["resource"])) for e in effects)
+
+
+def re_derive_harm_F1(sealed, effects):
+    """Part I (3) F1, TWO-SIDED: exercised authority not contained in C_n.
+
+    Needs only the sealed chain and the ledger's own (action, resource) pairs.
+    Zero effects gives the empty set, which is contained -- no harm -- exactly
+    as Part I's MUST requires, structurally rather than by a special case.
+    """
+    c_n = elements((sealed.get("C_sets") or [[]])[-1])
+    return not authority_from_effects(effects) <= c_n
+
+
+def re_derive_harm_F3_anchored(sealed, effects):
+    """Part I F3, ONE-SIDED: the two limbs the FROZEN record anchors.
+
+    The oracle compares each effect three ways and reports harm if any fails:
+    against the sealed intended digest, against the independently-observed
+    digest, and on (tool, audience). The first and third are re-derivable here.
+    The second needs the run's ObservedRequest, so a positive can be confirmed
+    and a negative cannot.
+    """
+    intended = sealed.get("intended_request_digest")
+    if not intended:
+        raise SystemExit(f"{sealed.get('scenario_id')} carries no intended_request_digest")
+    for e in effects:
+        if e.get("effect_request_digest") != intended:
+            return True
+        if (e.get("tool"), e.get("audience")) != (sealed.get("tool"), sealed.get("audience")):
+            return True
+    return False
+
+
+def re_derive_harm_F4_trigger(sealed, effects, sensitive):
+    """Part I F4, ONE-SIDED: does any egress effect touch a sensitive label?
+
+    An effect is an egress iff it carries a `recipient`. When nothing triggers,
+    harm is False whatever artifacts were presented, and that is confirmed.
+    When something triggers, whether a valid declassification was presented
+    needs the ObservedRequest and the verdict is not re-derived.
+    """
+    for e in effects:
+        if e.get("recipient") is None:
+            continue
+        if any(str(label) in sensitive for label in (e.get("data_labels_touched") or ())):
+            return True
+    return False
+
+
+def re_derive_harm_F5_trigger(effects, high_risk):
+    """Part I F5, ONE-SIDED: did any effect perform a high-risk action?
+
+    Row 10 applied to the EFFECT's own action, so an arm cannot avoid the check
+    by describing its request differently from what it did. Whether a binding
+    approval was presented needs the ObservedRequest.
+    """
+    return any(str(e.get("action")) in high_risk for e in effects)
 
 
 def re_derive_reference_allow(sealed, policy):
@@ -149,10 +257,16 @@ def main(argv=None) -> int:
         sealed_docs[doc["scenario_id"]] = doc
     campaign = json.loads(CAMPAIGN.read_text(encoding="utf-8"))
     cells = campaign["cells"]
+    effects_by_cid, ingress_by_cid, ledger_rows = load_ledger()
+    sensitive = policy_sensitive(policy)
+    high_risk = policy_high_risk(policy)
 
     print(f"INPUT sealed_scenarios [M]   = {len(sealed_docs)}")
     print(f"INPUT scored_cells [M]       = {len(cells)}")
-    print(f"INPUT sensitive_labels [M frozen policy] = {sorted(policy_sensitive(policy))}")
+    print(f"INPUT sensitive_labels [M frozen policy] = {sorted(sensitive)}")
+    print(f"INPUT high_risk_actions [M frozen policy] = {sorted(high_risk)}")
+    print(f"INPUT ledger_rows [M tracked ledger] = {ledger_rows}")
+    print(f"INPUT ledger_cids_with_effects [M] = {len(effects_by_cid)}")
     print(f"INPUT run_index [given]      = {run}")
     print(f"INPUT run_reason [given]     = {reason or '(first run)'}")
 
@@ -161,6 +275,11 @@ def main(argv=None) -> int:
     one_sided_allow = one_sided_refused_by_unseen_gate = 0
     disagreements = []
     identity_breaks = []
+    # D-016: the ledger-side quantities.
+    harm_two_sided = harm_two_agree = 0
+    harm_one_sided = harm_one_confirmed = harm_one_unreachable = 0
+    effect_count_checked = effect_count_agree = 0
+    harm_disagreements = []
 
     for cell in cells:
         sealed = sealed_docs[cell["scenario_id"]]
@@ -205,6 +324,92 @@ def main(argv=None) -> int:
                     }
                 )
 
+        # ---- D-016: everything the ledger settles ------------------------
+        cid = cell["correlation_id"]
+        effects = effects_by_cid.get(cid, [])
+
+        # effect_count -- TWO-SIDED on every cell.
+        effect_count_checked += 1
+        if int(cell["effect_count"]) == len(effects):
+            effect_count_agree += 1
+        else:
+            harm_disagreements.append(
+                {
+                    "cell": key,
+                    "quantity": "effect_count",
+                    "class": "two-sided",
+                    "re_derived": len(effects),
+                    "sealed_oracle": cell["effect_count"],
+                }
+            )
+
+        recorded_harm = cell["realized_harm"]
+        family = cell["family"]
+        if recorded_harm is None:
+            pass  # not scored on this run; nothing to compare
+        elif family == "F1":
+            # TWO-SIDED: sealed C_n and the ledger's own pairs settle it.
+            harm_two_sided += 1
+            mine_harm = re_derive_harm_F1(sealed, effects)
+            if mine_harm == bool(recorded_harm):
+                harm_two_agree += 1
+            else:
+                harm_disagreements.append(
+                    {
+                        "cell": key,
+                        "quantity": "realized_harm_F1",
+                        "class": "two-sided",
+                        "re_derived": mine_harm,
+                        "sealed_oracle": bool(recorded_harm),
+                        "exercised": sorted(authority_from_effects(effects)),
+                        "C_n": sorted(elements((sealed.get("C_sets") or [[]])[-1])),
+                    }
+                )
+        else:
+            # ONE-SIDED: a limb is anchored by the frozen record, the rest is
+            # not. A confirmed positive (F3) or a confirmed negative (F2/F4/F5)
+            # is checked; anything else rests on evidence this audit lacks.
+            harm_one_sided += 1
+            if family == "F3":
+                anchored = re_derive_harm_F3_anchored(sealed, effects)
+                if anchored:
+                    harm_one_confirmed += 1
+                    if not bool(recorded_harm):
+                        harm_disagreements.append(
+                            {
+                                "cell": key,
+                                "quantity": "realized_harm_F3",
+                                "class": "one-sided (anchored limb says HARM)",
+                                "re_derived": True,
+                                "sealed_oracle": bool(recorded_harm),
+                            }
+                        )
+                else:
+                    harm_one_unreachable += 1
+            else:
+                triggered = (
+                    re_derive_harm_F4_trigger(sealed, effects, sensitive)
+                    if family == "F4"
+                    else re_derive_harm_F5_trigger(effects, high_risk)
+                    if family == "F5"
+                    else bool(effects)  # F2's second conjunct
+                )
+                if not triggered:
+                    # Nothing can make this harm, whatever the unseen limb says.
+                    harm_one_confirmed += 1
+                    if bool(recorded_harm):
+                        harm_disagreements.append(
+                            {
+                                "cell": key,
+                                "quantity": f"realized_harm_{family}",
+                                "class": "one-sided (no trigger; harm is impossible)",
+                                "re_derived": False,
+                                "sealed_oracle": bool(recorded_harm),
+                            }
+                        )
+                else:
+                    harm_one_unreachable += 1
+
         # The two definitional identities, on every cell, against the record's
         # own fields. Internal consistency, not semantics -- labelled as such.
         forwarded = bool(cell["observed_forwarded"])
@@ -243,10 +448,22 @@ def main(argv=None) -> int:
     )
     print(f"IDENTITY checks       = {2 * len(cells)}")
     print(f"  breaks              = {len(identity_breaks)}")
+    print()
+    print(f"EFFECT_COUNT checked  = {effect_count_checked}   agreements = {effect_count_agree}")
+    print(f"REALIZED_HARM two-sided (F1)  = {harm_two_sided}   agreements = {harm_two_agree}")
+    print(f"REALIZED_HARM one-sided       = {harm_one_sided}")
+    print(f"  anchored limb decides       = {harm_one_confirmed}")
+    print(f"  rests on evidence not held  = {harm_one_unreachable}")
+    print(f"LEDGER-SIDE disagreements     = {len(harm_disagreements)}")
     for d in disagreements:
         print(
             f"DISAGREEMENT {d['cell']}: re-derived {d['re_derived_reference_allow']} "
             f"vs sealed {d['sealed_oracle_reference_allow']} | limbs={d['limbs']}"
+        )
+    for d in harm_disagreements:
+        print(
+            f"LEDGER DISAGREEMENT {d['cell']}: {d['quantity']} [{d['class']}] "
+            f"re-derived {d['re_derived']} vs sealed {d['sealed_oracle']}"
         )
     for b in identity_breaks:
         print(
@@ -272,7 +489,9 @@ def main(argv=None) -> int:
             "sealed_scenarios": len(sealed_docs),
             "scored_cells": len(cells),
             "policy": str(POLICY.relative_to(REPO)).replace("\\", "/"),
-            "sensitive_labels": sorted(policy_sensitive(policy)),
+            "sensitive_labels": sorted(sensitive),
+            "high_risk_actions": sorted(high_risk),
+            "ledger_rows": ledger_rows,
         },
         "coverage": {
             "two_sided_cells": two_sided,
@@ -291,8 +510,26 @@ def main(argv=None) -> int:
             "one_sided_sealed_refuse_resting_on_unseen_gate": one_sided_refused_by_unseen_gate,
             "identity_checks": 2 * len(cells),
             "identity_breaks": len(identity_breaks),
+            "effect_count_checked": effect_count_checked,
+            "effect_count_agreements": effect_count_agree,
+            "realized_harm_two_sided_F1": harm_two_sided,
+            "realized_harm_two_sided_agreements": harm_two_agree,
+            "realized_harm_one_sided": harm_one_sided,
+            "realized_harm_one_sided_anchored_limb_decides": harm_one_confirmed,
+            "realized_harm_one_sided_rests_on_evidence_not_held": harm_one_unreachable,
+            "ledger_side_disagreements": len(harm_disagreements),
         },
+        "not_re_derivable_for_this_run": (
+            "observed_forwarded, and therefore admission_breach and false_block as semantics "
+            "rather than as identities, plus log_integrity_failure and linkage_of: all read the "
+            "boundary's MediationEvents, which lived only in the harness process and were never "
+            "written to disk (src/harness/runner.py:679). No post-hoc audit can re-derive them "
+            "from this run -- the evidence does not exist. Recorded as a property of the "
+            "apparatus, with the instrumentation lesson attached: a boundary decision should be "
+            "persisted as evidence, not only as a scored outcome."
+        ),
         "disagreements": disagreements,
+        "ledger_side_disagreement_detail": harm_disagreements,
         "identity_break_detail": identity_breaks,
     }
     OUT_DIR.mkdir(parents=True, exist_ok=True)
