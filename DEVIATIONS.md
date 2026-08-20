@@ -29,7 +29,7 @@ should expect from the sealed record.
 
 ## D-018 — Pre-commitment: the real-transport sweep completed over every scored cell
 
-**Status:** OPEN — written BEFORE any code for it exists and BEFORE any comparison is computed.
+**Status:** CLOSED — run once. All 143 scored cells driven over a real stdio transport to the sealed server in a child process, with the SEALED mediation boundary deciding server-side on wire-parsed arguments; 143/143 agree with the sealed campaign, 0 disagreements, 0 harness errors, 0 cells left undriven. No further run.
 **Date:** 2026-08-20
 **Authority:** Commander instruction 2026-08-20, on being shown D-017's delivered scope: complete
 every cell. D-017 clause 6's "run once" is therefore spent for the 18-cell run and this is a
@@ -121,6 +121,84 @@ reported ones.
 **On exit.** This entry is updated in the same commit as the committed output with the run commit
 hash, the artefact path, the counts, and the full list of disagreements. The pre-commitment text
 above is not edited.
+
+### CLOSED — run 1, the counts as returned
+
+**Run commit:** `b1d1ba8`, and the harness that ran is **byte-identical** to the harness committed
+there — `git diff b1d1ba8 -- validation/` is empty. Unlike D-017 run 1, no defect had to be fixed
+between commit and run. **Output artefacts:** `results/validation/real-transport-sweep.json` (the
+comparison) and `results/validation/real-transport-campaign.json` (the sealed driver's own record,
+written to the validation tree, never to `results/raw/`).
+
+| | as returned |
+|---|---|
+| scored cells in the sealed campaign | 143 |
+| cells driven over the real transport | **143** |
+| child processes spawned | **143** |
+| harness errors (seam faults) | **0** |
+| compared against the sealed campaign | **143** |
+| **agreements** | **143** |
+| **disagreements** | **0** |
+| unscorable this run | 10 — **exactly the campaign's ten NA cells**, same causes |
+| sealed cells not driven here | **0** |
+
+**Full coverage of the scored matrix.** All thirteen scenarios, all nine arms, both monitor
+configurations for the four F4/F5 families. The ten unscorable cells are not a shortfall: they are
+the same ten `NA per the sealed record` cells the campaign routed, matched by scenario and arm, and
+`143 + 10 = 153` is the full §E.4 accounting. D-017's delivered scope of 18 cells is superseded in
+reach and in method, and its 18/18 is **not amended and not folded in** — it stands as its own
+record.
+
+**The agreement is not degenerate.** Across the 143 compared cells the sealed decisions split
+**79 admitted / 64 blocked**, and every scenario carries a non-trivial pattern of its own:
+`cf-benign` 9/9 admitted, `cf-f1-chain-tamper` 0/5, `cf-f2-wrong-holder-proof` 0/3,
+`cf-f3-stolen-at-key-substitution` 6/9, `cf-f4-declassified` 16/18, `cf-f5-unapproved-high-risk`
+10/18. The ladder's discriminating behaviour — not merely its permissive behaviour — was reproduced
+cell for cell across a real process boundary.
+
+**The boundary decided server-side, on wire-parsed arguments.** This is the substantive advance over
+D-017 run 1 and the reason the method was rebuilt rather than merely extended. The child imported
+sealed `build_server` and sealed `install_boundary`, so the `MediationBoundary` wrapped `Tool.fn`
+exactly as `src/harness/runner.py:770` does in the campaign, and `decide` ran **after** the real
+stdio transport had delivered and the server had parsed. Run 1's disclosed relocation of the monitor
+to the client side is **retired**. Smoke-tested in both directions before the run: on admit the
+child's tool ran and its effect file recorded; on deny the child's effect file stayed **empty** — a
+denied call reached neither the recorder nor the tool across a real process boundary.
+
+**Nothing was reproduced that could be gotten wrong.** The whole per-cell orchestration D-017
+refused to re-implement was executed by sealed code: NA routing from the sealed record,
+`label_artifacts.mint_for_scenario`, `clock_refusal`, `credential_faults.validate`, the
+wrong-audience token, one-clock-per-cell, both monitor configurations, and the oracle scoring. Two
+names were rebound in the `src.harness.runner` namespace and nothing else changed —
+`create_connected_server_and_client_session` (the in-memory pair → a real stdio child) and
+`install_boundary` (intercepted only to carry the runner's own sealed closures across). ADR 0020
+anticipated exactly this substitution.
+
+**Safety, verified rather than asserted.** The seal was hash-checked **before and after** the run:
+all 167 covered files byte-identical to `ffa216e`, and no `src/` or `analysis/` file changed at all.
+`results/raw/` was untouched and `campaign-confirmatory.json` was never a candidate for overwriting.
+No ledger file was written anywhere — `git status results/_ledger/` is clean.
+
+**What this does NOT establish, as pre-committed.** That the boundary decision survived relocation
+to a real transport across every scored cell is **not** that the study's findings hold in a
+deployment. The residuals travel attached, unchanged: the A2A hop is **still an in-process port**;
+the tools are **still sandboxed intent recorders**; the server is **still the harness's own five-tool
+stub**, not a third-party implementation; the machine is still one machine. And this run carried
+**no effect ledger** — per ADR 0014 `realized_harm` is `None` for every cell here, so the harm
+columns are **not** validated by this result, by construction rather than by selection. A reader who
+wants those validated over a real transport is owed a further run with a relocatable ledger. No
+timing from this run is a result and none is reported (ADR 0034).
+
+**What it does establish.** ADR 0013 marks the stdio transport `[UNVERIFIED-IA]`, and §J.5 item 20
+asserts that the authorization measurements "ride the envelope contents and boundary checks, which
+the port preserves" — argued, never tested. Across the **entire scored matrix** that assertion now
+has an empirical answer: the sealed apparatus, with a real MCP transport and a real process boundary
+substituted underneath it, reached the recorded admit/refuse decision in every one of 143 cells.
+
+**Reported as committed.** Zero disagreements is the count as returned, not a target; a disagreeing
+cell would have been listed individually with both verdicts before any diagnosis. No sealed artefact
+was modified, no campaign re-run, no §E.4 prediction edited, and no reported number changed.
+**No further run.**
 
 ---
 

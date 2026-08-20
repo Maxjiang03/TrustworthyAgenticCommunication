@@ -1,0 +1,1242 @@
+{
+  "_what": "D-018: every scored cell of the sealed confirmatory campaign, re-driven with a REAL stdio MCP transport to the sealed server in a CHILD PROCESS, where the SEALED mediation boundary decides on wire-parsed arguments. The campaign orchestration is the sealed campaign driver's, unmodified; two names are rebound in the runner namespace and nothing sealed is re-implemented.",
+  "the_two_rebinds": [
+    "src.harness.runner.create_connected_server_and_client_session -> real stdio child",
+    "src.harness.runner.install_boundary -> carries the runner's own sealed closures to the child, where SEALED install_boundary installs the SEALED boundary"
+  ],
+  "boundary_placement": "SERVER-SIDE, in the child, wrapping Tool.fn as the campaign does. D-017 run 1 had to move it client-side; that residual is retired here.",
+  "no_latency_claim": "ADR 0034 excludes a loopback round trip from the measured segment by name. No timing from this run is a result, and none is reported.",
+  "ledger": "ledger_backed=False -- the ledger directory is fixed at results/_ledger/<run_mode>/ and the confirmatory ledger is tracked evidence this run must not write into. Per ADR 0014, realized_harm is then None for every cell, so effect-derived predicates are configuration artefacts here and are excluded from comparison BY CONSTRUCTION.",
+  "comparison_target": "observed_forwarded, per cell, keyed (scenario_id, arm, monitor_attached)",
+  "transport_evidence": {
+    "tools_listed_over_real_stdio": [
+      "calendar.read",
+      "mail.send",
+      "notes.delete",
+      "notes.read",
+      "notes.write"
+    ],
+    "child_processes_spawned": 143
+  },
+  "campaign_record": "results/validation/real-transport-campaign.json",
+  "counts": {
+    "sealed_campaign_cells": 143,
+    "cells_driven_over_real_transport": 143,
+    "child_processes_spawned": 143,
+    "harness_errors": 0,
+    "compared": 143,
+    "agreements": 143,
+    "disagreements": 0,
+    "unscorable_this_run": 10,
+    "cells_in_sealed_campaign_not_driven_here": 0
+  },
+  "disagreements": [],
+  "harness_errors": [],
+  "cells_in_sealed_campaign_not_driven_here": [],
+  "unmatched_cells_not_in_sealed_campaign": [],
+  "unscorable_this_run": [
+    [
+      "cf-f1-chain-tamper",
+      "B0",
+      "NA per the sealed record"
+    ],
+    [
+      "cf-f1-chain-tamper",
+      "B1",
+      "NA per the sealed record"
+    ],
+    [
+      "cf-f1-chain-tamper",
+      "B2-broad-noexchange",
+      "NA per the sealed record"
+    ],
+    [
+      "cf-f1-chain-tamper",
+      "B2-exchange-broad",
+      "NA per the sealed record"
+    ],
+    [
+      "cf-f2-wrong-holder-proof",
+      "B0",
+      "NA per the sealed record"
+    ],
+    [
+      "cf-f2-wrong-holder-proof",
+      "B1",
+      "NA per the sealed record"
+    ],
+    [
+      "cf-f2-wrong-holder-proof",
+      "B2-broad-noexchange",
+      "NA per the sealed record"
+    ],
+    [
+      "cf-f2-wrong-holder-proof",
+      "B2-exchange-broad",
+      "NA per the sealed record"
+    ],
+    [
+      "cf-f2-wrong-holder-proof",
+      "B2-exchange-task",
+      "NA per the sealed record"
+    ],
+    [
+      "cf-f2-wrong-holder-proof",
+      "B-cap",
+      "NA per the sealed record"
+    ]
+  ],
+  "cells": [
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B0",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B1",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B2-exchange-task",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B-cap",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B3",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B3+",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f1-chain-tamper",
+      "arm": "B2-exchange-task",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_exchange_refused",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-chain-tamper",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_exchange_refused",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-chain-tamper",
+      "arm": "B-cap",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-chain-tamper",
+      "arm": "B3",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-chain-tamper",
+      "arm": "B3+",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-root",
+      "arm": "B0",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f1-root",
+      "arm": "B1",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f1-root",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f1-root",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f1-root",
+      "arm": "B2-exchange-task",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-root",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-root",
+      "arm": "B-cap",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-root",
+      "arm": "B3",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-root",
+      "arm": "B3+",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B0",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B1",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B2-exchange-task",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B-cap",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B3",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B3+",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-invalid-credential",
+      "arm": "B0",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f2-invalid-credential",
+      "arm": "B1",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_invalid_credential",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-invalid-credential",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-invalid-credential",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-invalid-credential",
+      "arm": "B2-exchange-task",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-invalid-credential",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-invalid-credential",
+      "arm": "B-cap",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-invalid-credential",
+      "arm": "B3",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-invalid-credential",
+      "arm": "B3+",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-unauthenticated-caller",
+      "arm": "B0",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f2-unauthenticated-caller",
+      "arm": "B1",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_no_credential",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-unauthenticated-caller",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_nothing_presented",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-unauthenticated-caller",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_nothing_presented",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-unauthenticated-caller",
+      "arm": "B2-exchange-task",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_nothing_presented",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-unauthenticated-caller",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_nothing_presented",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-unauthenticated-caller",
+      "arm": "B-cap",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-unauthenticated-caller",
+      "arm": "B3",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-unauthenticated-caller",
+      "arm": "B3+",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-wrong-holder-proof",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2dpop_holder_proof",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-wrong-holder-proof",
+      "arm": "B3",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_holder_proof",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f2-wrong-holder-proof",
+      "arm": "B3+",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_holder_proof",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f3-audience-mismatch",
+      "arm": "B0",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f3-audience-mismatch",
+      "arm": "B1",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f3-audience-mismatch",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f3-audience-mismatch",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f3-audience-mismatch",
+      "arm": "B2-exchange-task",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f3-audience-mismatch",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f3-audience-mismatch",
+      "arm": "B-cap",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f3-audience-mismatch",
+      "arm": "B3",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f3-audience-mismatch",
+      "arm": "B3+",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f3-stolen-at-key-substitution",
+      "arm": "B0",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f3-stolen-at-key-substitution",
+      "arm": "B1",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f3-stolen-at-key-substitution",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f3-stolen-at-key-substitution",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f3-stolen-at-key-substitution",
+      "arm": "B2-exchange-task",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f3-stolen-at-key-substitution",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2dpop_holder_proof",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f3-stolen-at-key-substitution",
+      "arm": "B-cap",
+      "monitor_attached": null,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f3-stolen-at-key-substitution",
+      "arm": "B3",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_holder_proof",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f3-stolen-at-key-substitution",
+      "arm": "B3+",
+      "monitor_attached": null,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_holder_proof",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B0",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B1",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B2-exchange-task",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B-cap",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B3",
+      "monitor_attached": false,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B3+",
+      "monitor_attached": false,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B0",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B1",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B2-exchange-task",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B-cap",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B3",
+      "monitor_attached": false,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B3+",
+      "monitor_attached": false,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B0",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B1",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B2-exchange-task",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B-cap",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B3",
+      "monitor_attached": false,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B3+",
+      "monitor_attached": false,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B0",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B1",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B2-exchange-task",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B-cap",
+      "monitor_attached": false,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B3",
+      "monitor_attached": false,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B3+",
+      "monitor_attached": false,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B0",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B1",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B2-exchange-task",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B-cap",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B3",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-declassified",
+      "arm": "B3+",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B0",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B1",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B2-exchange-task",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B-cap",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B3",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f4-sensitive-egress",
+      "arm": "B3+",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_context_policy",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B0",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B1",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B2-exchange-task",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B-cap",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B3",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-approved",
+      "arm": "B3+",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B0",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B1",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B2-broad-noexchange",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_approval_artifact",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B2-exchange-broad",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_approval_artifact",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B2-exchange-task",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_approval_artifact",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B2-exchange-task-DPoP",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b2_approval_artifact",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B-cap",
+      "monitor_attached": true,
+      "real": true,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "sealed": true
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B3",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_approval_artifact",
+      "sealed": false
+    },
+    {
+      "scenario_id": "cf-f5-unapproved-high-risk",
+      "arm": "B3+",
+      "monitor_attached": true,
+      "real": false,
+      "reason_FOR_DIAGNOSIS_ONLY": "b3_approval_artifact",
+      "sealed": false
+    }
+  ],
+  "residuals_that_travel_with_any_agreement": [
+    "the A2A hop is still an in-process port, not a network protocol",
+    "the tools are still sandboxed intent recorders; nothing is sent, written or deleted",
+    "the server is still the harness's own five-tool stub, not a third-party implementation",
+    "the machine is still one machine",
+    "this run has no effect ledger, so the harm columns are not validated here"
+  ]
+}
