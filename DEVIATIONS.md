@@ -27,6 +27,82 @@ should expect from the sealed record.
 
 ---
 
+## D-015 — Pre-commitment: differential re-adjudication of the sealed oracle (in-band, read-only)
+
+**Status:** OPEN — written BEFORE the auditor exists and BEFORE any per-cell comparison is made.
+**Date:** 2026-08-19
+**Authority:** Commander ruling 2026-08-19 (the in-band validation class approved); G-12's own scope
+statement; ADR 0036 (the credential gate); ADR 0022 (the frozen label/approval policy); D-009 and
+D-014 as the reporting precedent.
+
+**The gap this addresses, in the study's own words.** Gate G-12 establishes that the oracle does not
+read the system under test: its L2 limb is an AST scan proving the oracle package imports no
+`src.sut` module and names no self-reported verdict or digest field, and its remaining limbs inject
+a lying SUT and show the oracle still detects the truth. `smoke/g12/REPORT.md` states the scope
+itself — it establishes *oracle independence* and does **not** re-establish complete mediation or
+ledger immutability, and it says nothing about whether `reference_allow`'s semantics are the right
+ones. Independence from the SUT's verdict is procedural. Whether the predicate encodes the
+specification correctly is a different question, and no gate in this study asks it. That is what this
+entry commits to asking.
+
+**What is committed to, before any comparison is seen.**
+
+1. **A second, independently written re-derivation.** A read-only auditor under `tools/verify/`
+   recomputes, per scored cell, the predicates the sealed oracle reports — `reference_allow`,
+   `admission_breach`, `false_block` — from the SEALED SCENARIO DOCUMENTS and the FROZEN POLICY,
+   never by importing `src/harness/oracle/`. It reads only committed artefacts:
+   `fixtures/confirmatory/sealed/*.json`, `src/harness/policy/label_approval_v1.json`,
+   `results/raw/campaign-confirmatory.json`, and the sealed §E.4 matrix in `docs/PRE_REGISTRATION.md`.
+   It writes no result any other artefact reads, re-runs nothing, and cannot change a reported number.
+2. **Coverage is stated here, before the answer is known, because it is a limit and not a finding.**
+   Of the 143 scored cells, **71 are two-sided**: their reference decision is fully re-derivable from
+   committed data (`R ⊆ C_n` containment plus ADR 0036's credential gate). **72 are one-sided**: an
+   F4 declassification gate or an F5 approval gate also applies, and those gates ask whether a VALID
+   SIGNED ARTIFACT was presented at run time — an observation that lives in `results/_ledger/`, which
+   is git-ignored and therefore not reproducible from a fresh clone. For those cells the auditor can
+   **refuse** an `allow` that containment or the credential gate already forbids, but cannot
+   **confirm** one, because it cannot see the artifact. Both halves are reported separately and
+   neither is presented as the other.
+3. **Two definitional identities are checked on all 143 cells**, independently of the above:
+   `admission_breach ≡ observed_forwarded ∧ ¬reference_allow`, and
+   `false_block ≡ is_benign ∧ reference_allow ∧ ¬observed_forwarded`, with `is_benign` read from the
+   sealed document as the oracle itself requires. These test internal consistency of the recorded
+   record, not semantics, and are labelled as such.
+4. **Every disagreement is reported as returned.** A cell where the re-derivation and the sealed
+   oracle differ is listed individually with both verdicts and the sealed facts behind it. **No
+   disagreement is resolved in favour of either side by this entry, and none is fixed.** Diagnosis —
+   auditor defect, or oracle defect, or an ambiguity in the specification — is recorded separately
+   from the count and does not amend the count that produced it.
+5. **Run once.** The auditor refuses to overwrite an existing output; a re-run requires a recorded
+   reason; the first run's counts remain the reported ones and later runs are recorded alongside,
+   never in place of. D-009 clause 2, applied unchanged.
+6. **Nothing sealed is modified.** The oracle is inside the seal and is run-only. The campaign is not
+   re-run — it cannot be. No expected §E.4 value is edited: if the re-derivation contradicts a frozen
+   prediction, that contradiction is the finding, and the matrix stands.
+
+**What this does NOT establish, stated now so no reader has to infer it.** The auditor is a second
+implementation written from the same specification by the same author as the oracle. It can catch a
+transcription error, a dropped conjunct, an inverted condition, a mis-read of the sealed record — the
+class of defect that a second route through the same specification does catch. It **cannot** catch a
+defect in the specification itself: an error in the reading of Part I, or in ADR 0036's gate, would
+be present identically on both sides and would show as agreement. Genuine author-independence — a
+different person, ideally a different toolchain — is not claimed and is not achieved here; that
+remains the stronger and still-unbuilt check, and this entry does not substitute for it. What is
+claimed is narrower and true: the oracle's per-cell semantics have been re-derived by a second route
+and the two are compared cell by cell, which is a question no existing gate asks.
+
+**Disclosure of what was read before this entry was written.** While scoping, the sealed documents'
+metadata was read to count how many cells carry an artifact gate (the 71/72 split above), and the
+oracle's own source was read to establish which predicates and gates exist. No per-cell comparison
+between a re-derivation and the sealed oracle was computed, and no agreement count was seen. The
+71/72 split is a property of the sealed corpus, not of any result.
+
+**On exit.** When the run completes, this entry is updated in the same commit as the committed output
+with the run commit hash, the artefact path, the two-sided and one-sided agreement counts, the full
+list of disagreements, and the identity-check results. The pre-commitment text above is not edited.
+
+---
+
 ## D-014 — Pre-commitment: reporting the RQ4 descriptive layer (span descriptives and arm-pair deltas)
 
 **Status:** CLOSED — run twice (run 1 defective in the composition root, kept; run 2 as reported); no further run.
