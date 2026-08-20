@@ -29,8 +29,7 @@ should expect from the sealed record.
 
 ## D-016 — Pre-commitment: the effect ledger enters version control, and the audit extends to every quantity the frozen record can settle
 
-**Status:** OPEN — written BEFORE the ledger is tracked, BEFORE the extended auditor exists, and
-BEFORE any new comparison is computed.
+**Status:** CLOSED — ledger tracked at `2eb8758`; extended audit run once at `7708bd1`. effect_count 143/143 and realized_harm_F1 32/32 two-sided, 39 further cells decided by the anchored limb, 0 disagreements anywhere; 72 cells rest on evidence not held; the mediation record is unrecoverable for this run. No further run.
 **Date:** 2026-08-20
 **Authority:** Commander ruling 2026-08-20 (admit the ledger; extend the audit); D-015 (the audit
 this extends); ADR 0014 (the effect ledger); ADR 0022 (the frozen policy); §J.4 item 14 (an
@@ -112,6 +111,74 @@ between a re-derivation and the sealed oracle was computed, and no new agreement
 **On exit.** This entry is updated in the same commit as the committed output with the run commit
 hash, the artefact path, the per-quantity two-sided and one-sided counts, and the full list of
 disagreements. The pre-commitment text above is not edited.
+
+### CLOSED — run 1, the counts as returned
+
+**Run commit:** `7708bd1` (tree clean; the extended auditor was committed before any extended output
+existed). **Output artefact:** `results/validation/oracle-audit-extended.json`. **Ledger admitted at**
+`2eb8758`, 286 files, 158 rows in the confirmatory tree, 79 correlation ids carrying effects.
+D-015's artefact `oracle-audit.json` is untouched and its 71/71 is not re-opened.
+
+| quantity | class | cells | result |
+|---|---|---|---|
+| `reference_allow` | two-sided | 71 | **71 agreements, 0 disagreements** |
+| `reference_allow` | one-sided | 72 | 36 sealed allow, 36 sealed refuse |
+| `admission_breach`, `false_block` | identity | 286 checks | **0 breaks** |
+| **`effect_count`** | **two-sided** | **143** | **143 agreements** |
+| **`realized_harm_F1`** | **two-sided** | **32** | **32 agreements** |
+| `realized_harm` F2/F3/F4/F5 | one-sided | 111 | **39 decided by the anchored limb, 0 disagreements** |
+| — of those, resting on evidence not held | | 72 | not adjudicated |
+
+**What the new two-sided results buy.** `effect_count` is now re-derived on every cell by counting
+the ledger rows the campaign's own correlation id selects — the recorded count and the ledger agree
+143 times out of 143, which is the bookkeeping between the two artefacts closing. `realized_harm_F1`
+is re-derived in full for all 32 F1 cells from the sealed `C_sets` and the ledger's own
+`(action, resource)` pairs and nothing else; it agrees 32 times. That is the first realized-harm
+predicate this study has ever had checked by a second implementation.
+
+**Where the anchored limb settled a one-sided cell, named rather than summarised.** 39 of the 111:
+
+- **F3, all 18 cells** — `cf-f3-audience-mismatch` (9) and `cf-f3-stolen-at-key-substitution` (9).
+  Every one is decided by the two limbs the FROZEN record anchors: the effect's
+  `effect_request_digest` against the sealed `intended_request_digest`, and the effect's
+  `(tool, audience)` against the sealed intent's. The sealed digest is the value no runtime
+  principal can reach, which is what makes it the anchor — so on this family the audit reaches the
+  whole predicate without the observation at all.
+- **F2, 19 of 21** — `cf-f2-invalid-credential` (8), `cf-f2-unauthenticated-caller` (8),
+  `cf-f2-wrong-holder-proof` (3). Zero effects means the second conjunct fails, so harm is
+  impossible whatever the credential verification said.
+- **F4/F5, 20 of 72** — the cells where no effect triggers the family's condition: no egress effect
+  carrying a sensitive label, or no effect performing a row-10 high-risk action. Harm is impossible
+  there regardless of what artifact was or was not presented.
+
+**The 72 that rest on evidence not held.** `cf-f4-declassified` (16), `cf-f4-sensitive-egress` (10),
+`cf-f5-approved` (16), `cf-f5-unapproved-high-risk` (10), and two F2 cells. In each, an effect
+triggers the family condition, and the verdict turns on whether a valid signed declassification or
+approval was presented — which the run's `ObservedRequest` records and no committed artefact does.
+Admitting the ledger did not reach these, and this entry does not pretend otherwise.
+
+**The finding this audit produced, which is not a count.** `observed_forwarded` — and therefore
+`admission_breach` and `false_block` as semantics rather than as identities, and
+`log_integrity_failure` and `linkage_of` entirely — read the boundary's `MediationEvent`s. Those
+objects exist only inside the harness process for the duration of a run
+(`src/harness/runner.py:679`; `src/harness/fault_injection.py:53` states it) and were **never
+written to disk**. What survived the campaign is the already-computed booleans. **For this run they
+can never be independently re-derived: the evidence does not exist**, and no amount of later
+auditing can create it. The lesson is an instrumentation one and belongs in the write-up beside the
+oracle-independence discussion: *a boundary decision should be persisted as evidence, not only as a
+scored outcome.* The effect ledger was persisted and could therefore be audited today; the mediation
+record was not and cannot.
+
+**Reported as committed.** Zero disagreements across every class is the count as returned, not a
+target; the auditor would have listed each disagreeing cell with both verdicts and the frozen facts
+behind it, and D-016 clause 3 forbids resolving one either way. No sealed artefact was modified, no
+campaign re-run, no §E.4 prediction edited, and no reported number changed. **No further run.**
+
+**Standing limit, unchanged.** A second implementation from the SAME specification by the same
+author. It excludes transcription-class defects — a dropped conjunct, an inverted condition, a
+mis-read field. It does not exclude a wrong reading of Part I, ADR 0036 or ADR 0022, which would sit
+identically on both sides and appear here as agreement. Author-independence is neither claimed nor
+achieved.
 
 ---
 
