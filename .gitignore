@@ -44,6 +44,7 @@ results/**
 !results/tables/results-latency-pilot-rq4-run2.json
 !results/validation/oracle-audit.json
 !results/validation/oracle-audit-extended.json
+!results/validation/real-transport.json
 # The effect ledger, admitted 2026-08-20 by Commander ruling (DEVIATIONS D-016).
 # It is the evidence the oracle's realized_harm predicates read, and without it no
 # post-hoc audit can re-derive them. 286 files, 728 KB, scanned for credential

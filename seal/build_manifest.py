@@ -80,6 +80,14 @@ EXCLUDED_PREFIX = {
     "draws",
     "tools/": "repository-history proofs and re-run records (reframe, workplan, "
     "gate_rerun); records about the repository, not campaign inputs",
+    "validation/": (
+        "POST-SEAL VALIDATION apparatus (DEVIATIONS D-017), added 2026-08-20. It drives the "
+        "SEALED arms over a real transport, to answer whether the boundary decision survives "
+        "relocation off the in-process adapter. Excluded for the same reason tools/ is: it is "
+        "a study ABOUT the sealed apparatus, written after the confirmatory result existed, "
+        "and sealing it would place post-result code inside a manifest whose purpose is to "
+        "exclude exactly that. It imports the sealed arms read-only and modifies nothing."
+    ),
     "docs/workplan/": "archived work specifications; history, not apparatus",
     "seal/": "the manifest and its tooling — DETACHED by Part H step 6: a "
     "manifest never covers itself, and the temporal-anchor proof that will sit "
