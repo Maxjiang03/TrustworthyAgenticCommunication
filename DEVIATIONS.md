@@ -27,6 +27,103 @@ should expect from the sealed record.
 
 ---
 
+## D-018 — Pre-commitment: the real-transport sweep completed over every scored cell
+
+**Status:** OPEN — written BEFORE any code for it exists and BEFORE any comparison is computed.
+**Date:** 2026-08-20
+**Authority:** Commander instruction 2026-08-20, on being shown D-017's delivered scope: complete
+every cell. D-017 clause 6's "run once" is therefore spent for the 18-cell run and this is a
+SECOND run with a recorded reason, which is the form clause 6 requires — not a silent re-run.
+D-017's reported 18/18 is **not amended, not superseded and not folded into** what follows.
+
+**Why this is not simply "more of D-017".** D-017 delivered 18 of 143 cells and named the reason:
+the other eleven scenarios need credential-fault injection and ADR 0030 artifact minting, and
+reproducing those **outside** the sealed runner risks a harness that is subtly unfaithful, whose
+AGREEMENT would then look like evidence. That reason is not answered by trying harder. It is
+answered by **not reproducing them at all**.
+
+Reading the sealed code to find the seam produced a better one than the one D-017 used. Every
+piece of per-cell orchestration this validation was missing — NA routing from the sealed record,
+`label_artifacts.mint_for_scenario`, `clock_refusal`, `credential_faults.validate`, the
+wrong-audience token, the one-clock-per-cell rule, both monitor configurations, and the oracle
+scoring itself — already lives in sealed `src/harness/campaign.py` and `src/harness/campaign_driver.py`.
+So this run **calls the sealed campaign driver** and moves the transport underneath it. Nothing is
+re-implemented; the sealed campaign runs all 143 cells and this entry supplies only a different
+transport.
+
+**What varies: the transport, and nothing else.** Exactly two names are rebound in the
+`src.harness.runner` module namespace at runtime, from unsealed validation code. No sealed file is
+edited; every covered file stays byte-identical to `ffa216e` and this is verified by hash before
+and after the run.
+
+1. `create_connected_server_and_client_session` — the SDK's **in-memory** object-stream pair
+   (`src/harness/runner.py:864`) is replaced by a real `stdio_client` to a child process. This is
+   the one variable under test, and ADR 0020 anticipated precisely this substitution: "an
+   SDK-backed adapter later replaces one constructor call site".
+2. `install_boundary` — intercepted **only to forward the sealed closures** `decide`,
+   `correlation_provider` and `emit` across to the child, where sealed `install_boundary` installs
+   the sealed `MediationBoundary` on the sealed server. The closures are the runner's own, executed
+   in the parent, unmodified.
+
+**The monitor moves back where the campaign has it.** D-017's run 1 relocated the reference monitor
+to the client side, calling `arm.decide` before `call_tool`, because a child-process server has no
+`Tool.fn` to wrap; that relocation was disclosed as its one substantive apparatus difference. It is
+**retired here**. The child imports sealed `build_server` and sealed `install_boundary`, so the
+boundary wraps `Tool.fn` exactly as the campaign does, and `decide` is called **after** the real
+transport has delivered and the server has parsed — on wire-parsed arguments, server-side, in the
+other process. That is strictly closer to the campaign than run 1 was, and it is the reason this
+entry supersedes run 1's method rather than merely extending its reach.
+
+**What is NOT available here, stated before the result.** The sweep runs `ledger_backed=False`.
+The sealed ledger directory is fixed at `results/_ledger/<run_mode>/`, the confirmatory ledger is
+tracked evidence (D-016), and this run must not write into it; there is no parameter that moves it.
+`check_ledger_available` permits an unledgered run, but ADR 0014's rule travels with it: **without
+the ledger every `realized_harm_*` reads `False`**, so effect-derived predicates in this run are
+artefacts of the configuration and carry no information. They are therefore **excluded from
+comparison by construction, not by selection**, and the comparison target is unchanged from D-017
+clause 3: per cell, whether the boundary admitted or refused, against `campaign-confirmatory.json`'s
+`observed_forwarded`. Admission does not read the ledger, so the target is untouched by its absence.
+Any reader who wants the harm columns validated over a real transport is owed a further run with a
+relocatable ledger, and this entry does not pretend otherwise.
+
+**Explicitly OUT of scope, carried forward from D-017 clause 4 unchanged.** No latency claim of any
+kind (ADR 0034 excludes a loopback round trip from the measured segment by name). No new attack, no
+new scenario, no adaptive attack. No real side effects: the tools stay the sealed sandboxed
+intent-recording stubs. No reference filesystem or GitHub server.
+
+**Nothing sealed is touched, and the campaign result is not at risk.** All new code lives outside
+`src/` and `analysis/`. Output goes to `results/validation/`, never `results/raw/`; the sealed
+driver's own `refuse_if_written` guard is pointed at the validation path, so `results/raw/campaign-confirmatory.json`
+is not a candidate for overwriting even by accident. No ledger file is written anywhere. The v0.7
+confirmatory result at `17e11c9` is not superseded, not re-run and not amended.
+
+**Committed BEFORE the result: how each outcome is reported.**
+
+- **If every comparable cell agrees**, the claim is the narrow one: on this corpus, with these arms,
+  the boundary decision survived relocation to a real transport and a real process boundary across
+  every scored cell. The residuals still travel with it — the A2A hop is still an in-process port,
+  the tools are still intent recorders, the server is still the harness's own five-tool stub rather
+  than a third-party implementation, the machine is still one machine, and this run has no effect
+  ledger.
+- **If any cell disagrees**, the disagreement is the finding, reported with equal prominence and
+  **before any diagnosis**, listed individually with both verdicts. Diagnosis is recorded separately
+  and does not amend the count that produced it.
+- **If cells become unscorable here that were scored in the campaign** — a child that fails to
+  start, a transport timeout, a clock straddle routed by `clock_refusal` — they are reported as
+  unscorable **with their causes**, and are subtracted from the comparable denominator in the open,
+  never quietly dropped to make a ratio look better.
+- **If the sweep cannot be built at all**, that is reported as a negative result about the
+  apparatus, and D-017's 18/18 stands as the only real-transport evidence. D-011's precedent.
+
+**Run once**, refusing to overwrite, exactly as D-017 clause 6. The first run's counts are the
+reported ones.
+
+**On exit.** This entry is updated in the same commit as the committed output with the run commit
+hash, the artefact path, the counts, and the full list of disagreements. The pre-commitment text
+above is not edited.
+
+---
+
 ## D-017 — Pre-commitment: real-transport boundary-transfer validation (post-seal, out-of-band)
 
 **Status:** CLOSED — run once. 18 of 143 cells driven over a real stdio transport to a child-process server; 18/18 agree with the sealed campaign, 0 disagreements, 0 harness errors. Scope narrower than clause 1 committed, by a structural criterion fixed before running; the reason is recorded. No further run.
