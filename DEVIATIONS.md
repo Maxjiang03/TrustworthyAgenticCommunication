@@ -27,6 +27,93 @@ should expect from the sealed record.
 
 ---
 
+## D-017 — Pre-commitment: real-transport boundary-transfer validation (post-seal, out-of-band)
+
+**Status:** OPEN — written BEFORE any validation code exists and BEFORE any comparison is computed.
+**Date:** 2026-08-20
+**Authority:** Commander ruling 2026-08-20 (proceed to the third class); ADR 0013 (the MCP SDK pin,
+which marks the stdio/streamable-HTTP transports `[UNVERIFIED-IA]`); ADR 0020 (the A2A port, whose
+stated purpose is that an SDK-backed adapter later replaces one constructor call site); ADR 0034
+(single-process; the measured segment); `EXPERIMENT_ARCHITECTURE_FINAL.md` §J.5 item 20 and :746
+(a second MCP server named as a conference/journal extension "defined on the same interfaces");
+D-009, D-014, D-015 and D-016 as the reporting precedent.
+
+**The question, stated so it can fail.** For every scored cell of the sealed confirmatory campaign,
+does the **unmodified sealed arm**, driven over a **real loopback MCP transport** against a server
+in a **separate operating-system process**, reach the same boundary decision the in-process campaign
+recorded? The paper's position today is that it must, and that position is argued rather than
+tested: `mproj.tex:529-535` forfeits transport realism and says no result speaks to A2A on the wire,
+while §J.5 item 20 asserts the authorization measurements "ride the envelope contents and boundary
+checks, which the port preserves". This entry commits to testing the assertion.
+
+**Why the apparatus permits it.** The mechanism under measurement is `arm.decide(tool, arguments)`,
+a function of the tool name, the arguments, and the credential state `arm.present(...)` staged — it
+reads nothing from the transport. The `Arm` protocol is three methods (`src/sut/baselines/base.py:198-213`)
+and the arms import only the A2A port, never a concrete transport. So the sealed arm classes can be
+imported **verbatim, unmodified** into a separate harness and driven over a real transport. That is
+the whole reason this validation is cheap, and it is also the hypothesis under test: if the decision
+really is transport-independent, the cells agree; if it is not, they do not, and that is the finding.
+
+**Scope, fixed before anything runs.**
+
+1. **What varies: the transport, and nothing else.** The same 13 sealed scenarios, the same nine
+   arms, the same frozen `Ω` and the harness's own five-tool `FastMCP` server. The server runs in a
+   **child process** over a real MCP transport (stdio), so the tool call crosses a genuine process
+   boundary with genuine framing and genuine bytes on the pipe. Corpus, arms, policy and the
+   decision function are the sealed ones.
+2. **Where the monitor goes, and why that is the work.** Today the reference monitor is installed by
+   wrapping the harness server's own `Tool.fn` (`src/harness/mediation/boundary.py:123`). A server in
+   another process has no `Tool.fn` this harness can reach, so `arm.decide` is called **client-side,
+   before `client.call_tool`**, and a denial means the call is never issued. The DECISION stays the
+   sealed arm's; only the interposition point moves. This relocation is stated here because it is the
+   one substantive difference from the sealed apparatus and a reader must be able to weigh it.
+3. **Outcome compared:** per cell, whether the boundary admitted or refused, against
+   `campaign-confirmatory.json`'s `observed_forwarded`. Reported as agreements over comparable cells,
+   with **every disagreement listed individually**.
+4. **Explicitly OUT of scope.** *No latency claim of any kind* — ADR 0034 excludes a loopback round
+   trip from the measured segment by name, and reporting one would present an apparatus difference as
+   a mechanism difference. *No new attack, no new scenario, no adaptive attack.* *No real side
+   effects*: the tools stay the sandboxed intent-recording stubs, since a tool performing a real
+   effect is a pre-registered forbidden action. *No reference filesystem or GitHub server* — that
+   needs an `Ω`-to-real-tool mapping and real effects, and is a different study.
+5. **Nothing sealed is touched.** All new code lives outside `src/` and `analysis/`; the sealed arms,
+   corpus and policy are imported read-only and unmodified; output goes to `results/validation/`.
+   `results/` stays manifest-EXCLUDED, so no reseal is triggered and the v0.7 confirmatory result at
+   `17e11c9` is not superseded, not re-run, and not amended.
+6. **Run once**, refusing to overwrite; a re-run needs a recorded reason; the first run's counts are
+   the reported ones. D-009 clause 2, unchanged.
+
+**Committed BEFORE the result: how each outcome is reported.**
+
+- **If every comparable cell agrees**, the claim reported is the narrow one — that on this corpus,
+  with these arms, the boundary decision survived relocation to a real transport and a real process
+  boundary. It will **not** be reported as showing the study's results hold in deployment: the A2A
+  hop remains an in-process port, the tools remain stubs, the machine remains one machine, and the
+  server remains the harness's own. Those residuals travel with the number.
+- **If any cell disagrees**, the disagreement is reported **as the finding it is**, with equal
+  prominence, before any diagnosis. Diagnosis — a defect in this validation harness, or a genuine
+  transport dependence in the mechanism — is recorded separately from the count and does not amend
+  the count that produced it. A disagreement is not a reason to adjust the validation harness and
+  re-run silently; a corrected re-run is recorded here with its reason and reported alongside, never
+  in place of, exactly as D-014's run 1 was.
+- **If the validation cannot be built at all** — because the interposition cannot be relocated
+  faithfully, or the arms cannot be driven without modification — that is reported as a negative
+  result about the apparatus, and nothing is built to paper over it. D-011's precedent: an extension
+  closed UNBUILT is a record, not a failure.
+
+**What a clean result would NOT establish, stated now.** That the boundary decision is
+transport-independent **on this corpus** is not that the study's findings hold in a real deployment.
+The A2A hop is still an in-process adapter; the MCP server is still the harness's own five-tool stub,
+not a third-party implementation; the effects are still recorded intents; the network is a loopback
+pipe on one machine. This validation moves exactly one variable, which is what makes any difference
+attributable — and equally what bounds the claim.
+
+**On exit.** This entry is updated in the same commit as the committed output with the run commit
+hash, the artefact path, the agreement counts, and the full list of disagreements. The
+pre-commitment text above is not edited.
+
+---
+
 ## D-016 — Pre-commitment: the effect ledger enters version control, and the audit extends to every quantity the frozen record can settle
 
 **Status:** CLOSED — ledger tracked at `2eb8758`; extended audit run once at `7708bd1`. effect_count 143/143 and realized_harm_F1 32/32 two-sided, 39 further cells decided by the anchored limb, 0 disagreements anywhere; 72 cells rest on evidence not held; the mediation record is unrecoverable for this run. No further run.
