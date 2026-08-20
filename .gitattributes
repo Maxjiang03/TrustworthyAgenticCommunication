@@ -1,0 +1,10 @@
+# The effect ledger is EVIDENCE, admitted to version control by DEVIATIONS D-016.
+# Its bytes are what the sealed run wrote; a checkout that rewrote line endings
+# would hand a fresh clone something other than what was recorded, and every
+# digest in it would still verify while the file itself no longer matched. Pin
+# the bytes.
+results/_ledger/**/*.jsonl -text
+# The committed result artefacts, for the same reason.
+results/raw/*.json -text
+results/tables/*.json -text
+results/validation/*.json -text

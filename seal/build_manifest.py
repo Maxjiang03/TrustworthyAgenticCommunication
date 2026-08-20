@@ -108,6 +108,13 @@ EXCLUDED_EXACT = {
     "Makefile": "developer convenience targets; not apparatus",
     ".editorconfig": "repository hygiene",
     ".gitignore": "repository hygiene",
+    ".gitattributes": (
+        "repository hygiene, added 2026-08-20 with the effect ledger (DEVIATIONS D-016). "
+        "It pins the byte content of the committed evidence files -- the ledger and the "
+        "result JSONs -- so a checkout cannot rewrite their line endings and hand a fresh "
+        "clone something other than what the sealed run wrote. Not apparatus: it constrains "
+        "how git stores an OUTPUT, and nothing it names is an input to a measurement."
+    ),
     ".dockerignore": (
         "build-context hygiene; it keeps the host's virtualenv and the results tree out of the "
         "image, so the container builds the environment `uv sync` produced rather than a "
