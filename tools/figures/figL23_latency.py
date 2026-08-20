@@ -29,6 +29,17 @@ figure reads, and drawing an arm's absolute IQR on a delta axis would be a
 unit error in any case. Nothing here subtracts, pools or interpolates; every
 mark is a field of results/tables/results-latency-pilot-rq4-run2.json. Pure
 presentation (ADR 0048).
+
+Every dot prints its value beside it (Commander ruling 2026-08-20), in the
+suite's shared three-decimal millisecond format. Placement is MEASURED, not
+estimated -- the per-character estimate is a closed defect class in this
+suite -- and decided per arm row from the rendered label widths against the
+room the panel actually has: warm right of the row's marks and cold left
+where both sides fit; both labels chained on whichever single side fits
+where one does not; and inside the row's own interval bar, knocked out on
+paper, for the one row whose zero-crossing interval leaves no room on
+either side. Association is by sub-row: the warm value sits on the warm
+sub-row, the cold value on the cold, exactly like the marks.
 """
 
 import math
@@ -45,6 +56,7 @@ from _common import (
     assert_no_text_overlap,
     draw_key,
     enforce_placement,
+    fmt_ms3,
     load_latency_rq4,
     mpl_setup,
     plt,
@@ -71,6 +83,98 @@ PHASES = ("warm", "cold")
 # smaller than half the row, so a pair groups more tightly than two arms do.
 PHASES_IN_ROW = (("warm", 0.18, True), ("cold", -0.18, False))
 SERIES_REF = "refusal_path"
+# The value labels sit a shade inside the mark's dodge (0.15 vs 0.18 row
+# units): the 8 pt line box then clears the neighbouring row's labels, and the
+# 0.006 in of vertical slack against the mark is imperceptible while the
+# sub-row association stays unambiguous.
+LABEL_DY = 0.15
+
+
+def _label_width_px(ax, renderer, text, x_probe, y_probe):
+    """The rendered width of `text`, measured, never estimated.
+
+    Per-character estimates are a closed defect class in this suite; the probe
+    is drawn at a finite in-axis position (x=0 breaks a log transform),
+    measured, and removed.
+    """
+    probe = ax.text(x_probe, y_probe, text, fontsize=FONT_MIN_PT)
+    width = probe.get_window_extent(renderer).width
+    probe.remove()
+    return width
+
+
+def place_row_labels(ax, renderer, union, items, counts):
+    """One arm row's two value labels, placed where measurement says they fit.
+
+    `union` is the row's full mark extent in data coords (both phases' bars in
+    the delta band; median-to-p95 in the refusal band). `items` is
+    ((y, dot_x, text)) for warm then cold. The ladder of placements, tried in
+    order against MEASURED widths: warm right of the union and cold left of it
+    (the default); both chained on the left; both chained on the right; and
+    last, inside the union itself on the stretch clear of the dots, knocked
+    out on paper -- needed only where a zero-crossing interval spans nearly
+    the whole panel. Association is by sub-row y throughout. A row that fits
+    nowhere raises rather than printing a cropped or overprinted number.
+    """
+    bbox = ax.get_window_extent(renderer)
+    dpi = ax.figure.dpi
+    pad = 0.030 * dpi
+    edge = 0.020 * dpi
+    to_px = ax.transData.transform
+    to_data = ax.transData.inverted().transform
+    x0p = to_px((union[0], 0.0))[0]
+    x1p = to_px((union[1], 0.0))[0]
+    (y_w, dot_w, s_w, bar_w), (y_c, dot_c, s_c, bar_c) = items
+    w_w = _label_width_px(ax, renderer, s_w, union[1], y_w)
+    w_c = _label_width_px(ax, renderer, s_c, union[1], y_c)
+
+    def put(x_px, y, s, ha):
+        ax.text(
+            to_data((x_px, 0.0))[0],
+            y,
+            s,
+            ha=ha,
+            va="center",
+            fontsize=FONT_MIN_PT,
+            color=INK,
+            zorder=3.6,
+            bbox=dict(facecolor=PAPER, edgecolor="none", pad=0.15),
+        )
+
+    room_right = bbox.x1 - edge - x1p
+    room_left = x0p - (bbox.x0 + edge)
+    if room_right >= w_w + pad and room_left >= w_c + pad:
+        put(x1p + pad, y_w, s_w, "left")
+        put(x0p - pad, y_c, s_c, "right")
+        counts["split"] += 1
+    elif room_left >= w_w + w_c + 3 * pad:
+        put(x0p - pad, y_c, s_c, "right")
+        put(x0p - 2 * pad - w_c, y_w, s_w, "right")
+        counts["chained-left"] += 1
+    elif room_right >= w_w + w_c + 3 * pad:
+        put(x1p + pad, y_w, s_w, "left")
+        put(x1p + 2 * pad + w_w, y_c, s_c, "left")
+        counts["chained-right"] += 1
+    else:
+        dots = sorted(to_px((x, 0.0))[0] for x in (dot_w, dot_c))
+        stretches = ((x0p, dots[0]), (dots[-1], x1p))
+        s0, s1 = max(stretches, key=lambda pair: pair[1] - pair[0])
+        if (s1 - s0) < w_w + w_c + 4 * pad:
+            raise PresentationError(
+                f"no measured room for the value pair {s_w!r}/{s_c!r} on any side or on the bar"
+            )
+        # The left slot goes to the phase whose own bar starts leftmost, inset
+        # so that bar's END TIP stays visible past the knockout -- an interval
+        # endpoint is data and a label must not eat it. The right slot lands
+        # mid-bar, where both of its own endpoints are clear of it anyway.
+        tip = min(0.10 * dpi, (s1 - s0) - (w_w + w_c + 4 * pad))
+        warm_takes_left = to_px((bar_w[0], 0.0))[0] <= to_px((bar_c[0], 0.0))[0]
+        (yl, sl), (yr, sr) = (
+            ((y_w, s_w), (y_c, s_c)) if warm_takes_left else ((y_c, s_c), (y_w, s_w))
+        )
+        put(s0 + pad + tip, yl, sl, "left")
+        put(s1 - pad, yr, sr, "right")
+        counts["on-bar"] += 1
 
 
 def draw_tier_brackets(fig, pos, ys, fig_w):
@@ -250,6 +354,10 @@ def main():
         ax.tick_params(axis="x", colors=INK, labelsize=FONT_MIN_PT, length=2.4, width=0.6, pad=1.5)
         ax.tick_params(axis="x", which="minor", colors=INK, length=1.4, width=0.4)
 
+    # Every dot's value label, collected while the marks are drawn and placed
+    # AFTER both bands exist, from one rendered measurement pass.
+    pending_labels = []
+
     # ---- band 1: benign deltas against B0 ----------------------------------
     band_label(y1_bot, f"benign path — median(arm) − median({control}), ms")
     ticks1, labels1 = [-1, 0, 0.1, 10], ["−1", "0", "0.1", "10"]
@@ -277,11 +385,13 @@ def main():
         for arm in ARM_ORDER:
             if arm == control or arm in refused_arms:
                 continue
+            row = {}
             for phase, dy, filled in PHASES_IN_ROW:
                 y = ys[arm] + dy
                 d = by_delta.get((arm, phase, span))
                 if d is None:
                     raise PresentationError(f"no delta for {arm} / {phase} / {span} and no refusal")
+                row[phase] = d
                 ax.plot(
                     [d["ci_low_ms"], d["ci_high_ms"]],
                     [y, y],
@@ -307,6 +417,24 @@ def main():
                     f"{d['point_estimate_ms']:.4f} [{d['ci_low_ms']:.4f}, "
                     f"{d['ci_high_ms']:.4f}] {d['label']}",
                 )
+            pending_labels.append(
+                (
+                    ax,
+                    (
+                        min(r["ci_low_ms"] for r in row.values()),
+                        max(r["ci_high_ms"] for r in row.values()),
+                    ),
+                    tuple(
+                        (
+                            ys[arm] + (LABEL_DY if ph == "warm" else -LABEL_DY),
+                            row[ph]["point_estimate_ms"],
+                            fmt_ms3(row[ph]["point_estimate_ms"]),
+                            (row[ph]["ci_low_ms"], row[ph]["ci_high_ms"]),
+                        )
+                        for ph in PHASES
+                    ),
+                )
+            )
         if col == 0:
             draw_tier_brackets(fig, pos, ys, fig_w)
             for arm in ARM_ORDER:
@@ -373,6 +501,25 @@ def main():
                     f"refusal.{arm}.{phase}.{span} [M]",
                     f"median={d['median']:.4f} p95={d['p95']:.4f} n={d['n']}",
                 )
+            ref_row = {ph: by_ref[(arm, ph, span)] for ph in PHASES}
+            pending_labels.append(
+                (
+                    ax,
+                    (
+                        min(r["median"] for r in ref_row.values()),
+                        max(r["p95"] for r in ref_row.values()),
+                    ),
+                    tuple(
+                        (
+                            ys[arm] + (LABEL_DY if ph == "warm" else -LABEL_DY),
+                            ref_row[ph]["median"],
+                            fmt_ms3(ref_row[ph]["median"]),
+                            (ref_row[ph]["median"], ref_row[ph]["p95"]),
+                        )
+                        for ph in PHASES
+                    ),
+                )
+            )
         if col == 0:
             draw_tier_brackets(fig, pos, ys, fig_w)
             for arm in ARM_ORDER:
@@ -397,6 +544,19 @@ def main():
         color=MIDGREY,
     )
 
+    # ---- the value labels: one measurement pass over the finished bands ----
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    counts = {"split": 0, "chained-left": 0, "chained-right": 0, "on-bar": 0}
+    for ax, union, items in pending_labels:
+        place_row_labels(ax, renderer, union, items, counts)
+    print_render(ARTEFACT, "labels.count [D]", 2 * len(pending_labels))
+    print_render(ARTEFACT, "labels.value", "the dot -- delta point estimate above, median below")
+    print_render(
+        ARTEFACT, "labels.format", "fmt_ms3: three-decimal ms, <0.001 below 0.0005 (shared)"
+    )
+    print_render(ARTEFACT, "labels.placement_by_measure [D]", counts)
+
     # ---- one key, one provenance line --------------------------------------
     x_end = draw_key(
         fig,
@@ -408,6 +568,15 @@ def main():
         ),
         x_in=0.10,
         y_in=0.13,
+    )
+    fig.text(
+        (x_end + 0.34) / fig_w,
+        0.13 / fig_h,
+        "each dot prints its value, three-decimal ms",
+        ha="left",
+        va="center",
+        fontsize=FONT_MIN_PT,
+        color=MIDGREY,
     )
     fig.text(
         (fig_w - 0.05) / fig_w,
@@ -447,7 +616,13 @@ def main():
         f"and the one absolute end-to-end value stated is {control}'s own warm median, "
         f"{b0_e2e_med:.3f} ms, the fixed testbed overhead present in every arm. The two bands "
         "carry different quantities on different axes and are never summed or compared cell to "
-        "cell. Interquartile widths are not drawn; they stand verbatim in the committed artefact "
+        "cell. Every dot prints its value beside its own sub-row -- the median difference above, "
+        "the median below -- in the suite's shared three-decimal millisecond format, in which a "
+        "value under 0.0005 prints as <0.001 and never as a zero the record does not contain; "
+        "labels sit left or right of the row's marks wherever the panel has measured room, and "
+        "inside the one interval wide enough to hold them where it has none. Interval bounds and "
+        "p95 values are not printed and stand at full precision in the committed artefact. "
+        "Interquartile widths are not drawn; they stand verbatim in the committed artefact "
         "this figure reads, and the interval shown in the upper band is the uncertainty of the "
         "median difference, not the spread of the data. The gutter groups the arms into the three "
         f"ladder tiers of the authority-surface figure. n is {n} per arm, phase and span after "
