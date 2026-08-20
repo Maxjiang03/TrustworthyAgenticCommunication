@@ -29,7 +29,7 @@ should expect from the sealed record.
 
 ## D-017 — Pre-commitment: real-transport boundary-transfer validation (post-seal, out-of-band)
 
-**Status:** OPEN — written BEFORE any validation code exists and BEFORE any comparison is computed.
+**Status:** CLOSED — run once. 18 of 143 cells driven over a real stdio transport to a child-process server; 18/18 agree with the sealed campaign, 0 disagreements, 0 harness errors. Scope narrower than clause 1 committed, by a structural criterion fixed before running; the reason is recorded. No further run.
 **Date:** 2026-08-20
 **Authority:** Commander ruling 2026-08-20 (proceed to the third class); ADR 0013 (the MCP SDK pin,
 which marks the stdio/streamable-HTTP transports `[UNVERIFIED-IA]`); ADR 0020 (the A2A port, whose
@@ -111,6 +111,82 @@ attributable — and equally what bounds the claim.
 **On exit.** This entry is updated in the same commit as the committed output with the run commit
 hash, the artefact path, the agreement counts, and the full list of disagreements. The
 pre-commitment text above is not edited.
+
+### CLOSED — run 1, the counts as returned
+
+**Run commit:** `6d2dcc2` plus the three defect fixes recorded below. **Output artefact:**
+`results/validation/real-transport.json`. The sealed confirmatory result at `17e11c9` is untouched,
+not re-run and not superseded.
+
+| | as returned |
+|---|---|
+| cells driven over the real transport | **18** (2 scenarios × 9 arms) |
+| harness errors | **0** |
+| compared against the sealed campaign | **18** |
+| **agreements** | **18** |
+| **disagreements** | **0** |
+
+**The result is not a trivial all-pass.** `cf-benign` forwards on all nine arms, which is the
+uninformative half. `cf-f1-terminal` splits: B0, B1, B2-broad-noexchange and B2-exchange-broad
+admit; B2-exchange-task, B2-exchange-task-DPoP, B-cap, B3 and B3⁺ refuse. That four-admit /
+five-refuse pattern is reproduced cell for cell over a real stdio transport to a server in another
+operating-system process, by the **unmodified sealed arms** — the ladder's discriminating behaviour,
+not just its permissive behaviour.
+
+**What was actually exercised.** A real `stdio_client` to a child process running the sealed
+`build_server`; a genuine MCP `initialize` handshake and `tools/list` over the pipe (the five frozen
+tools answered); genuine `CallToolRequest`/`CallToolResult` framing with bytes crossing a real OS
+pipe. The sealed `Supervisor` and `Specialist` performed the A2A hop exactly as the campaign does —
+`arm.delegate`, then `arm.present` — against a real loopback-TLS `ASProcess`. The arms were
+constructed by the sealed `_factories` and provisioned through the sealed `Arm.provision` contract.
+
+**Scope delivered, narrower than clause 1 committed, and why.** 18 cells of 143. The eligible set
+was chosen by a structural criterion applied to the sealed documents **before running**: no
+`credential_fault` to inject, no `intended_labels`, no `requires_approval` — hence no sealed
+orchestration this harness would have to reproduce. That admits `cf-benign` and `cf-f1-terminal` and
+excludes the other eleven, each listed in the artefact with its reason. Delivering the eleven needs
+this harness to reproduce `src/harness/credential_faults.py`'s injection at an exact point inside
+the presentation span, and the ADR 0030 artifact minting F4/F5 depend on. **A reproduction this
+harness cannot vouch for would be worse than an admitted gap: a subtly infidel harness reporting
+AGREEMENT looks like evidence.** The narrowing is reported with the result, not folded into it, and
+the remaining eleven scenarios are the obvious next increment.
+
+**Three defects in the validation harness, found and fixed before the reported run.** Recorded
+because D-014's run 1 set the precedent that debugging history is evidence, not noise.
+1. Two import paths were wrong — `registry` lives in `src.harness.verifier`, `frozen_config` in
+   `src.harness.authorizer`, not under `src.sut`. Import-time failure, no output produced.
+2. A cell was keyed `(scenario, arm)`, and the harness's own guard refused the run: the F4/F5
+   scenarios run under BOTH monitor configurations, so that key carries two different outcomes. The
+   guard was right and the key was wrong; it is now `(scenario, arm, monitor_attached)`. Those
+   scenarios are excluded on other grounds anyway, so no reported number depended on it — but a
+   guard that fires on a real ambiguity is the reason it exists.
+3. The arm was constructed as `cls(**setup)`. The sealed contract is `factory()` with no arguments
+   and the setup delivered through `Arm.provision` (`src/sut/baselines/base.py:205`;
+   `src/harness/runner.py:673`). `B1Arm` refused the keyword, correctly.
+None of the three could have produced a wrong AGREEMENT — each is an outright failure — but they are
+recorded rather than tidied away.
+
+**What this result does NOT establish, as clause "committed BEFORE the result" requires.** That the
+boundary decision survived relocation to a real transport **on these two scenarios** is not that the
+study's findings hold in a deployment. The residuals travel attached: the A2A hop is **still an
+in-process port**; the tools are **still sandboxed intent recorders**; the server is **still the
+harness's own five-tool stub**, not a third-party implementation; the machine is still one machine;
+and the reference monitor **moved** from server-side `Tool.fn` wrapping to a client-side call before
+`call_tool`, because a child-process server has no `Tool.fn` to wrap. This validation moves exactly
+one variable, which is what makes the agreement attributable to the transport and equally what
+bounds what it can claim.
+
+**What it does establish, narrowly and for the first time in this study.** ADR 0013 marks the
+stdio/streamable-HTTP transports `[UNVERIFIED-IA]`, and §J.5 item 20 asserts that the authorization
+measurements "ride the envelope contents and boundary checks, which the port preserves" — an
+assertion the study had argued and never tested. On these 18 cells it now has an empirical answer
+rather than only a construction argument: the sealed arms, driven across a real process boundary and
+a real MCP transport, reached the recorded decision every time.
+
+**Reported as committed.** Zero disagreements is the count as returned, not a target; a disagreeing
+cell would have been listed individually with both verdicts, before any diagnosis, and D-017 forbids
+adjusting the harness and re-running silently. No sealed artefact was modified, no campaign re-run,
+no §E.4 prediction edited, and no reported number changed. **No further run.**
 
 ---
 

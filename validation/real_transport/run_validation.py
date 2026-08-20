@@ -62,10 +62,10 @@ sys.path.insert(0, str(REPO))
 
 from mcp import ClientSession  # noqa: E402
 from mcp.client.stdio import StdioServerParameters, stdio_client  # noqa: E402
-from src.sut.identity import registry as reg  # noqa: E402
 
 from src.harness import key_material  # noqa: E402
 from src.harness.as_process import ASProcess, golden_thread_as_document  # noqa: E402
+from src.harness.authorizer import frozen_config  # noqa: E402
 from src.harness.campaign_driver import (  # noqa: E402
     CAMPAIGN_TOKEN_LIFETIME_SECONDS,
     WRONG_AUDIENCE,
@@ -73,9 +73,9 @@ from src.harness.campaign_driver import (  # noqa: E402
     _factories,
 )
 from src.harness.runner import GoldenThreadRunner  # noqa: E402
+from src.harness.verifier import registry as reg  # noqa: E402
 from src.sut.agents.specialist import Specialist  # noqa: E402
 from src.sut.agents.supervisor import Supervisor  # noqa: E402
-from src.sut.authz import frozen_config  # noqa: E402
 from src.sut.protocol.a2a import InProcessDelegationTransport  # noqa: E402
 
 CORPUS_DIR = REPO / "fixtures" / "confirmatory"
@@ -176,8 +176,13 @@ async def run_all(session, runner, running_as, document, corpus, eligible, seale
             runner, running_as, document, monitor_attached=None, scenario_id=scenario_id
         )
         for arm_name in ARM_ORDER:
+            # The sealed contract: the factory takes no arguments and the
+            # setup goes to `provision` (Arm protocol, src/sut/baselines/base.py:205;
+            # src/harness/runner.py:673 does exactly this). Constructing with
+            # **setup was this harness's error and the arm refused it, correctly.
             cls, setup = factories[arm_name]
-            arm = cls(**setup) if setup else cls()
+            arm = cls()
+            arm.provision(dict(setup or {}))
             run_epoch = int(time.time())
             cid = f"validation-{scenario_id}-{arm_name}"
             try:
@@ -186,7 +191,7 @@ async def run_all(session, runner, running_as, document, corpus, eligible, seale
             except Exception as exc:  # reported, never swallowed
                 outcome = {"admitted": None, "reason": "", "tool_error": None}
                 error = f"{type(exc).__name__}: {exc}"
-            key = (scenario_id, arm_name)
+            key = (scenario_id, arm_name, None)
             sealed = sealed_forwarded.get(key)
             row = {
                 "scenario_id": scenario_id,
@@ -236,11 +241,15 @@ def main(argv=None) -> int:
         print(f"EXCLUDED {sid}: {', '.join(reasons)}")
 
     campaign = json.loads(CAMPAIGN.read_text(encoding="utf-8"))
+    # A cell is keyed by (scenario, arm, monitor_attached): the F4/F5 scenarios
+    # run under BOTH monitor configurations and the same (scenario, arm) then
+    # carries two different outcomes -- the guard that first caught this was
+    # right, and the key was wrong. The eligible scenarios run once each, with
+    # `monitor_attached` recorded as None, so their lookup is unambiguous; the
+    # configuration-bearing scenarios are excluded on other grounds anyway.
     sealed_forwarded = {}
     for cell in campaign["cells"]:
-        # The eligible scenarios run under one configuration only, so a cell is
-        # keyed by (scenario, arm) without ambiguity; assert rather than assume.
-        key = (cell["scenario_id"], cell["arm"])
+        key = (cell["scenario_id"], cell["arm"], cell.get("monitor_attached"))
         if key in sealed_forwarded and sealed_forwarded[key] != bool(cell["observed_forwarded"]):
             raise SystemExit(f"{key} appears twice in the campaign with different outcomes")
         sealed_forwarded[key] = bool(cell["observed_forwarded"])

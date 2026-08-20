@@ -1,0 +1,245 @@
+{
+  "_what": "The SEALED arms driven over a REAL loopback stdio MCP transport against the sealed five-tool server in a CHILD PROCESS, compared per cell against the sealed campaign's observed_forwarded. Governed by DEVIATIONS D-017. Post-seal validation: it re-runs no campaign, amends no sealed number, and does not supersede the confirmatory result.",
+  "the_one_variable": "the transport. Corpus, arms, AS, frozen policy and the decision function are the sealed ones; the server is the sealed builder. The interposition point moves: arm.decide runs client-side before call_tool, because a child-process server has no Tool.fn this harness can wrap.",
+  "no_latency_claim": "ADR 0034 excludes a loopback round trip from the measured segment by name. Nothing here is timed and no latency is reported.",
+  "scope_narrowing": {
+    "committed_in_d017": "all 13 sealed scenarios, nine arms",
+    "delivered": [
+      "cf-benign",
+      "cf-f1-terminal"
+    ],
+    "criterion_fixed_before_running": "no credential_fault to inject, no intended_labels, no requires_approval -- so no sealed orchestration this harness would have to reproduce",
+    "excluded": [
+      {
+        "scenario_id": "cf-f1-chain-tamper",
+        "reasons": [
+          "requires_approval"
+        ]
+      },
+      {
+        "scenario_id": "cf-f1-root",
+        "reasons": [
+          "requires_approval"
+        ]
+      },
+      {
+        "scenario_id": "cf-f2-invalid-credential",
+        "reasons": [
+          "credential_fault=invalid_credential"
+        ]
+      },
+      {
+        "scenario_id": "cf-f2-unauthenticated-caller",
+        "reasons": [
+          "credential_fault=unauthenticated_caller"
+        ]
+      },
+      {
+        "scenario_id": "cf-f2-wrong-holder-proof",
+        "reasons": [
+          "credential_fault=wrong_registered_holder"
+        ]
+      },
+      {
+        "scenario_id": "cf-f3-audience-mismatch",
+        "reasons": [
+          "credential_fault=audience_mismatch"
+        ]
+      },
+      {
+        "scenario_id": "cf-f3-stolen-at-key-substitution",
+        "reasons": [
+          "credential_fault=stolen_AT_key_substitution"
+        ]
+      },
+      {
+        "scenario_id": "cf-f4-declassified",
+        "reasons": [
+          "intended_labels=['sensitive']",
+          "requires_approval"
+        ]
+      },
+      {
+        "scenario_id": "cf-f4-sensitive-egress",
+        "reasons": [
+          "intended_labels=['sensitive']",
+          "requires_approval"
+        ]
+      },
+      {
+        "scenario_id": "cf-f5-approved",
+        "reasons": [
+          "intended_labels=['public']",
+          "requires_approval"
+        ]
+      },
+      {
+        "scenario_id": "cf-f5-unapproved-high-risk",
+        "reasons": [
+          "intended_labels=['public']",
+          "requires_approval"
+        ]
+      }
+    ],
+    "why": "reproducing credential-fault injection and ADR 0030 artifact minting outside the sealed runner risks a subtly infidel harness, and a subtly infidel harness that reported AGREEMENT would be worth less than no validation at all"
+  },
+  "run": {
+    "index": 1,
+    "reason": "(first run)"
+  },
+  "counts": {
+    "cells_driven": 18,
+    "harness_errors": 0,
+    "compared": 18,
+    "agreements": 18,
+    "disagreements": 0
+  },
+  "cells": [
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B0",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B1",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B2-broad-noexchange",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B2-exchange-broad",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B2-exchange-task",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B2-exchange-task-DPoP",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B-cap",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B3",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-benign",
+      "arm": "B3+",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B0",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B1",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B2-broad-noexchange",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B2-exchange-broad",
+      "real_transport_admitted": true,
+      "sealed_observed_forwarded": true,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B2-exchange-task",
+      "real_transport_admitted": false,
+      "sealed_observed_forwarded": false,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B2-exchange-task-DPoP",
+      "real_transport_admitted": false,
+      "sealed_observed_forwarded": false,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B-cap",
+      "real_transport_admitted": false,
+      "sealed_observed_forwarded": false,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B3",
+      "real_transport_admitted": false,
+      "sealed_observed_forwarded": false,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "harness_error": ""
+    },
+    {
+      "scenario_id": "cf-f1-terminal",
+      "arm": "B3+",
+      "real_transport_admitted": false,
+      "sealed_observed_forwarded": false,
+      "reason_code_FOR_DIAGNOSIS_ONLY": "b3_containment",
+      "harness_error": ""
+    }
+  ],
+  "disagreements": [],
+  "residuals_that_travel_with_any_agreement": "the A2A hop is still an in-process port; the tools are still sandboxed intent recorders; the server is still the harness's own five-tool stub, not a third-party implementation; the machine is still one machine. This moves exactly one variable, which is what makes a difference attributable and equally what bounds the claim."
+}
