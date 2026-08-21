@@ -75,6 +75,19 @@ def _staged(arm: Any):
     return getattr(arm, "_staged", None)
 
 
+def _field(staged: Any, name: str) -> Any:
+    """A staged field, or None if this arm's presentation type has no such field.
+
+    B0, B1 and the B2 arms stage their own presentation types -- `B2Presentation`
+    carries no `htc_chain` and no `invocation_assertion` at all. An attack that
+    reached for those attributes directly would raise inside the sealed runner
+    and abort the cell, which is the defect this helper closes: an arm that
+    cannot express the attack must record NOT APPLICABLE and still be scored,
+    exactly as SS E.4's NA rule requires.
+    """
+    return getattr(staged, name, None)
+
+
 def _open_envelope(wire: bytes) -> dict[str, Any]:
     return dict(json.loads(bytes(wire))["payload"])
 
@@ -90,7 +103,7 @@ def forge_htc_hop(arm: Any, seed: bytes, **_: Any) -> str:
     such key, so the appended hop is signed by the attacker's own.
     """
     staged = _staged(arm)
-    if staged is None or not staged.htc_chain:
+    if staged is None or not _field(staged, "htc_chain"):
         return "not applicable: this arm stages no HTC chain"
     key = _attacker_key(seed)
     pub = key.public_key().public_bytes_raw().hex()
@@ -114,7 +127,7 @@ def resign_inv_as_attacker(arm: Any, seed: bytes, **_: Any) -> str:
     what keeps `invocation_binding_ok` from firing first and masking the limb.
     """
     staged = _staged(arm)
-    if staged is None or not staged.invocation_assertion:
+    if staged is None or not _field(staged, "invocation_assertion"):
         return "not applicable: this arm stages no INV"
     payload = _open_envelope(staged.invocation_assertion)
     arm._staged = dataclasses.replace(
@@ -132,7 +145,7 @@ def substitute_access_token(arm: Any, seed: bytes, **_: Any) -> str:
     first. Whether it does is what this cell measures.
     """
     staged = _staged(arm)
-    if staged is None or not getattr(staged, "access_token", ""):
+    if staged is None or not _field(staged, "access_token"):
         return "not applicable: this arm stages no access token"
     arm._staged = dataclasses.replace(staged, access_token="adaptive.attacker.token")
     return "swapped the staged access token for the attacker's own; INV left as signed"
@@ -148,7 +161,7 @@ def remint_inv_out_of_scope(arm: Any, seed: bytes, **_: Any) -> str:
     """
     staged = _staged(arm)
     key = _holder_key(arm)
-    if staged is None or not staged.invocation_assertion or key is None:
+    if staged is None or not _field(staged, "invocation_assertion") or key is None:
         return "not applicable: this arm stages no INV under a terminal holder key"
     payload = _open_envelope(staged.invocation_assertion)
     payload["tool"] = HIGH_RISK_TOOL

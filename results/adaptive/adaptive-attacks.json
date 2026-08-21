@@ -1,0 +1,829 @@
+{
+  "_what": "D-019 Phase B: the eight unmasked FALSIFIABLE cells of the conjunct-falsifiability enumeration, instantiated as defence-aware adaptive attacks, each run against all nine arms on the sealed corpus and scored by the SEALED oracle. A SEPARATE EVIDENCE CLASS: never summed with the 143-cell campaign, which is untouched.",
+  "base_scenario": "cf-benign",
+  "three_rebinds": [
+    "campaign_driver._scenarios -> the single base scenario",
+    "runner.credential_faults -> sealed faults verbatim, then this attack's corruption",
+    "runner._LateBoundToolCaller -> (tool, arguments) substitution before the boundary"
+  ],
+  "ledger": "ledger_backed=False -- the sealed ledger directory is tracked evidence this run must not write into. Per ADR 0014 realized_harm is None throughout, so effect-derived predicates are excluded BY CONSTRUCTION; the comparison target is the boundary decision and the conjunct that produced it.",
+  "attacks": [
+    {
+      "id": "A1-htc-chain-K-none-T1",
+      "conjunct_targeted": "certificate-chain-valid",
+      "capability": "K-none",
+      "tampering_point": "T1 caller substitution",
+      "prediction_PRE_REGISTERED": "b3_htc_chain",
+      "seams_used": {
+        "staged_material": [
+          "B0: not applicable: this arm stages no HTC chain",
+          "B1: not applicable: this arm stages no HTC chain",
+          "B2-broad-noexchange: not applicable: this arm stages no HTC chain",
+          "B2-exchange-broad: not applicable: this arm stages no HTC chain",
+          "B2-exchange-task: not applicable: this arm stages no HTC chain",
+          "B2-exchange-task-DPoP: not applicable: this arm stages no HTC chain",
+          "B-cap: not applicable: this arm stages no HTC chain",
+          "B3: appended a self-signed HTC hop at depth 2 naming the attacker",
+          "B3+: appended a self-signed HTC hop at depth 2 naming the attacker"
+        ],
+        "tool_substitution": []
+      },
+      "counts": {
+        "arms": 9,
+        "admitted": 7,
+        "blocked": 2,
+        "admission_breaches": 0,
+        "unscorable": 0
+      },
+      "admission_breaches": [],
+      "cells": [
+        {
+          "arm": "B0",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B1",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-broad-noexchange",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-exchange-broad",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-exchange-task",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-exchange-task-DPoP",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B-cap",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B3",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_htc_chain",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3+",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_htc_chain",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        }
+      ],
+      "campaign_record": "results/adaptive/campaign-A1-htc-chain-K-none-T1.json"
+    },
+    {
+      "id": "A2-holder-proof-K-none-T1",
+      "conjunct_targeted": "holder-proof-valid",
+      "capability": "K-none",
+      "tampering_point": "T1 caller substitution",
+      "prediction_PRE_REGISTERED": "b3_holder_proof",
+      "seams_used": {
+        "staged_material": [
+          "B0: not applicable: this arm stages no INV",
+          "B1: not applicable: this arm stages no INV",
+          "B2-broad-noexchange: not applicable: this arm stages no INV",
+          "B2-exchange-broad: not applicable: this arm stages no INV",
+          "B2-exchange-task: not applicable: this arm stages no INV",
+          "B2-exchange-task-DPoP: not applicable: this arm stages no INV",
+          "B-cap: not applicable: this arm stages no INV",
+          "B3: re-signed the INV under an unregistered attacker key, payload unchanged",
+          "B3+: re-signed the INV under an unregistered attacker key, payload unchanged"
+        ],
+        "tool_substitution": []
+      },
+      "counts": {
+        "arms": 9,
+        "admitted": 7,
+        "blocked": 2,
+        "admission_breaches": 0,
+        "unscorable": 0
+      },
+      "admission_breaches": [],
+      "cells": [
+        {
+          "arm": "B0",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B1",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-broad-noexchange",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-exchange-broad",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-exchange-task",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-exchange-task-DPoP",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B-cap",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B3",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_holder_proof",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3+",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_holder_proof",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        }
+      ],
+      "campaign_record": "results/adaptive/campaign-A2-holder-proof-K-none-T1.json"
+    },
+    {
+      "id": "A3-invocation-bound-K-none-T2",
+      "conjunct_targeted": "invocation-bound",
+      "capability": "K-none",
+      "tampering_point": "T2 tool substitution",
+      "prediction_PRE_REGISTERED": "b3_invocation_binding",
+      "seams_used": {
+        "staged_material": [],
+        "tool_substitution": [
+          "notes.read{'resource': 'notes/meeting'} -> notes.delete{'resource': 'notes/meeting'}"
+        ]
+      },
+      "counts": {
+        "arms": 9,
+        "admitted": 2,
+        "blocked": 7,
+        "admission_breaches": 0,
+        "unscorable": 0
+      },
+      "admission_breaches": [],
+      "cells": [
+        {
+          "arm": "B0",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B1",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-broad-noexchange",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-broad",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-task",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-task-DPoP",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B-cap",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_containment",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_invocation_binding",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3+",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_invocation_binding",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        }
+      ],
+      "campaign_record": "results/adaptive/campaign-A3-invocation-bound-K-none-T2.json"
+    },
+    {
+      "id": "A4-invocation-bound-K-none-T3",
+      "conjunct_targeted": "invocation-bound",
+      "capability": "K-none",
+      "tampering_point": "T3 argument substitution",
+      "prediction_PRE_REGISTERED": "b3_invocation_binding",
+      "seams_used": {
+        "staged_material": [],
+        "tool_substitution": [
+          "notes.read{'resource': 'notes/meeting'} -> notes.read{'resource': 'notes/project'}"
+        ]
+      },
+      "counts": {
+        "arms": 9,
+        "admitted": 7,
+        "blocked": 2,
+        "admission_breaches": 0,
+        "unscorable": 0
+      },
+      "admission_breaches": [],
+      "cells": [
+        {
+          "arm": "B0",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B1",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-broad-noexchange",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-exchange-broad",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-exchange-task",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-exchange-task-DPoP",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B-cap",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B3",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_invocation_binding",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3+",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_invocation_binding",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        }
+      ],
+      "campaign_record": "results/adaptive/campaign-A4-invocation-bound-K-none-T3.json"
+    },
+    {
+      "id": "A5-containment-K-none-T4",
+      "conjunct_targeted": "R subset-of C_n",
+      "capability": "K-none",
+      "tampering_point": "T4 scope excess",
+      "prediction_PRE_REGISTERED": "b3_invocation_binding on B3 (masks); b3_containment on B-cap",
+      "seams_used": {
+        "staged_material": [],
+        "tool_substitution": [
+          "notes.read{'resource': 'notes/meeting'} -> notes.read{'resource': 'notes/secret'}"
+        ]
+      },
+      "counts": {
+        "arms": 9,
+        "admitted": 2,
+        "blocked": 7,
+        "admission_breaches": 0,
+        "unscorable": 0
+      },
+      "admission_breaches": [],
+      "cells": [
+        {
+          "arm": "B0",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B1",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-broad-noexchange",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-broad",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-task",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-task-DPoP",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B-cap",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_containment",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_invocation_binding",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3+",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_invocation_binding",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        }
+      ],
+      "campaign_record": "results/adaptive/campaign-A5-containment-K-none-T4.json"
+    },
+    {
+      "id": "A6-resource-authorized-K-none-T1",
+      "conjunct_targeted": "resource-authorized",
+      "capability": "K-none",
+      "tampering_point": "T1 caller substitution",
+      "prediction_PRE_REGISTERED": "b3_invocation_binding on B3 (masks); b3_oauth_resource_authorization on B-cap",
+      "seams_used": {
+        "staged_material": [
+          "B0: not applicable: this arm stages no access token",
+          "B1: not applicable: this arm stages no access token",
+          "B2-broad-noexchange: swapped the staged access token for the attacker's own; INV left as signed",
+          "B2-exchange-broad: swapped the staged access token for the attacker's own; INV left as signed",
+          "B2-exchange-task: swapped the staged access token for the attacker's own; INV left as signed",
+          "B2-exchange-task-DPoP: swapped the staged access token for the attacker's own; INV left as signed",
+          "B-cap: swapped the staged access token for the attacker's own; INV left as signed",
+          "B3: swapped the staged access token for the attacker's own; INV left as signed",
+          "B3+: swapped the staged access token for the attacker's own; INV left as signed"
+        ],
+        "tool_substitution": []
+      },
+      "counts": {
+        "arms": 9,
+        "admitted": 2,
+        "blocked": 7,
+        "admission_breaches": 0,
+        "unscorable": 0
+      },
+      "admission_breaches": [],
+      "cells": [
+        {
+          "arm": "B0",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B1",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-broad-noexchange",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-broad",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-task",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-task-DPoP",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B-cap",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_invocation_binding",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3+",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_invocation_binding",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        }
+      ],
+      "campaign_record": "results/adaptive/campaign-A6-resource-authorized-K-none-T1.json"
+    },
+    {
+      "id": "A7-identity-consistent-K-none-T1",
+      "conjunct_targeted": "identity-consistent",
+      "capability": "K-none",
+      "tampering_point": "T1 caller substitution",
+      "prediction_PRE_REGISTERED": "unreachable under K-none; conjunct 5 or 9 fires first",
+      "seams_used": {
+        "staged_material": [
+          "B0: not applicable: this arm stages no access token",
+          "B1: not applicable: this arm stages no access token",
+          "B2-broad-noexchange: swapped the staged access token for the attacker's own; INV left as signed",
+          "B2-exchange-broad: swapped the staged access token for the attacker's own; INV left as signed",
+          "B2-exchange-task: swapped the staged access token for the attacker's own; INV left as signed",
+          "B2-exchange-task-DPoP: swapped the staged access token for the attacker's own; INV left as signed",
+          "B-cap: swapped the staged access token for the attacker's own; INV left as signed",
+          "B3: swapped the staged access token for the attacker's own; INV left as signed",
+          "B3+: swapped the staged access token for the attacker's own; INV left as signed"
+        ],
+        "tool_substitution": []
+      },
+      "counts": {
+        "arms": 9,
+        "admitted": 2,
+        "blocked": 7,
+        "admission_breaches": 0,
+        "unscorable": 0
+      },
+      "admission_breaches": [],
+      "cells": [
+        {
+          "arm": "B0",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B1",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-broad-noexchange",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-broad",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-task",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-task-DPoP",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_oauth_token_rejected",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B-cap",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_oauth_resource_authorization",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_invocation_binding",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3+",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_invocation_binding",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        }
+      ],
+      "campaign_record": "results/adaptive/campaign-A7-identity-consistent-K-none-T1.json"
+    },
+    {
+      "id": "A8-containment-K-holder-T4",
+      "conjunct_targeted": "R subset-of C_n",
+      "capability": "K-holder",
+      "tampering_point": "T4 scope excess",
+      "prediction_PRE_REGISTERED": "b3_containment -- the only conjunct that can refuse a compromised holder",
+      "seams_used": {
+        "staged_material": [
+          "B0: not applicable: this arm stages no INV under a terminal holder key",
+          "B1: not applicable: this arm stages no INV under a terminal holder key",
+          "B2-broad-noexchange: not applicable: this arm stages no INV under a terminal holder key",
+          "B2-exchange-broad: not applicable: this arm stages no INV under a terminal holder key",
+          "B2-exchange-task: not applicable: this arm stages no INV under a terminal holder key",
+          "B2-exchange-task-DPoP: not applicable: this arm stages no INV under a terminal holder key",
+          "B-cap: not applicable: this arm stages no INV under a terminal holder key",
+          "B3: re-minted a VALID INV under the terminal holder key binding notes.delete on notes/secret (outside C_n)",
+          "B3+: re-minted a VALID INV under the terminal holder key binding notes.delete on notes/secret (outside C_n)"
+        ],
+        "tool_substitution": [
+          "notes.read{'resource': 'notes/meeting'} -> notes.delete{'resource': 'notes/secret'}"
+        ]
+      },
+      "counts": {
+        "arms": 9,
+        "admitted": 2,
+        "blocked": 7,
+        "admission_breaches": 0,
+        "unscorable": 0
+      },
+      "admission_breaches": [],
+      "cells": [
+        {
+          "arm": "B0",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B1",
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": false
+        },
+        {
+          "arm": "B2-broad-noexchange",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-broad",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-task",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B2-exchange-task-DPoP",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_token_scope",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B-cap",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_containment",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_containment",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        },
+        {
+          "arm": "B3+",
+          "admitted": false,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_containment",
+          "reference_allow": true,
+          "admission_breach": false,
+          "false_block": true
+        }
+      ],
+      "campaign_record": "results/adaptive/campaign-A8-containment-K-holder-T4.json"
+    }
+  ],
+  "totals": {
+    "cells_instantiated": 8,
+    "arm_runs": 72,
+    "admitted_total": 31,
+    "admission_breaches_total": 0
+  },
+  "not_established": "A blocked attack is not evidence the gate is sound, only that this attack failed. These eight cells are the table's unmasked FALSIFIABLE set on the constructed instance set; they are not a search over all adversaries, and every out-of-model premise (P1-P5) still bounds the result."
+}
