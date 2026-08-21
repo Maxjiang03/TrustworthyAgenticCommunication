@@ -81,3 +81,11 @@ smoke/g10/_ledger_tmp/
 /*_TASK.md
 /TASK_*.md
 /HANDOFF.md
+
+# Local-only working files. Kept OUT of the repository deliberately, and listed
+# here so `git status --porcelain` is empty and a campaign or extension run can
+# record `git_dirty: false` (src/harness/campaign.py computes it from that
+# command, which counts untracked files). Nothing about their contents is
+# changed by this entry; remove these two lines to track them.
+PROJECT_BRIEFING.md
+_tmp_*.py

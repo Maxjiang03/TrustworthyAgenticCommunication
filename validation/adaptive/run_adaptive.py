@@ -1,4 +1,17 @@
-"""Phase B: instantiate the FALSIFIABLE cells and score them with the SEALED oracle.
+"""Phase B: instantiate the FALSIFIABLE cells and OBSERVE the boundary's decision.
+
+RUN 2 (D-019 addendum): provenance only. Run 1's findings are unchanged; this run
+exists to record them on a clean tree and under D-012's evidence_class stamping.
+
+THE SEALED ORACLE CANNOT SCORE THESE CELLS, and the module no longer pretends it
+can. The oracle judges each cell against the sealed record of the BASE scenario,
+while the attack substitutes the request -- so it adjudicates a request that was
+never made. Four verdict columns are void here (`reference_allow`,
+`admission_breach`, `false_block`, and every effect-derived field, the last
+because the run is `ledger_backed=False`). They are emitted with a `_VOID` suffix
+so no reader can lift them out. What stands is `observed_forwarded` and the reason
+code: harness-side observations of which conjunct refused, which is exactly what a
+reachability question needs.
 
 Post-seal adaptive validation (DEVIATIONS D-019). Outside `src/` and `analysis/`;
 no sealed file is edited and every covered file stays byte-identical to `ffa216e`,
@@ -6,7 +19,7 @@ hash-verified before and after.
 
 **This module drives nothing itself.** Each attack runs through the SEALED campaign
 driver against the SEALED corpus, so the nine arms, the artifact minting, the clock
-rule, the oracle scoring and the matrix-grouping refusal are all the campaign's own.
+rule and the matrix-grouping refusal are all the campaign's own.
 Three names are rebound in sealed namespaces and nothing else changes:
 
 1. `campaign_driver._scenarios` -> the single base scenario this attack builds on,
@@ -24,10 +37,12 @@ Three names are rebound in sealed namespaces and nothing else changes:
 "run once" is spent and is not touched: nothing here re-runs it, reads its verdicts
 as inputs, or writes near it.
 
-**No count is adjusted after the fact.** Every cell is reported exactly as the
-sealed oracle returned it, including any cell where the attack is ADMITTED by B3.
-D-019 pre-commits that a successful attack is the most valuable result available
-here and is reported before any diagnosis.
+**No count is adjusted after the fact**, including any cell where the attack is
+ADMITTED by B3: D-019 pre-commits that a successful attack is the most valuable
+result available here and is reported before any diagnosis. Admissions are counted
+over APPLICABLE arm runs only -- an arm that cannot express the corruption runs the
+unmodified base scenario, and counting that as an attack success is the defect run
+1's reporting had.
 """
 
 import argparse
@@ -46,7 +61,10 @@ from src.harness import runner as runner_module  # noqa: E402
 from validation.adaptive.attacks import ATTACKS  # noqa: E402
 
 BASE_SCENARIO = "cf-benign"
-OUT_DIR = REPO / "results" / "adaptive"
+OUT_DIR = REPO / "results" / "adaptive" / "run2"
+SEAL_MANIFEST = "seal/manifest_v0.8.json"
+SEAL_IMPLEMENTATION_COMMIT = "ffa216e7ae116fe3f20b9dda4522d8b88ede0de0"
+EVIDENCE_CLASS = "extension"
 ADMITTED_CODES = {"b3_admitted", "b2_admitted", "b1_admitted", "b0_no_boundary_check"}
 
 
@@ -107,19 +125,60 @@ def run_attack(attack: Mapping[str, Any], armed: Armed) -> dict[str, Any]:
         sut_mode="in-process",
         out=out,
     )
+    # D-012's pre-committed mitigation, applied AT WRITE TIME. The sealed
+    # driver's record is nested VERBATIM inside an evidence envelope -- not
+    # altered, wrapped -- so `run_mode: "confirmatory"` can never be read alone
+    # and the artefact cannot be mistaken for a campaign result.
+    out.write_text(
+        json.dumps(
+            {
+                "evidence_class": EVIDENCE_CLASS,
+                "NOT_A_CAMPAIGN_RESULT": (
+                    "An adaptive attack from DEVIATIONS D-019 Phase B. The nested record's "
+                    "run_mode, family and subcase are inherited from the BASE scenario the "
+                    "attack was built on (cf-benign) and describe that base, NOT this cell. "
+                    "Never sum with the 143-cell confirmatory campaign."
+                ),
+                "seal_manifest": SEAL_MANIFEST,
+                "seal_implementation_commit": SEAL_IMPLEMENTATION_COMMIT,
+                "adaptive_attack": {
+                    "id": attack["id"],
+                    "conjunct_targeted": attack["conjunct"],
+                    "capability": attack["capability"],
+                    "tampering_point": attack["tampering_point"],
+                },
+                "campaign_driver_record": record,
+            },
+            indent=2,
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    # WHICH ARMS THE ATTACK COULD ACTUALLY BE APPLIED TO. An arm that stages no
+    # HTC chain, no INV or no access token cannot express a corruption of it;
+    # the stage function records "not applicable" and the arm then runs the
+    # UNMODIFIED base scenario. Counting such a run as an admission would report
+    # an untouched benign request as an attack success -- the defect run 1's
+    # reporting had. SS E.4's rule is that an NA cell is not a result.
+    na_arms = {
+        note.split(":", 1)[0].strip() for note in armed.stage_notes if "not applicable" in note
+    }
+    substituted = bool(armed.invoke_notes)
     cells = [
         {
             "arm": c["arm"],
+            "attack_applied": substituted or c["arm"] not in na_arms,
             "admitted": bool(c["observed_forwarded"]),
             "reason_code_FOR_DIAGNOSIS_ONLY": c["reason_code_FOR_DIAGNOSIS_ONLY"],
-            "reference_allow": c["reference_allow"],
-            "admission_breach": c["admission_breach"],
-            "false_block": c["false_block"],
+            "reference_allow_VOID": c["reference_allow"],
+            "admission_breach_VOID": c["admission_breach"],
+            "false_block_VOID": c["false_block"],
         }
         for c in record["cells"]
     ]
-    admitted = [c for c in cells if c["admitted"]]
-    breaches = [c for c in cells if c["admission_breach"]]
+    applicable = [c for c in cells if c["attack_applied"]]
+    not_applicable = [c for c in cells if not c["attack_applied"]]
+    admitted = [c for c in applicable if c["admitted"]]
     return {
         "id": attack["id"],
         "conjunct_targeted": attack["conjunct"],
@@ -132,12 +191,13 @@ def run_attack(attack: Mapping[str, Any], armed: Armed) -> dict[str, Any]:
         },
         "counts": {
             "arms": len(cells),
-            "admitted": len(admitted),
-            "blocked": len(cells) - len(admitted),
-            "admission_breaches": len(breaches),
-            "unscorable": len(record["unscorable"]),
+            "attack_applicable": len(applicable),
+            "not_applicable_ran_unmodified_base": len(not_applicable),
+            "admitted_of_applicable": len(admitted),
+            "blocked_of_applicable": len(applicable) - len(admitted),
+            "unscorable_reported_by_driver": len(record["unscorable"]),
         },
-        "admission_breaches": breaches,
+        "not_applicable_arms": [c["arm"] for c in not_applicable],
         "cells": cells,
         "campaign_record": str(out.relative_to(REPO)).replace("\\", "/"),
     }
@@ -167,17 +227,28 @@ def main(argv: list[str] | None = None) -> int:
         result = run_attack(attack, armed)
         results.append(result)
         c = result["counts"]
-        print(f"    admitted {c['admitted']}/{c['arms']}   breaches {c['admission_breaches']}")
+        print(
+            f"    applicable {c['attack_applicable']}/{c['arms']}   "
+            f"admitted {c['admitted_of_applicable']}/{c['attack_applicable']}"
+        )
         for cell in result["cells"]:
-            mark = "ADMIT" if cell["admitted"] else "block"
+            if not cell["attack_applied"]:
+                mark = "n/a  "
+            elif cell["admitted"]:
+                mark = "ADMIT"
+            else:
+                mark = "block"
             print(f"      {mark} {cell['arm']:24s} {cell['reason_code_FOR_DIAGNOSIS_ONLY']}")
 
     report = {
         "_what": (
             "D-019 Phase B: the eight unmasked FALSIFIABLE cells of the conjunct-falsifiability "
             "enumeration, instantiated as defence-aware adaptive attacks, each run against all "
-            "nine arms on the sealed corpus and scored by the SEALED oracle. A SEPARATE EVIDENCE "
-            "CLASS: never summed with the 143-cell campaign, which is untouched."
+            "nine arms on the sealed corpus. THE SEALED ORACLE CANNOT SCORE THEM: it judges each "
+            "cell against the sealed record of the BASE scenario while the attack substitutes the "
+            "request, so four verdict columns are VOID and are suffixed _VOID. What stands is the "
+            "boundary decision and the conjunct that produced it. A SEPARATE EVIDENCE CLASS: never "
+            "summed with the 143-cell campaign, which is untouched."
         ),
         "base_scenario": BASE_SCENARIO,
         "three_rebinds": [
@@ -195,8 +266,11 @@ def main(argv: list[str] | None = None) -> int:
         "totals": {
             "cells_instantiated": len(results),
             "arm_runs": sum(r["counts"]["arms"] for r in results),
-            "admitted_total": sum(r["counts"]["admitted"] for r in results),
-            "admission_breaches_total": sum(r["counts"]["admission_breaches"] for r in results),
+            "attack_applicable_runs": sum(r["counts"]["attack_applicable"] for r in results),
+            "not_applicable_runs": sum(
+                r["counts"]["not_applicable_ran_unmodified_base"] for r in results
+            ),
+            "admitted_of_applicable": sum(r["counts"]["admitted_of_applicable"] for r in results),
         },
         "not_established": (
             "A blocked attack is not evidence the gate is sound, only that this attack failed. "
@@ -208,10 +282,11 @@ def main(argv: list[str] | None = None) -> int:
     args.out.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     t = report["totals"]
     print()
-    print(f"CELLS instantiated   = {t['cells_instantiated']}")
-    print(f"ARM RUNS             = {t['arm_runs']}")
-    print(f"ADMITTED (any arm)   = {t['admitted_total']}")
-    print(f"ADMISSION BREACHES   = {t['admission_breaches_total']}")
+    print(f"CELLS instantiated        = {t['cells_instantiated']}")
+    print(f"ARM RUNS                  = {t['arm_runs']}")
+    print(f"  attack applicable       = {t['attack_applicable_runs']}")
+    print(f"  NA (ran unmodified base)= {t['not_applicable_runs']}")
+    print(f"ADMITTED of applicable    = {t['admitted_of_applicable']}")
     print(f"WROTE {args.out}")
     return 0
 
