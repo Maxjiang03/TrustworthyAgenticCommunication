@@ -448,6 +448,47 @@ had missed, did. All four findings verified [M].
    as if it answered the behavioural question. Note also that the primary campaign ran under seal
    **v0.7** (`17e11c9`) while the byte-identity claim is against **v0.8**.
 
+#### 9c. Pre-commitment: Phase B is re-run ONCE, for provenance only
+
+**Written BEFORE the re-run exists and BEFORE any of its output is seen.**
+**Authority:** Commander instruction 2026-08-21, on being shown §9b.
+
+**The recorded reason D-019 clause "run once" requires.** Run 1's *findings* are not in question and
+are not being re-litigated. Two **provenance** defects are: the run executed on a dirty tree, so the
+exact bytes are not recoverable from any hash; and D-012's pre-committed `evidence_class` stamping
+was never applied, so the artefacts self-describe as confirmatory benign F1 cells. Neither can be
+repaired by editing the output — that is the one thing this ledger never does — so they are repaired
+by running again under the conditions that were pre-committed in the first place.
+
+**Fixed before the re-run, and nothing else changes:**
+
+1. **A clean tree.** `git status --porcelain` must be empty at run time, so `git_dirty` records
+   `false`. Two local-only working files that had sat untracked all session (`PROJECT_BRIEFING.md`
+   and three `_tmp_*.py` inspection scripts) are formalised as ignored. **Their contents are not
+   touched and nothing about them is committed** — they stay exactly as local as they already were.
+2. **D-012's stamping, applied at write time.** Every per-attack artefact is written as an evidence
+   envelope carrying `evidence_class: "extension"`, the seal manifest and its implementation commit,
+   and the attack's identity, **with the sealed driver's own record nested verbatim inside**. The
+   record is not altered; it is wrapped, so `run_mode: "confirmatory"` can never be read alone.
+3. **The artefact stops asserting what the red state withdrew.** `_what` no longer says "scored by
+   the SEALED oracle", and names all **four** void columns rather than two.
+4. **Applicability is reported, not inferred.** Each attack records which arms it could be applied
+   to and which it could not, and the admission count is reported **over applicable arm runs only**,
+   with NA runs listed separately instead of printed as ADMIT.
+
+**Committed BEFORE the result:**
+
+- **Run 1 is NOT superseded, deleted or amended.** Both runs stand, in separate directories, exactly
+  as D-014's run 1 and run 2 both stand. Run 2 writes to `results/adaptive/run2/`.
+- **If run 2's outcomes differ from run 1's in any cell, that is reported as the finding it is**,
+  with both values, before any diagnosis. A provenance-only re-run that changes a verdict would mean
+  something was non-deterministic, and that would matter more than either verdict.
+- **If they agree, no claim is strengthened by the agreement.** Run 2 fixes how the result is
+  labelled and stored. It does not add evidence about B3, and the corrected reading of run 1 — three
+  masked cells, four distinct conjuncts, 13 admissions over 54 applicable arm runs — carries over
+  unchanged.
+- **Run once.** Refusing to overwrite; a third run would need its own recorded reason.
+
 #### 10. Scope, and what this does not establish
 
 Eight cells of 22 FALSIFIABLE and of 100 enumerated, nine arms each, one base scenario. Blocking
