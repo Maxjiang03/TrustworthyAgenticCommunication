@@ -27,6 +27,94 @@ should expect from the sealed record.
 
 ---
 
+## D-019 — Pre-commitment: conjunct-falsifiability enumeration and adaptive validation
+
+**Status:** PHASE A COMPLETE, PHASE B NOT AUTHORISED. The enumeration is committed BEFORE any
+adaptive attack exists and BEFORE any cell is instantiated.
+**Date:** 2026-08-21
+**Authority:** Commander task 2026-08-21 (Phase A only). Motivating context supplied by the
+Commander: a June 2026 systematisation of out-of-band defences (arXiv:2606.26479) reporting that
+such defences have been validated only on static benchmarks, and that no result exists for
+action-level deterministic gates. **That citation postdates this assistant's knowledge cutoff and
+has not been verified here; nothing in Phase A depends on it.** The enumeration is derived from
+this repository's own code and documents, not from the cited paper.
+
+**Why an enumeration can serve as a pre-registration.** An adaptive attack a defender designs
+against its own gate proves nothing when it fails. That objection binds for probabilistic
+defences, where evasion is creative. It does not bind here: Equation 3.1 (`mproj.tex:726-737`) is
+a fully specified conjunction of ten deterministic predicates, so the adversary's question is
+mechanical — for each conjunct, at each tampering point, with each capability class, can it be
+made false? There is no conjunct one can fail to think of, because the rule enumerates them. The
+table is therefore committed first, and it binds Phase B to report every cell it marks.
+
+**Scope, fixed before anything runs.**
+
+1. **Phase A instantiates nothing.** No attack, no campaign, no arm, no oracle change. The
+   deliverable is `drafts/adaptive/CONJUNCT_ENUMERATION.md`: a reachability matrix over the ten
+   §A.5 conjuncts × two key-possession classes × five Table 3.1 tampering points, every cell
+   labelled FALSIFIABLE / STRUCTURALLY UNREACHABLE / OUT OF MODEL / NOT EXPRESSIBLE with the
+   mechanism and file:line that decides it.
+2. **Separate evidence class.** Any Phase B output goes to `results/adaptive/`, is never summed
+   with the 143-cell campaign, and is never reported as changing a campaign number. The primary
+   campaign's "run once" is spent and is not touched.
+3. **Nothing sealed is modified.** The sealed arms and oracle are imported read-only. Phase B, if
+   authorised, stages attacks from unsealed code by intervening on what the arm staged after the
+   sealed `present()` returns — the D-018 pattern — because adding a fault name would mean editing
+   `src/harness/credential_faults.py`, which is inside the seal. This constraint is recorded now,
+   before instantiation, so a later failure cannot be attributed to a seam known to be missing.
+4. **Phase B runs only cells the approved table marks FALSIFIABLE and unmasked.** A masked cell
+   would measure the masking conjunct instead of the intended one.
+
+**Committed BEFORE the result: how Phase B reports, whatever it returns.**
+
+- **Every cell's outcome is reported as returned**, including cells that return nothing
+  interesting, and including any cell where the attack **succeeds against B3**. A successful
+  attack against B3 is the most valuable result this work can produce. It will be reported as the
+  finding it is, with equal prominence, **before any diagnosis**, and it will not be softened,
+  deferred, reframed, or moved to future work. A defence study that can only report its defence
+  winning is the failure mode this task exists to avoid.
+- **A blocked attack is not evidence the gate is sound**, only that this attack failed. Phase B
+  results are reported per cell, mapped to the arms that carry the conjunct, never as "the system
+  blocks".
+- **If a cell cannot be instantiated**, that is reported as a negative result about the apparatus
+  with the constraint named, not quietly dropped from the denominator.
+
+**Phase A findings that are already committed and must not be restated more favourably later.**
+
+- **Five of the ten conjuncts are never falsified by the 143-cell campaign** [M]:
+  chain-verified, authorizer-permits, certificate-chain-valid, invocation-bound and
+  identity-consistent. Half the admission rule has never been put under load by the corpus that
+  validates it.
+- The negatives carry different scopes and the difference is load-bearing: three are
+  unconditional (reached in 34/34 cells and never false), invocation-bound is unknown on 4 cells
+  where an earlier conjunct fired first, and **identity-consistent is reached in only 6 of 34
+  cells** — it has passed six times and been tested zero times.
+- **The task's own hypothesis was three-quarters wrong and is recorded as such.** It nominated
+  label-policy-satisfied, approval-valid, resource-authorized and identity-consistent as candidate
+  never-exercised conjuncts. Measured: the first three are exercised (10, 2 and 6 falsifications
+  respectively); only identity-consistent is not.
+- **`credential_faults.py:62-65` shows the corpus steers around the identity plane deliberately** —
+  the wrong-holder fault uses a *registered* wrong holder so that the registry lookup succeeds and
+  holder-proof is left as the only conjunct that can catch it. That is a good reason for the
+  absence and not a reason to believe the conjunct works.
+- **H4b's premise is confirmed structurally**: at the single live K-holder tampering point, one
+  conjunct fires on its own merits — R ⊆ Cₙ — and six cannot fire at all. It is unevadable while
+  κ stays unreachable, required authority stays server-computed, and attenuation stays
+  monotone-narrowing. **This is an argument from mechanism, not a measurement**, and it is exactly
+  the kind of argument the static-benchmark critique says should not be trusted alone — including
+  when this study makes it. No cell of it has been instantiated.
+
+**A wrong-scope near-miss, recorded.** The dissertation was first searched for inside the
+repository, found absent, and was one step from being reported as a red state; it sits one
+directory above the repository. No red state exists. Recorded because the task's rules note three
+prior false negatives from searching the wrong scope, and this would have been the fourth.
+
+**On exit from Phase B.** This entry is updated in the same commit as the committed output with
+the run commit hash, the artefact path, and every cell's outcome. The Phase A text above is not
+edited.
+
+---
+
 ## D-018 — Pre-commitment: the real-transport sweep completed over every scored cell
 
 **Status:** CLOSED — run once. All 143 scored cells driven over a real stdio transport to the sealed server in a child process, with the SEALED mediation boundary deciding server-side on wire-parsed arguments; 143/143 agree with the sealed campaign, 0 disagreements, 0 harness errors, 0 cells left undriven. No further run.
