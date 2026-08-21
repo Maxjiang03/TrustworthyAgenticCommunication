@@ -489,6 +489,58 @@ by running again under the conditions that were pre-committed in the first place
   unchanged.
 - **Run once.** Refusing to overwrite; a third run would need its own recorded reason.
 
+#### 9d. Run 2 CLOSED — provenance repaired, findings unchanged, one further correction
+
+**Run commit:** `3dae7b1d`, recorded identically in all eight artefacts. **Artefacts:**
+`results/adaptive/run2/`. Run 1 is untouched and both runs stand.
+
+**Determinism: 72 of 72 cells identical across the two runs, 0 differences** [M, compared cell by
+cell on `(admitted, reason_code)`]. The addendum pre-committed that any difference would be the
+finding, because a provenance-only re-run that changed a verdict would mean something was
+non-deterministic. Nothing differed. **No claim is strengthened by this agreement** — run 2 fixes
+labelling and storage, not evidence.
+
+**The corrected figures are now what the harness itself emits**, rather than a reading imposed on
+it afterwards: **72 arm runs, 54 with an attack applied, 18 not applicable, and 13 admissions of the
+54** [M]. NA runs are marked `attack_applied: false`, listed by arm, printed as `n/a` and excluded
+from the count.
+
+**D-012's stamping is applied.** Each artefact is an envelope carrying `evidence_class: "extension"`,
+the seal manifest and implementation commit, and the attack's identity, with the sealed driver's
+record nested **verbatim** inside. `run_mode: "confirmatory"` can no longer be read alone. The
+withdrawn oracle claim is gone from the code as well as the ledger, and the four void columns are
+emitted with a `_VOID` suffix so they cannot be lifted out of the JSON.
+
+**`git_dirty`: repaired at the start, and self-dirtied thereafter — stated exactly.** The tree was
+genuinely clean when the run began: **A1 records `git_dirty: false`** [M]. A2 through A8 record
+`true`, and the cause is **this run's own preceding artefacts** sitting untracked in
+`results/adaptive/run2/` — `campaign.py` computes the flag from `git status --porcelain`, which
+counts untracked files. All eight record the same source commit `3dae7b1d`. This is materially
+different from run 1, where the flag was true because **uncommitted source code** was in the tree
+and the running bytes were unrecoverable; here the source is pinned and identical across all eight.
+It is **not** repaired further: writing to a temp directory and moving the artefacts afterwards
+would clear the flag, and spending a third run on a cosmetic flag with no evidentiary gain is not
+a trade this ledger should make. Disclosed instead.
+
+**A correction run 2's own accounting surfaced, about A8.** The applicability rule marks an arm
+applicable if the attack substituted its request **or** its staged material was corrupted. For A8
+that marks all nine arms applicable, because the tool substitution reached every arm. But the stage
+notes show **only B3 and B3⁺ re-minted the INV under the terminal holder identity key** [M]; the
+other seven "stage no INV under a terminal holder key". **So the compromised-holder adversary was
+staged on exactly two arms.** On the other seven, A8 was a plain scope-excess substitution — a
+different adversary. B-cap's refusal at `containment_ok` is therefore a refusal of **T-scope**, not
+of a compromised holder, and the earlier phrasing "every arm enforcing Cₙ refused a compromised
+holder" overstates the arm coverage. What stands: **the two arms that could carry the K-holder
+construction both refused it at `containment_ok`**, with conjuncts 1–5 satisfied by construction.
+That is still the H4b-adjacent result, on two arms rather than seven, and H4b's verdict remains
+**NOT DETERMINED**.
+
+**Unchanged by run 2, and still true:** three of the eight cells were masked; on B3/B3⁺ the eight
+attacks exercise four distinct conjuncts of ten; the sealed oracle cannot score any of it; B3 and
+B3⁺ admitted no applied attack. Seal hash-verified after the run: **167/167 covered files
+byte-identical to `ffa216e`** [M], with the standing caveat that a file-hash check cannot observe
+the three runtime rebinds.
+
 #### 10. Scope, and what this does not establish
 
 Eight cells of 22 FALSIFIABLE and of 100 enumerated, nine arms each, one base scenario. Blocking
