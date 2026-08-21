@@ -29,7 +29,7 @@ should expect from the sealed record.
 
 ## D-019 — Pre-commitment: conjunct-falsifiability enumeration and adaptive validation
 
-**Status:** PHASE A AND PHASE B COMPLETE, each run once. Eight cells instantiated, 72 arm runs; B3/B3+ admitted none. RED STATE reported, not worked around: the sealed oracle cannot score a substituted request, so its verdict columns are withdrawn and only the boundary decision and the refusing conjunct are reported. The enumeration is committed BEFORE any
+**Status:** PHASE A AND PHASE B COMPLETE, each run once; Phase B's closure REVISED under Commander ruling 2026-08-21 after four adversarial audits, three of which refuted the first draft. Eight of 22 FALSIFIABLE cells (of 100 enumerated), 72 arm runs; B3/B3+ admitted none -- eight attacks failing, not evidence the gate is sound. RED STATE reported, not worked around: the sealed oracle cannot score a substituted request, so its verdict columns are withdrawn and only the boundary decision and the refusing conjunct are reported. The enumeration is committed BEFORE any
 adaptive attack exists and BEFORE any cell is instantiated.
 **Date:** 2026-08-21
 **Authority:** Commander task 2026-08-21 (Phase A only). Motivating context supplied by the
@@ -113,160 +113,280 @@ prior false negatives from searching the wrong scope, and this would have been t
 the run commit hash, the artefact path, and every cell's outcome. The Phase A text above is not
 edited.
 
-### PHASE B CLOSED — run 1, every cell as returned
+### PHASE B CLOSED — revised under Commander ruling 2026-08-21, after adversarial audit
 
-**Run commit:** `980bdd6` plus the one defect fixed below. **Artefacts:**
+**Run commit:** `980bdd6` plus the defects fixed below. **Artefacts:**
 `results/adaptive/adaptive-attacks.json` and eight per-attack campaign records under
-`results/adaptive/`. Eight cells instantiated, nine arms each, **72 arm runs** [M].
+`results/adaptive/`. Eight cells, nine arms each, **72 arm runs** [M].
+
+Four independent auditors were run against the first draft of this closure, each instructed to
+**refute**. Three of four claims came back refuted or partially refuted, and the corrections are
+folded in below rather than appended. The first draft's errors are named where they were made.
 
 ---
 
-#### RED STATE, reported rather than worked around: the sealed oracle cannot score these cells
+#### 1. OBSERVED outcomes, not SCORED ones — and what that is worth
 
-**`reference_allow` returned TRUE on all 72 cells** [M], and every arm that correctly **blocked**
-an attack was scored **`false_block = True`**. This is not an oracle defect. The oracle judges each
-cell against the **sealed record of the base scenario**, and the base is `cf-benign`, whose sealed
-truth describes the legitimate request `notes.read(notes/meeting)` — not the substituted request the
-attack actually made. **The oracle scored the wrong request**, because the corpus is sealed and no
-sealed document describing an adaptive attack can be added without modifying it.
+The sealed oracle **cannot score these cells**. `reference_allow` returned TRUE on all 72 [M] and
+every arm that correctly **blocked** was scored `false_block = True`. The oracle judges each cell
+against the **sealed record of the base scenario** — `cf-benign` — while the attack substituted the
+request. `admission_breach = 0` is an artefact and is **withdrawn**; `false_block` is inverted here
+and is **withdrawn**.
 
-Three consequences, stated before any result is read:
+**What survives is not a remnant.** `observed_forwarded` and the reason code are **harness-side
+observations**, not SUT self-reports: the mediation record is written by the interposition layer
+(`src/harness/mediation/boundary.py`) and the effect ledger by a separate process (ADR 0014, G-7).
+The enumeration asks a **reachability** question, and an observed refusal at a **named conjunct** is
+exactly the evidence that question needs. **The enumeration never required a scored outcome.**
 
-1. **`admission_breach = 0` is an artefact and is NOT evidence that no attack succeeded.** It is
-   withdrawn as a finding.
-2. **`false_block` is inverted on these cells** — it marks correct refusals — and is withdrawn.
-3. **`observed_forwarded` and the reason code stand.** They are direct observations of the boundary,
-   emitted by the sealed mediation layer, not products of the sealed-truth comparison. Every result
-   below rests only on those two.
+**Correction the audit forced (first draft was wrong here).** The first draft attributed
+`reference_allow = TRUE` entirely to "the oracle scored the wrong request". **For A4 that
+attribution is incomplete.** Re-scoring the *substituted* request would return the same verdict:
+`reference_allow` is `R ⊆ Cₙ` plus gates (`src/harness/oracle/predicates.py:147-151, 186-189`), the
+substituted `R = {(notes.read, notes/project)}` is **inside Cₙ**, and no credential fault applies.
+A correctly-targeted oracle would still rule the mutated request ALLOWED and would still score
+B3/B3⁺ `false_block = True`. **Consequence, stated plainly: A4 cannot distinguish "B3 correctly
+blocked a body mutation" from "B3 over-blocked an authorized request" on authorization semantics
+alone.** Its entire evidentiary value rests on `reason_code_FOR_DIAGNOSIS_ONLY` plus
+`observed_forwarded`. That is a real limit, not a presentational one.
 
-The task specified "scored by the sealed oracle". **That could not be delivered for substituted
-requests and the shortfall is reported rather than papered over.** Phase B therefore delivers
-*mechanism* measurements — which conjunct refuses, on which arms — and **not** oracle verdicts.
+#### 2. The enumeration base, carried wherever a count appears
 
-This is itself a methodological finding, and it bears directly on the gap the task cites: a
-defence-aware adaptive protocol needs **sealed ground truth minted per attack**. Bolting adaptive
-attacks onto a sealed corpus leaves the oracle adjudicating a request that was never made. Any
-future adaptive suite must seal the attack's intent alongside the attack.
+Independently recounted from the committed table [M]: **100 cells** (10 conjuncts × 2 key classes ×
+5 tampering points).
 
----
+| Label | Cells |
+|---|--:|
+| FALSIFIABLE | **22** — **8 unmasked** (run) + **14 masked** (not run) |
+| STRUCTURALLY UNREACHABLE | 38 |
+| NOT EXPRESSIBLE | 40 |
+| OUT OF MODEL (as a cell label) | **0** |
+| **total** | **100** |
 
-#### The result matrix, as returned [M]
+Masked cells were not run because an earlier conjunct fires first, so the instance would measure the
+masking conjunct. **OUT OF MODEL labels no cell**; it classifies specific *evasion routes* inside SU
+rows, all barred by premise **P4**. The result below is therefore **eight of 22 FALSIFIABLE cells,
+eight of 100 enumerated.**
 
-Conjunct that refused, by attack and arm. `ADMIT` = the attack succeeded against that arm.
+#### 3. The result matrix, as returned [M]
 
 | Attack (conjunct · class · point) | B0 | B1 | B2-bn | B2-eb | B2-et | B2-DPoP | B-cap | B3 | B3⁺ |
 |---|---|---|---|---|---|---|---|---|---|
 | A1 certificate-chain-valid · K-none · T1 | ADMIT | ADMIT | ADMIT | ADMIT | ADMIT | ADMIT | ADMIT | **htc(3)** | **htc(3)** |
 | A2 holder-proof-valid · K-none · T1 | ADMIT | ADMIT | ADMIT | ADMIT | ADMIT | ADMIT | ADMIT | **holder(4)** | **holder(4)** |
 | A3 invocation-bound · K-none · T2 | ADMIT | ADMIT | b2-scope | b2-scope | b2-scope | b2-scope | contain(6) | **invoke(5)** | **invoke(5)** |
-| **A4 invocation-bound · K-none · T3** | **ADMIT** | **ADMIT** | **ADMIT** | **ADMIT** | **ADMIT** | **ADMIT** | **ADMIT** | **invoke(5)** | **invoke(5)** |
+| **A4 invocation-bound · K-none · T3** | ADMIT | ADMIT | ADMIT | ADMIT | ADMIT | ADMIT | ADMIT | **invoke(5)** | **invoke(5)** |
 | A5 R ⊆ Cₙ · K-none · T4 | ADMIT | ADMIT | b2-scope | b2-scope | b2-scope | b2-scope | contain(6) | invoke(5) | invoke(5) |
 | A6 resource-authorized · K-none · T1 | ADMIT | ADMIT | b2-oauth | b2-oauth | b2-oauth | b2-oauth | **oauth(9)** | invoke(5) | invoke(5) |
 | A7 identity-consistent · K-none · T1 | ADMIT | ADMIT | b2-oauth | b2-oauth | b2-oauth | b2-oauth | oauth(9) | invoke(5) | invoke(5) |
 | **A8 R ⊆ Cₙ · K-holder · T4** | ADMIT | ADMIT | b2-scope | b2-scope | b2-scope | b2-scope | **contain(6)** | **contain(6)** | **contain(6)** |
 
-**31 of 72 arm runs admitted the attack** [M]. **B3 and B3⁺ admitted none of the eight** [M].
+**31 of 72 arm runs admitted** [M]. **B3 and B3⁺ admitted none of the eight** [M].
 
-**No attack succeeded against B3.** That is reported as what it is — eight attacks failing — and
-not as evidence the gate is sound. D-019 pre-committed that a success would be the most valuable
-result available here; none occurred, and the eight cells are the table's unmasked FALSIFIABLE set,
-not a search over all adversaries.
+**No attack succeeded against B3.** That is **eight attacks failing** — eight of the 22 FALSIFIABLE
+cells the approved table identified, eight of 100 enumerated — and it is **not** evidence the gate
+is sound.
 
----
+#### 4. A4, and the scoped negative — restated, with the first draft's overreach removed
 
-#### A4 populates a row the campaign never could
+The dissertation states (`mproj.tex:1255-1257`, verbatim): *"The first-use body mutation has no
+faithful seam, because the available construction would require the terminal holder's identity key,
+which the adversary definition for this hypothesis excludes."*
 
-**A4 is the substantive result.** Argument substitution *within* Cₙ
-(`notes/meeting` → `notes/project`), with the genuine INV carried unchanged onto a request it does
-not bind. Returned: **seven of nine arms admit; only B3 and B3⁺ refuse**, at `invocation_binding_ok`.
+**The first draft called this "false as written". The audit refuted that, and the audit is right.**
+Every clause is individually true: `_rebind_inv` (`credential_faults.py:180-220`) does read
+`holders["holder-specialist"]` and re-seal the INV with it, so the construction *the sealed fault
+layer supports* really would need the terminal holder key, which H4a's adversary definition
+(`PRE_REGISTRATION.md:143-144`) really does exclude. The sentence is not false. **It is UNSCOPED:
+the words "the available construction" carry a scope the sentence never declares.**
 
-That pattern — seven A, two B — is **exactly §E.4's prediction for `F3 dpop-first-use-body-mutation`**
-(`docs/EXPERIMENT_ARCHITECTURE_FINAL.md:266`: `A A A A A A A B B`) [M], the row the confirmatory
-campaign left **NOT POPULATED** and which carries **H4a branch (ii)**. H4a has stood at NOT
-DETERMINED because that branch rested on gate G-14 C2, which is gate evidence rather than campaign
-evidence.
+**The decisive counterexample is the study's own gate, not A4** [M]. `smoke/g14/fixture.py`
+`b3_body_mutation` arms the arm with a genuine `present()` over the original tool and arguments,
+then calls `arm.decide(MUTATED_TOOL, MUTATED_ARGS)` — **no key of any kind**. That is the same
+paragraph's own named carrier, G-14 C2 (`mproj.tex:1260-1262`). So a key-free construction already
+existed in the repository **before** this run, and the unscoped sentence is contradicted two
+sentences after it is made.
 
-**Stated with its limits, because this is a positive claim.** This is *not* the sealed campaign
-cell: it is an out-of-band adaptive instance on a different base scenario, in a separate evidence
-class, and it is **not summed into the 143** or into the §E.4 agreement count. It does not convert
-H4a to SUPPORTED — only a populated corpus row could do that. What it does is put the branch's
-prediction under load for the first time and return the predicted pattern. B2-exchange-task-DPoP
-admits, which is the precise gap §D.3 attributes to INV: DPoP binds method and URI, not the body.
+**What A4 adds, stated without inflation.** G-14 C2 calls `arm.decide()` directly — a unit-level
+probe over two arms, bypassing the Specialist, the A2A hop, the MCP dispatch and the boundary
+interposition. A4 moves the same key-free construction onto the **full sealed campaign path across
+all nine arms**. It is not the first key-free construction, and the first draft's implication that
+it was is withdrawn.
 
-A3 (tool substitution) does **not** reproduce that row, and the reason is instructive: substituting
-to `notes.delete` also leaves the token's scope, so the B2 arms refuse on scope and B-cap on
-containment before any body-binding question arises. **A3 is not a clean T-tool instance.** Only
-the within-scope argument substitution isolates conjunct 5.
+**A4's construction, verified three ways** [M]: `"stage": None` (`attacks.py`), the artefact's
+`staged_material` list is **empty**, and `_holder_key`'s only call site is inside A8's function. The
+INV is the one the sealed arm minted, untouched; it binds `notes.read{resource: notes/meeting}`
+while `notes.read{resource: notes/project}` was dispatched; the substitution is at
+`runner._LateBoundToolCaller` (`runner.py:1001-1010`), invoked at `specialist.py:77`, strictly after
+signing at `specialist.py:62` and strictly before the session call at `runner.py:867-873`.
 
----
+**Four qualifications the audit required, all adopted:**
 
-#### A8 stages H4b for the first time
+1. **T-args only.** The row is `dpop-first-use-body-mutation` **(T-tool/T-args)**. A4 instantiates
+   the **T-args half**. A3 is *not* a clean T-tool instance — the B2 arms refuse on token scope and
+   B-cap on containment before any body-binding question arises. **No clean T-tool instance exists
+   anywhere in the suite.** The E.4 pattern match below is therefore a match **on the T-args half**.
+2. **The adversary gains nothing.** The mutation is deliberately *within* Cₙ so containment cannot
+   also fire — a legitimate isolation choice, but it means A4 reproduces the adversary's
+   **mechanism** and not its **objective**. It obtains no authority the principal did not hold.
+3. **No TLS client exists.** §D.2 says "between the holder's proof signing and the TLS client"; the
+   substitution sits before an **in-process** MCP session (`runner.py:864`). The "malicious
+   component" has no representation in the SUT: it is a runtime rebind of a symbol inside the seal,
+   disclosed in the module header. (No sealed file is edited; 167/167 hashes verified.)
+4. **The K-none label is generous to the attacker's costume, not its power.** K-none is "only a
+   captured credential"; A4's adversary **captures nothing** — the holder's own credential flows
+   through untouched and its whole power is positional. It is strictly weaker in possession than the
+   class it is filed under.
 
-A compromised holder re-minted a **fully valid** INV under the genuine terminal holder identity key,
-correctly bound to a substituted out-of-scope request (`notes.delete` on `notes/secret`). Conjuncts
-1–5 were satisfied by construction — the adversary holds the key and computes its own digests.
+**The pattern, checked mechanically** [M]: §E.4's row reads `A A A A A A A B B`
+(`EXPERIMENT_ARCHITECTURE_FINAL.md:266`); A4 returned `A A A A A A A B B`, arm for arm — on the
+T-args half. That A4 isolates conjunct 5 is proved by the run, not argued: **B-cap enforces
+`containment_ok` and ADMITTED A4 with `b3_admitted`** [M], so containment was reached and passed.
 
-Returned: **B-cap, B3 and B3⁺ all refused at `containment_ok`** [M]; the four B2 arms refused on
-token scope; B0 and B1 admitted, having no scope check at all. **Every Cₙ-enforcing mechanism
-blocked it and every non-enforcing one admitted it** — which is D.1's H4b prediction verbatim:
-*"all Cₙ-enforcing mechanisms block it from exceeding Cₙ, because scope containment is independent
-of holder identity"* (`EXPERIMENT_ARCHITECTURE_FINAL.md:183`).
+**Restated — the fourth scoped-negative failure, restated and not patched:**
 
-Phase A derived this structurally; **A8 measures it.** The premise H4b was written against has now
-been staged, which it never had been. The concession still stands unchanged and unsoftened: within
-Cₙ no conjunct fires, and this run says nothing about that residual because it never tested it.
+> The first-use body mutation **cannot be built as a credential fault**: the sealed fault layer acts
+> only on what the arm *staged*, never on the arguments that are *dispatched*, so the only
+> construction it supports would require the terminal holder identity key that H4a excludes. That is
+> a statement about **one seam**, not about all constructions — and the study's own G-14 C2 fixture
+> already built the attack key-free at the decision function. A second key-free construction exists
+> at the dispatch alias, which the fault layer cannot reach; this run rebound it out-of-band and
+> returned the predicted pattern **on the T-args half**. The T-tool half remains uninstantiated.
 
----
+**What this does NOT do.** It does not populate the §E.4 cell, is **not summed into the 143**, and
+**does not move H4a's verdict, which stands at NOT DETERMINED.**
 
-#### Two corrections Phase B forced on the Phase A table
+#### 5. identity-consistent: the arithmetic, reconciled — and the first draft's error named
 
-Recorded because a pre-registration that quietly absorbs its own errors is worthless.
+**The count is confirmed** [M, independently recomputed]: 34 B3/B3⁺ campaign cells; conjunct 10
+reached 6, passed 6, falsified 0, unreached 28. No cell in either dataset carries
+`b3_identity_plane_consistency`.
 
-1. **A6 and A7 were marked FALSIFIABLE and *unmasked*. Both are masked.** On B3/B3⁺ the token
-   substitution trips `invocation_binding_ok` (position 5) on `access_token_hash`, before
-   `resource-authorized` (9) or `identity-consistent` (10) is ever reached [M]. The sealed corpus
-   already knew this — `credential_faults._rebind_inv` exists precisely to re-bind the hash so the
-   later limb is reachable (`credential_faults.py:186-193`) — and the Phase A table missed it.
-   B-cap, lacking the invoke bit, does reach `oauth(9)`.
-2. **A6 and A7 are not separable cells under K-none.** Both required the same realisation, because
-   the only K-none route to either conjunct is presenting a foreign access token. Under the table's
-   own vocabulary they are **NOT EXPRESSIBLE** as distinct cells at this capability class.
+**The first draft's characterisation was materially misleading and is corrected.** It said the six
+are "exactly the three benign/control scenarios × two arms". There are **10** benign/control B3/B3⁺
+cells, not 6 [M]:
 
-**Consequence for identity-consistent, the conjunct Phase A flagged as untested.** It was reached
-**0 times in 72 adaptive cells** [M], on top of 6 reaches and 0 falsifications in 143 campaign cells
-[M]. Phase B now supplies the mechanism: under **K-none** it is unreachable because conjunct 5 fires
-first on any token substitution; under **K-holder** it is satisfied by construction, since the
-adversary's actor claim maps to its own holder key. **Conjunct 10 appears to be structurally
-unreachable in both columns** — a stronger statement than "never targeted", and one the corpus alone
-could not have produced. It is offered as a finding about this apparatus and this rule, not as a
-claim that the identity plane is unnecessary.
+| Scenario | monitor | Outcome |
+|---|---|---|
+| `cf-benign` × {B3, B3⁺} | None | `b3_admitted` — **reached** |
+| `cf-f4-declassified` × {B3, B3⁺} | **True** | `b3_admitted` — **reached** |
+| `cf-f5-approved` × {B3, B3⁺} | **True** | `b3_admitted` — **reached** |
+| `cf-f4-declassified` × {B3, B3⁺} | **False** | `b3_context_policy` — **blocked at conjunct 7** |
+| `cf-f5-approved` × {B3, B3⁺} | **False** | `b3_context_policy` — **blocked at conjunct 7** |
 
----
+The four monitor-detached controls never reached conjunct 10: with no monitor attached
+`_context_policy_ok` refuses what it cannot verify (`capability_path.py:842-861`). **The 3 × 2 = 6
+arithmetic landed on the right number by coincidence of the monitor split**, and the first draft
+silently dropped a dimension that changed the outcome for four cells.
 
-#### One harness defect, found and fixed before any output existed
+**The reachability rule, stated in full.** Conjunct 10 is reached iff it is in the arm's `enabled`
+set **and** not in `disabled` **and** no earlier enabled-and-not-disabled conjunct failed
+(`capability_path.py:485-497, 505-511`). Both extra preconditions were verified for B3/B3⁺
+(`b3.py:48-59`, `b3_plus.py:41-52`, `base.py:141`, `base.py:110-131`, run_mode `confirmatory`). **The
+rule does not transfer to B-cap**, which shares the `b3_*` reason-code namespace but has conjunct 10
+`absent` (`b_cap.py`, `htc_holder=0`). The six reaches are **[D] derived from reason codes, not
+observed**: the `evaluated` trace exists but reaches only the in-memory audit buffer and is not
+persisted.
 
-The attacks reached for `staged.htc_chain` and `staged.invocation_assertion` directly. B0, B1 and
-the B2 arms stage their own presentation types — `B2Presentation` carries neither — so the first run
-raised `AttributeError` **inside** the sealed runner and aborted. `results/adaptive/` was verified
-empty afterwards [M]: no artefact was written and the per-cell "once" was not consumed. The fix
-reads staged fields defensively and records **not applicable** for an arm that cannot express the
-attack, which is §E.4's own NA rule. The defect could not have produced a false *block* or a false
-*admission* — it aborted the cell outright.
+**Denominators corrected.** The first draft wrote "0 reaches in 72 adaptive cells". The correct
+denominator is **0 of the 16 adversarial B3/B3⁺ arm runs** — the other 56 of 72 belong to arms whose
+bitmask does not carry conjunct 10 or which never enter `CapabilityDecisionPath`, so they could not
+reach it under any attack. The first draft inflated the denominator 4.5×. In the campaign: **0 of
+the 24 adversarial B3/B3⁺ cells** [M].
 
----
+**The claim, scoped as the evidence supports and no further.** Supported: *conjunct 10 was not
+reached by any of the 24 adversarial B3/B3⁺ campaign cells or the 16 adversarial B3/B3⁺ adaptive
+runs; its entire reach set is benign.* **Not asserted as a modal claim:** "adversarially
+unreachable" is withdrawn as stated. The K-none half rests on a **single** construction (A6 and A7
+are byte-identical and were conceded non-separable), and the K-holder half is not "unreachable" at
+all — it is "cannot be made false", a different property.
 
-#### Scope, and what this does not establish
+**Untested residual, which must travel with this finding:** a compromised holder acting **within**
+Cₙ would reach conjunct 10 and pass it, and **no cell in either dataset stages that.** A8 avoided it
+only by exceeding Cₙ, so containment fired at conjunct 6.
 
-Eight cells, nine arms, one base scenario, on the constructed instance set. Blocking eight attacks
-is not evidence B3 blocks a ninth. Every out-of-model premise still bounds the result: **P1** no
-network position at the in-process A2A hop, **P2** an AS and label issuer that behave, **P3** a
-complete mediation layer, **P4** sealed harness material — which is what keeps κ, the AS root key,
-the label-issuer keys and the approver keys out of every adversary's hands — and **P5** tools with
-no hidden side effects. Four of those five are assumptions this apparatus cannot check about itself.
+#### 6. A8: what may and may not be said
 
-The seal was hash-verified before and after: **167/167 covered files byte-identical to `ffa216e`**
-[M]. `results/raw/` untouched, no ledger written, the campaign's spent "run once" not approached.
-This is a separate evidence class and is summed with nothing.
+Returned [M]: **B-cap, B3 and B3⁺ all refused at `containment_ok`**; the four B2 arms refused on
+token scope; B0 and B1 admitted, having no scope check.
+
+**Statable:** an adversary holding the terminal holder identity key and presenting a fully valid
+invocation assertion was refused at containment by **every arm enforcing Cₙ**, and admitted by both
+arms enforcing nothing.
+
+**Not statable: H4b's verdict remains NOT DETERMINED.** A8 is an out-of-band instance in a separate
+evidence class and **does not adjudicate a pre-registered hypothesis**. *"H4b was staged for the
+first time"* and *"H4b was adjudicated"* are different statements and must not be read together.
+
+**The residual, unchanged and unsoftened:** within Cₙ no conjunct fires, and **this run did not test
+it.**
+
+#### 7. The primary output: sealed ground truth is incompatible with request substitution
+
+Per-scenario sealed truth is what makes the static benchmark rigorous — every verdict recomputed
+from a document written before the run, never from the SUT's self-report. **That same property is
+what makes it unable to score an adaptive attack**, because the attack substitutes the request while
+the sealed document does not. A **structural incompatibility between two evaluation paradigms**, not
+an implementation defect, and a concrete reason the standardised defence-aware adaptive protocol the
+literature calls for is hard to build: **such a protocol must mint sealed ground truth per attack,
+not per scenario.**
+
+A4 sharpens it further: even a correctly-targeted oracle would have returned ALLOWED there, because
+the mutation stayed inside Cₙ. **Authorization semantics alone cannot separate a correct block of a
+substituted request from an over-block of an authorized one.** Distinguishing them needs the
+*binding* evidence the reason code carries — which means an adaptive protocol needs not only
+per-attack ground truth but a verdict vocabulary richer than allow/deny.
+
+Recorded as the **fourth entry** in this study's taxonomy of why a cell goes uninstantiated,
+alongside the three the dissertation carries (`mproj.tex:1252-1260`):
+
+| # | Reason | Instance |
+|---|---|---|
+| 1 | observation-unit mismatch | bit-identical replay: the attack lies in the history of decisions; the measurement unit is one boundary decision per cell |
+| 2 | absence of a faithful seam — **scope restated per §4** | first-use body mutation: none as a *credential fault*; constructions exist at the decision function (G-14 C2) and at the dispatch alias |
+| 3 | marginal information too low | expired-token control: predicted row identical to the populated audience-mismatch row |
+| 4 | **sealed ground truth incompatible with request substitution** | **every adaptive cell here: the oracle scores the base scenario's request, not the substituted one** |
+
+#### 8. Corrections Phase B forced on the Phase A table
+
+1. **A6 and A7 were marked FALSIFIABLE and *unmasked*. Both are masked** — conjunct 5 fires on
+   `access_token_hash` before 9 or 10 is reached [M]. The table has been marked in place with a
+   dated correction; the original cells are left visible rather than rewritten.
+2. **A6 and A7 are not separable cells under K-none** — one realisation serves both, so in the
+   table's own vocabulary they are **NOT EXPRESSIBLE** as distinct cells at that class.
+
+#### 9. Defects found in this work, and the state the aborted run left
+
+**Harness defect (before any output existed).** The attacks read `staged.htc_chain` and
+`staged.invocation_assertion` directly; `B2Presentation` carries neither, so the first run raised
+`AttributeError` inside the sealed runner and aborted. The fix reads staged fields defensively and
+records **not applicable** for an arm that cannot express the attack. It could not have produced a
+false block or a false admission — it aborted the cell outright.
+
+**Documentation defect (found by audit, after the harness commit).** Two docstrings in
+`validation/adaptive/attacks.py` read `"A3-target"` and `"A4-target"` while wired to attacks **A1**
+and **A2**; the same file used real attack ids in two other docstrings, so the labels read as attack
+ids and **asserted the opposite of the wiring on exactly the point A4 turns on**. Corrected to name
+the conjunct *and* the attack. No behaviour changed; the run stands.
+
+**State left by the aborted run, verified rather than assumed** [M]: `results/adaptive/` was empty
+afterwards, so no per-cell "once" was consumed; the aborted run was a separate OS process, so no
+in-process state survived it; `results/_ledger/confirmatory` and `.../pilot` still hold **143 files
+each, byte-identical to committed evidence** (`git diff HEAD -- results/_ledger/` empty);
+`results/raw/` untouched; **no orphaned `python.exe` process remained**; the only repository files
+newer than the run artefact are `.gitignore` and `DEVIATIONS.md`, both edited deliberately. The run
+was `ledger_backed=False`, so no ledger path was ever opened.
+
+#### 10. Scope, and what this does not establish
+
+Eight cells of 22 FALSIFIABLE and of 100 enumerated, nine arms each, one base scenario. Blocking
+eight attacks is not evidence B3 blocks a ninth. Every out-of-model premise still bounds the result:
+**P1** no network position at the in-process A2A hop, **P2** an AS and label issuer that behave,
+**P3** a complete mediation layer, **P4** sealed harness material, **P5** tools with no hidden side
+effects. Four of those five are assumptions this apparatus cannot check about itself.
+
+Seal hash-verified before and after: **167/167 covered files byte-identical to `ffa216e`** [M].
+Separate evidence class throughout; summed with nothing.
 
 ---
 

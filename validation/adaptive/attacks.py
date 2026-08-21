@@ -96,7 +96,9 @@ def _open_envelope(wire: bytes) -> dict[str, Any]:
 # staged-material attacks
 # --------------------------------------------------------------------------
 def forge_htc_hop(arm: Any, seed: bytes, **_: Any) -> str:
-    """A3-target: append an HTC hop naming the attacker as the next holder.
+    """Targets CONJUNCT 3 (certificate-chain-valid). Wired to attack A1.
+
+    Appends an HTC hop naming the attacker as the next holder.
 
     Targets `certificate-chain-valid` (conjunct 3). HTC_i must be signed by
     HTC_{i-1}.next_holder_pubkey (`capability_path.py:669-676`); K-none holds no
@@ -120,7 +122,9 @@ def forge_htc_hop(arm: Any, seed: bytes, **_: Any) -> str:
 
 
 def resign_inv_as_attacker(arm: Any, seed: bytes, **_: Any) -> str:
-    """A4-target: re-sign the staged INV under an unregistered attacker key.
+    """Targets CONJUNCT 4 (holder-proof-valid). Wired to attack A2.
+
+    Re-signs the staged INV under an unregistered attacker key.
 
     Targets `holder-proof-valid` (conjunct 4). The payload is left byte-identical
     so that only WHO SIGNED changes -- the binding fields stay correct, which is
@@ -137,7 +141,10 @@ def resign_inv_as_attacker(arm: Any, seed: bytes, **_: Any) -> str:
 
 
 def substitute_access_token(arm: Any, seed: bytes, **_: Any) -> str:
-    """A6/A7-target: present the attacker's own access token.
+    """Targets CONJUNCTS 9 and 10 (resource-authorized, identity-consistent).
+    Wired to attacks A6 and A7.
+
+    Presents the attacker's own access token.
 
     Targets `resource-authorized` (9) and `identity-consistent` (10). The INV is
     NOT re-bound, because K-none cannot re-sign it -- which is the honest form of
@@ -152,7 +159,9 @@ def substitute_access_token(arm: Any, seed: bytes, **_: Any) -> str:
 
 
 def remint_inv_out_of_scope(arm: Any, seed: bytes, **_: Any) -> str:
-    """A8: K-HOLDER. Re-mint a fully valid INV binding an out-of-scope request.
+    """Targets CONJUNCT 6 (R subset-of C_n) under K-HOLDER. Wired to attack A8.
+
+    Re-mints a fully valid INV binding an out-of-scope request.
 
     Targets `R subset-of C_n` (conjunct 6) under K-holder -- the H4b staging.
     Every binding field is set CORRECTLY for the substituted request, and the
@@ -219,6 +228,8 @@ ATTACKS: tuple[dict[str, Any], ...] = (
         "conjunct": "invocation-bound",
         "capability": "K-none",
         "tampering_point": "T3 argument substitution",
+        # NO staged-material corruption of any kind: the INV that reaches the
+        # boundary is the one the sealed arm minted, untouched and unre-signed.
         "stage": None,
         # Substituted WITHIN C_n on purpose, so containment cannot also fire and
         # the cell isolates conjunct 5 rather than measuring two at once.

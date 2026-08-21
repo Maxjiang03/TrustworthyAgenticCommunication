@@ -259,8 +259,15 @@ by an earlier conjunct in `CONJUNCT_ORDER` — it fires only on an arm that lack
 | 6 | R ⊆ Cₙ | SU | **F**ᵐ | **F**ᵐ | **F** | SU |
 | 7 | label-policy-satisfied | SU | **F**ᵐ | **F**ᵐ | **F**ᵐ | SU |
 | 8 | approval-valid | SU | **F**ᵐ | **F**ᵐ | **F**ᵐ | SU |
-| 9 | resource-authorized | **F** | **F**ᵐ | **F**ᵐ | **F**ᵐ | SU |
-| 10 | identity-consistent | **F** | SU | SU | SU | SU |
+| 9 | resource-authorized | **F**ᵐ † | **F**ᵐ | **F**ᵐ | **F**ᵐ | SU |
+| 10 | identity-consistent | **F**ᵐ † | SU | SU | SU | SU |
+
+> **† CORRECTED BY PHASE B (D-019), 2026-08-21.** Rows 9 and 10 at T1 were published here as
+> FALSIFIABLE and *unmasked*. They are **masked**: on B3/B3⁺ a substituted access token trips
+> `invocation_binding_ok` (position 5) on `access_token_hash` before either conjunct is reached
+> — measured on attacks A6 and A7. The sealed corpus already knew this; `credential_faults._rebind_inv`
+> exists to re-bind the hash so the later limb becomes reachable. The uncorrected cells are left
+> visible above rather than silently rewritten, as the pre-registration requires.
 
 **Row-by-row mechanism, with file:line.**
 
