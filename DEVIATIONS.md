@@ -29,7 +29,7 @@ should expect from the sealed record.
 
 ## D-019 — Pre-commitment: conjunct-falsifiability enumeration and adaptive validation
 
-**Status:** PHASE A AND PHASE B COMPLETE, each run once; Phase B's closure REVISED under Commander ruling 2026-08-21 after four adversarial audits, three of which refuted the first draft. Eight of 22 FALSIFIABLE cells (of 100 enumerated), 72 arm runs; B3/B3+ admitted none -- eight attacks failing, not evidence the gate is sound. RED STATE reported, not worked around: the sealed oracle cannot score a substituted request, so its verdict columns are withdrawn and only the boundary decision and the refusing conjunct are reported. The enumeration is committed BEFORE any
+**Status:** PHASE A AND PHASE B COMPLETE, each run once; Phase B's closure REVISED TWICE under Commander ruling 2026-08-21, after four adversarial audits (three refuted the first draft) and a completeness audit that found what none of the four had checked. Eight cells run, of which **three were masked** in breach of D-019 scope item 4, so on B3/B3+ they exercise **four distinct conjuncts of ten**. **54 of 72 arm runs had an attack applied; 13 admitted it** -- the other 18 admissions are NA runs, not attack successes. B3/B3+ admitted none: eight attacks failing, not evidence the gate is sound. RED STATE stands, and FOUR verdict columns are void, not two. Provenance defects disclosed: the run was made on a DIRTY tree, and D-012's pre-committed `evidence_class` stamping was never applied, so the artefacts self-describe as confirmatory benign F1 cells. The enumeration is committed BEFORE any
 adaptive attack exists and BEFORE any cell is instantiated.
 **Date:** 2026-08-21
 **Authority:** Commander task 2026-08-21 (Phase A only). Motivating context supplied by the
@@ -181,7 +181,19 @@ eight of 100 enumerated.**
 | A7 identity-consistent · K-none · T1 | ADMIT | ADMIT | b2-oauth | b2-oauth | b2-oauth | b2-oauth | oauth(9) | invoke(5) | invoke(5) |
 | **A8 R ⊆ Cₙ · K-holder · T4** | ADMIT | ADMIT | b2-scope | b2-scope | b2-scope | b2-scope | **contain(6)** | **contain(6)** | **contain(6)** |
 
-**31 of 72 arm runs admitted** [M]. **B3 and B3⁺ admitted none of the eight** [M].
+**The ADMIT column must be read with its applicability, and the first revision did not say so.**
+For A1 and A2 the corruption targets material seven of the nine arms do not stage (no HTC chain, no
+INV) and neither attack carries a tool substitution; for A6 and A7, B0 and B1 stage no access token.
+**Those 18 arm runs executed the unmodified benign scenario — nothing was tampered with** [M, from
+each attack's own `seams_used` record]. Printing them as ADMIT reads as attack success and they are
+not: by §E.4's own NA rule, which this harness invokes by name when it records "not applicable",
+such a cell is not a result at all.
+
+Corrected figures [M/D]: **54 of the 72 arm runs had an attack applied**, and **13 of those 54
+admitted it**. The other **18 admissions are NA runs**, not attack successes. `counts.unscorable` is
+0 in all eight records, which is a defect in the harness's reporting, not a property of the run.
+
+**B3 and B3⁺ admitted none of the eight** [M] — unchanged, and on every attack that applied to them.
 
 **No attack succeeded against B3.** That is **eight attacks failing** — eight of the 22 FALSIFIABLE
 cells the approved table identified, eight of 100 enumerated — and it is **not** evidence the gate
@@ -347,13 +359,29 @@ alongside the three the dissertation carries (`mproj.tex:1252-1260`):
 | 3 | marginal information too low | expired-token control: predicted row identical to the populated audience-mismatch row |
 | 4 | **sealed ground truth incompatible with request substitution** | **every adaptive cell here: the oracle scores the base scenario's request, not the substituted one** |
 
-#### 8. Corrections Phase B forced on the Phase A table
+#### 8. Corrections Phase B forced on the Phase A table — three cells, not two
 
-1. **A6 and A7 were marked FALSIFIABLE and *unmasked*. Both are masked** — conjunct 5 fires on
-   `access_token_hash` before 9 or 10 is reached [M]. The table has been marked in place with a
-   dated correction; the original cells are left visible rather than rewritten.
+1. **Three cells published as FALSIFIABLE-and-unmasked were measured as MASKED on B3/B3⁺** [M]:
+   resource-authorized × K-none × T1 (A6) and identity-consistent × K-none × T1 (A7), both because
+   `invocation_binding_ok` (5) fires on `access_token_hash` first; **and R ⊆ Cₙ × K-none × T4 (A5)**,
+   where conjunct 5 fires before containment. The first revision recorded only two and **missed A5,
+   even though `attacks.py` pre-registered that masking in A5's own `expect` string** before the run.
 2. **A6 and A7 are not separable cells under K-none** — one realisation serves both, so in the
    table's own vocabulary they are **NOT EXPRESSIBLE** as distinct cells at that class.
+3. **A departure from D-019's own scope, now disclosed.** Scope item 4 pre-committed that Phase B
+   would run "only cells the approved table marks FALSIFIABLE **and unmasked**", because a masked
+   cell measures the masking conjunct instead of the intended one. **Three of the eight cells run
+   were masked.** The consequence must travel with the result: on B3/B3⁺ the eight attacks land on
+   **four distinct conjuncts of ten — 3, 4, 5 and 6** [M], with five of the eight resolving at
+   conjunct 5. *"Eight cells instantiated"* is true; *"eight conjunct-falsifiability cells measured"*
+   is **not**, and "eight of 22 FALSIFIABLE cells" overstates what was measured.
+4. **A correction to how the first revision made its correction.** It rewrote two cells of the
+   pre-registered table in place, from `F` to `Fᵐ`, while stating that "the original cells are left
+   visible rather than rewritten". That statement was false, and an in-place edit of a pre-registered
+   prediction described as not being one is a worse fault than the mislabel it repaired. **The edit
+   has been reverted**: the table now carries its original cells and a superseding note beside them,
+   which is this repository's discipline everywhere else (D-011 clause 5 superseded by D-013; "the
+   Phase A text above is not edited").
 
 #### 9. Defects found in this work, and the state the aborted run left
 
@@ -376,6 +404,49 @@ each, byte-identical to committed evidence** (`git diff HEAD -- results/_ledger/
 `results/raw/` untouched; **no orphaned `python.exe` process remained**; the only repository files
 newer than the run artefact are `.gitignore` and `DEVIATIONS.md`, both edited deliberately. The run
 was `ledger_backed=False`, so no ledger path was ever opened.
+
+#### 9b. Provenance defects in the Phase B artefacts, found by a completeness audit
+
+None of the four claim-auditors opened the eight per-attack records; a fifth, asked what everyone
+had missed, did. All four findings verified [M].
+
+1. **The run executed on a DIRTY working tree.** Every adaptive record carries
+   `git_commit: 980bdd6…, git_dirty: true`. The primary campaign carries `git_dirty: false` at
+   `17e11c9`, and this ledger twice cites that as an integrity property. **The exact bytes that
+   produced these eight artefacts were never committed and are not recoverable from any hash.** The
+   pre-commitment "committed BEFORE it runs" is true of the harness's *design* and false of its
+   *bytes*: the presentation-type fix was in the tree, uncommitted, when the run happened, and
+   `attacks.py` was edited again afterwards. Disclosed, not repaired — repairing it would mean
+   re-running, and D-019 says once.
+2. **D-012's pre-committed labelling mitigation was never applied.** D-012 anticipated exactly this
+   hazard and pre-committed that `evidence_class: "extension"` and the seal version be stamped into
+   any extension output "so `run_mode: \"confirmatory\"` can never be read alone". The eight records
+   carry `run_mode: "confirmatory"`, **no `evidence_class`, no seal version**, and every cell is
+   stamped `scenario_id: "cf-benign"`, `family: "F1"`, `subcase: "benign:golden-thread"` [M].
+   **The adaptive records self-describe as confirmatory benign F1 cells; only the directory name
+   separates them from the primary campaign.** The artefacts are **not** restamped here — rewriting
+   a run's output after the fact is the one thing this ledger never does — so the unapplied
+   mitigation is recorded as a defect that travels with the artefacts.
+3. **The artefact still asserts what the red state withdrew.** `adaptive-attacks.json`'s `_what`
+   reads "… scored by the SEALED oracle" [M]. A reader who opens the artefact rather than this entry
+   gets the retracted claim.
+4. **Four columns are void, not two.** The red state named `admission_breach` and `false_block`.
+   Because the run was `ledger_backed=False`, `realized_harm` is `None`, `linkage` is `"not-scored"`
+   and `effect_count` is `0` in all 72 cells [M]. All four are void.
+5. **A widening of the pre-registered intervention surface, disclosed as such.** D-019 scope item 3
+   pre-committed that Phase B would intervene "on what the arm staged after the sealed `present()`
+   returns". The run used **three** rebinds, and the third — `runner._LateBoundToolCaller` — is on
+   the **dispatch path**, not staged material. A3, A4, A5 and A8 all ride on it, including the
+   headline result. The first revision disclosed it as a fidelity caveat; it is also a **departure
+   from scope item 3** and is recorded here as one.
+6. **The seal claim is narrower than its phrasing.** "167/167 covered files byte-identical to
+   `ffa216e`" is a **file-level self-check**: the committed `seal/verify_manifest.py` refuses to run
+   unless HEAD equals `ffa216e`, so it cannot reproduce the claim at HEAD, and no verification code
+   exists in `validation/`. It is independently corroborated by `git log ffa216e..HEAD -- src/
+   analysis/ fixtures/ docs/` being empty. But **a file-hash check cannot observe three runtime
+   rebinds of sealed symbols**, which is precisely how this run worked, and it must stop being cited
+   as if it answered the behavioural question. Note also that the primary campaign ran under seal
+   **v0.7** (`17e11c9`) while the byte-identity claim is against **v0.8**.
 
 #### 10. Scope, and what this does not establish
 

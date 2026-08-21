@@ -259,15 +259,24 @@ by an earlier conjunct in `CONJUNCT_ORDER` — it fires only on an arm that lack
 | 6 | R ⊆ Cₙ | SU | **F**ᵐ | **F**ᵐ | **F** | SU |
 | 7 | label-policy-satisfied | SU | **F**ᵐ | **F**ᵐ | **F**ᵐ | SU |
 | 8 | approval-valid | SU | **F**ᵐ | **F**ᵐ | **F**ᵐ | SU |
-| 9 | resource-authorized | **F**ᵐ † | **F**ᵐ | **F**ᵐ | **F**ᵐ | SU |
-| 10 | identity-consistent | **F**ᵐ † | SU | SU | SU | SU |
+| 9 | resource-authorized | **F** | **F**ᵐ | **F**ᵐ | **F**ᵐ | SU |
+| 10 | identity-consistent | **F** | SU | SU | SU | SU |
 
-> **† CORRECTED BY PHASE B (D-019), 2026-08-21.** Rows 9 and 10 at T1 were published here as
-> FALSIFIABLE and *unmasked*. They are **masked**: on B3/B3⁺ a substituted access token trips
-> `invocation_binding_ok` (position 5) on `access_token_hash` before either conjunct is reached
-> — measured on attacks A6 and A7. The sealed corpus already knew this; `credential_faults._rebind_inv`
-> exists to re-bind the hash so the later limb becomes reachable. The uncorrected cells are left
-> visible above rather than silently rewritten, as the pre-registration requires.
+> **SUPERSEDED IN PART BY PHASE B (D-019), 2026-08-21 — the table above is NOT edited.**
+> Phase B measured **three** cells this table marks bare **F** (FALSIFIABLE and unmasked) as in fact
+> **MASKED** on B3/B3⁺. The predictions stand as published; the measurements supersede them:
+>
+> | Cell | Published here | Measured in Phase B |
+> |---|---|---|
+> | 9 resource-authorized × K-none × T1 | **F** unmasked | **masked** — `invocation_binding_ok` (5) fires on `access_token_hash` (attack A6) |
+> | 10 identity-consistent × K-none × T1 | **F** unmasked | **masked** — same conjunct, same reason (attack A7) |
+> | 6 R ⊆ Cₙ × K-none × T4 | **F** unmasked | **masked** — `invocation_binding_ok` (5) fires before containment (attack A5) |
+>
+> **Consequence for D-019 scope item 4**, which barred masked cells from Phase B: three of the eight
+> cells run were masked, so on B3/B3⁺ the eight attacks exercise only **four distinct conjuncts of
+> ten** — 3, 4, 5 and 6. "Eight cells instantiated" is true; "eight conjunct-falsifiability cells
+> measured" is not. An earlier revision of this file rewrote two of these cells in place and
+> described itself as not having done so; that edit is reverted here and recorded in D-019.
 
 **Row-by-row mechanism, with file:line.**
 
