@@ -37,6 +37,10 @@ AUTHORISED = (
     # Commander ruling 2026-08-19: FIG-L2 and FIG-L3 merge into one two-band
     # figure; the two scripts they replace are removed.
     "figL23_latency.py",
+    # Commander instruction 2026-08-21. A SEPARATE EVIDENCE CLASS (DEVIATIONS
+    # D-019 Phase B), drawn from results/adaptive/run2/ and never summed with
+    # the 143-cell campaign; the figure carries that on its own face.
+    "fig_adaptive_attacks.py",
 )
 
 
