@@ -1,0 +1,84 @@
+{
+  "_what": "D-021: the sealed confirmatory campaign re-driven in process, ledger off, 5 times, each compared cell by cell against results/raw/campaign-confirmatory.json on the ledger-independent fields. Repetition here detects nondeterminism and nothing else (D26); no value is averaged and no sealed number changes.",
+  "sealed_artefact": "results/raw/campaign-confirmatory.json",
+  "compared_fields": [
+    "observed_forwarded",
+    "reason_code_FOR_DIAGNOSIS_ONLY",
+    "reference_allow",
+    "admission_breach",
+    "false_block"
+  ],
+  "excluded_by_construction": [
+    "realized_harm",
+    "effect_count",
+    "linkage",
+    "log_integrity_failure"
+  ],
+  "git": {
+    "head": "74a5875aed389540c958627d9a2741d7d661d3e2",
+    "dirty": true
+  },
+  "runs": [
+    {
+      "compared_cells": 143,
+      "cells_only_in_sealed": [],
+      "cells_only_in_run": [],
+      "field_disagreements": [],
+      "unscorable_sealed": 10,
+      "unscorable_run": 10,
+      "unscorable_identical": true,
+      "run_index": 1,
+      "elapsed_seconds": 4.493,
+      "artefact": "results/replication/run-1.json"
+    },
+    {
+      "compared_cells": 143,
+      "cells_only_in_sealed": [],
+      "cells_only_in_run": [],
+      "field_disagreements": [],
+      "unscorable_sealed": 10,
+      "unscorable_run": 10,
+      "unscorable_identical": true,
+      "run_index": 2,
+      "elapsed_seconds": 5.022,
+      "artefact": "results/replication/run-2.json"
+    },
+    {
+      "compared_cells": 143,
+      "cells_only_in_sealed": [],
+      "cells_only_in_run": [],
+      "field_disagreements": [],
+      "unscorable_sealed": 10,
+      "unscorable_run": 10,
+      "unscorable_identical": true,
+      "run_index": 3,
+      "elapsed_seconds": 5.332,
+      "artefact": "results/replication/run-3.json"
+    },
+    {
+      "compared_cells": 143,
+      "cells_only_in_sealed": [],
+      "cells_only_in_run": [],
+      "field_disagreements": [],
+      "unscorable_sealed": 10,
+      "unscorable_run": 10,
+      "unscorable_identical": true,
+      "run_index": 4,
+      "elapsed_seconds": 5.242,
+      "artefact": "results/replication/run-4.json"
+    },
+    {
+      "compared_cells": 143,
+      "cells_only_in_sealed": [],
+      "cells_only_in_run": [],
+      "field_disagreements": [],
+      "unscorable_sealed": 10,
+      "unscorable_run": 10,
+      "unscorable_identical": true,
+      "run_index": 5,
+      "elapsed_seconds": 4.996,
+      "artefact": "results/replication/run-5.json"
+    }
+  ],
+  "all_runs_agree_with_sealed": true
+}

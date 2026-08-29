@@ -29,7 +29,7 @@ should expect from the sealed record.
 
 ## D-022 — Pre-commitment: the RQ4 latency pass repeated ONCE with CPU affinity pinned (run 3)
 
-**Status:** OPEN — written BEFORE the pass runs.
+**Status:** CLOSED — run once (run 3, pinned). Verdict `stands` at 3.1478 ms (3.1229–3.1767); pinning collapses the capability arms' boundary IQR from about 3.1 ms to about 0.3 ms and halves or better every span of every arm, the exchange arms' delegation cost included (about 16 ms → 3.0–3.7 ms). Run 2 remains the reported value.
 **Date:** 2026-08-30 (instruction received 2026-08-29; record committed before the run)
 **Authority:** Commander instruction 2026-08-29 ("继续上述任务"), executing item E3a of
 `drafts/review/SUPPLEMENTARY_EXPERIMENTS_PLAN.md`, the plan the same day's review recommended.
@@ -127,7 +127,7 @@ Per-mechanism attribution stays under ADR 0041: every delta here is still compos
 
 ## D-021 — Pre-commitment: in-process replication of the sealed campaign, five times, to detect nondeterminism
 
-**Status:** OPEN — written BEFORE any replication run.
+**Status:** CLOSED — five runs; in every run all 143 scored cells agree with the sealed record on every compared field and the same ten NA cells are routed. No nondeterminism found.
 **Date:** 2026-08-30 (instruction received 2026-08-29; record committed before the run)
 **Authority:** Commander instruction 2026-08-29 ("继续上述任务"), executing item E9 of
 `drafts/review/SUPPLEMENTARY_EXPERIMENTS_PLAN.md`.
@@ -164,9 +164,34 @@ alone.
 hash, the artefact paths, per-run elapsed time, and every disagreement. The text above is not
 edited.
 
+### CLOSED — five runs, the counts as returned
+
+**Run commit:** `74a5875` (tree dirty with unrelated untracked drafts, recorded in each artefact's
+`git.dirty = true`). **Date:** 2026-08-30. **Artefacts:** `results/replication/run-1.json` …
+`run-5.json` (each the sealed driver's record nested verbatim in an `evidence_class: "replication"`
+envelope) and `results/replication/replication-summary.json`. A first launch of the harness
+failed in the shell before Python started (the output directory did not yet exist); no artefact
+was written and no run-once guard was consumed, so the five runs below are the first and only
+runs.
+
+**Outcome, as returned [M].** Five runs, each 143 scored cells and 10 unscorable. In every run,
+every one of the 143 cells agreed with `results/raw/campaign-confirmatory.json` on all five
+compared fields — `observed_forwarded`, the reason code, `reference_allow`, `admission_breach`,
+`false_block` — with **0 field disagreements, 0 cells present on one side only, and the same ten
+NA cells with the same causes** (`unscorable_identical = true` in all five). Wall clock per run:
+4.49, 5.02, 5.33, 5.24, 5.00 s. The committed prediction held in full.
+
+**What this establishes, and what it does not.** On this platform and this apparatus the sealed
+campaign's boundary decisions and ledger-independent verdicts are reproducible run to run, which
+is the only thing repetition is permitted to show (D26); it says nothing about the effect column
+(the ledger was detached, so every `realized_harm` here is None and was excluded from comparison
+by construction) and nothing about instances outside the corpus. No sealed number changes; the
+replication records are a separate evidence class and are never summed with the campaign.
+
+
 ## D-020 — Pre-commitment: adaptive run 3, one cell (A9), the in-scope half of H4b
 
-**Status:** OPEN — written BEFORE the cell is instantiated.
+**Status:** CLOSED — run once. A9 admitted by all nine arms, as predicted: H4b's in-scope half is carried at mechanism level, and A4's refusal is shown to rest on invocation binding, not on scope.
 **Date:** 2026-08-30 (instruction received 2026-08-29; record committed before the run)
 **Authority:** Commander instruction 2026-08-29 ("继续上述任务"), executing item E4 of
 `drafts/review/SUPPLEMENTARY_EXPERIMENTS_PLAN.md`.
