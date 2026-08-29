@@ -70,6 +70,61 @@ reported as a negative result about the apparatus and run 2 stands alone.
 **On exit.** This entry is updated in the same commit as the committed output with the run commit
 hash, the artefact paths, the verdict, and the side-by-side IQRs. The text above is not edited.
 
+### CLOSED — run 3 (pinned), the verdict and the descriptives as returned, and one finding that is larger than the one this entry was written for
+
+**Run commit:** `7ce9c34` (tree dirty with unrelated untracked drafts, recorded in the sidecar's
+companion artefacts). **Date:** 2026-08-30, 00:03–00:06 +0100, on the row 9 platform, on AC power,
+pinned to logical CPUs 0–11 (the twelve performance-core threads, detected). **Artefacts:**
+`results/validation/latency-pilot-run3-pinned.json` (40,500 samples, the sealed collector's
+output untouched), `latency-pilot-run3-pinned.meta.json` (the pinned CPU list and the platform
+as read; `plan_identical_to_run2 = true`), `latency-run3-pinned-decision.json`,
+`latency-run3-pinned-rq4.json`. Collection took 175.5 s against run 2's 274.7 s.
+
+**Prediction (i), as returned [M].** Verdict **`stands`**: median(B3) − median(B0), measured
+segment, warm, n = 210 per arm after the warm-up discard, point estimate **3.1478 ms**, 95%
+bootstrap interval **3.1229–3.1767 ms**, same seed and 10,000 resamples. Run 2's reported value is
+6.4417 ms (6.3721–6.4641). Both are below the 20 ms margin; the pre-registered verdict is
+unchanged in direction and run 2 remains the reported value (D-009 clause 2).
+
+**Prediction (ii), as returned [M].** The capability arms' warm benign boundary-verification
+distributions collapse under pinning — median and IQR, run 2 → run 3: B-cap 5.3891 / 3.1533 →
+2.5299 / 0.2626 ms; B3 6.1953 / 3.1854 → 3.0064 / 0.2488 ms; B3+ 6.2140 / 3.0661 → 3.0244 /
+0.3270 ms. The split D-009 could not exclude **is** core migration: the two clusters run 2
+showed near 3 ms and near 6.5 ms are the performance-core and efficiency-core paths, and the
+unpinned median sat in the slower cluster. The same holds cold (B3 6.1569 / 3.4054 → 3.0583 /
+0.3367 ms) and on the refusal path (B3 5.8351 → 2.7698 ms).
+
+**The finding this entry did not anticipate, reported before any use is made of it.** Pinning
+moved **every** span of **every** arm, not only the capability arms' boundary. The warm deltas
+against B0, run 2 → run 3 [M]: delegation — B2-exchange-broad 16.028 → 3.027 ms
+(2.947–3.212), B2-exchange-task 15.954 → 3.718 ms (3.420–4.611), B2-exchange-task-DPoP
+16.165 → 3.467 ms (3.030–3.953), B-cap 0.928 → 0.474, B3 1.432 → 0.776, B3+ 1.431 → 0.799;
+presentation — B3 0.243 → 0.143 ms; boundary verification — the OAuth arms essentially
+unchanged (0.337 → 0.233, 0.229 → 0.202, 0.221 → 0.228, 0.389 → 0.385 ms). B0's own warm
+end-to-end median, the fixed testbed overhead, fell from 22.736 ms to 13.258 ms. All 70 deltas
+were emitted and the same 10 B1 pairs were refused by the sealed layer, as in run 2.
+
+**What this changes, stated plainly.** The **location** of each configuration's cost is the same in
+both series — the exchange arms pay at delegation and almost nothing at the boundary, the
+capability arms pay at the boundary and little at delegation — and the row-1 verdict stands in
+both. The **magnitudes** reported from run 2 (about 16 ms per delegation for the exchange arms,
+about 6 ms at the boundary for the capability arms) are properties of an unpinned process on a
+hybrid P/E-core CPU under the Windows scheduler, and the exchange arms' delegation cost is the
+quantity most affected: the loopback AS round trip involves two processes waking each other, and
+the unpinned figure carries that scheduling cost. Under pinning the exchange arms' delegation cost
+is 3.0–3.7 ms and the capability arms' boundary cost 2.5–3.0 ms, so the two families' costs are
+of the same order rather than 16:6. The pinned boundary figures for B3 (3.0 ms) also agree with
+the G-3 microbenchmark's adjudicated 2.8264 ms, which was pinned.
+
+**Reporting obligation this creates, recorded here so it is not softened later.** Wherever the
+dissertation states run 2's absolute magnitudes (the abstract's "about 16 ms" and "about 6 ms",
+§4.4, §5.1 RQ4, §5.2), it must state beside them that a pinned pass on the same platform gives
+3.0–3.7 ms and 2.5–3.0 ms respectively, that the unpinned figures carry scheduler placement on a
+hybrid CPU, and that the location conclusion is the one both series support. Run 2 stays the
+pre-registered reported value; run 3 is the validation series; neither is pooled with the other.
+Per-mechanism attribution stays under ADR 0041: every delta here is still composite.
+
+
 ## D-021 — Pre-commitment: in-process replication of the sealed campaign, five times, to detect nondeterminism
 
 **Status:** OPEN — written BEFORE any replication run.
@@ -148,6 +203,30 @@ overwrite.
 
 **On exit.** This entry is updated in the same commit as the committed output with the run commit
 hash, the artefact path and every arm's outcome. The text above is not edited.
+
+### CLOSED — run 1, the outcome as returned
+
+**Run commit:** `7ce9c34` (the pre-commitment commit itself; the tree carried unrelated untracked
+review drafts and figure scripts, recorded in the artefact's `git.dirty = true`). **Date:**
+2026-08-30. **Artefacts:** `results/adaptive/run3/adaptive-run3.json`,
+`results/adaptive/run3/campaign-A9-in-scope-K-holder-T3.json`. Wall clock 1.6 s.
+
+**Outcome, as returned [M].** 9 arm runs, 9 applicable: the tool substitution
+`notes.read{notes/meeting} → notes.read{notes/project}` applied to every arm, and the re-minted
+INV applied to B3 and B3+ only, the other seven recording "not applicable: this arm stages no INV
+under a terminal holder key". **9 admitted, 0 blocked, 0 unscorable.** Reason codes: B0
+`b0_no_boundary_check`, B1 `b1_admitted`, the four B2 arms `b2_admitted`, B-cap `b3_admitted`,
+B3 `b3_admitted`, B3+ `b3_admitted`. The committed prediction held cell for cell.
+
+**What this establishes, and what it does not.** H4b's in-scope half — no mechanism blocks a
+compromised holder acting within C_n — is now carried at mechanism level by one instantiated
+cell, as its out-of-scope half is by A8. H4b remains **NOT DETERMINED at campaign level**: no
+campaign cell stages a compromised holder, and this entry does not change that. A4's refusal
+(D-019 §1) is now shown to rest on invocation binding and not on scope: the same in-scope
+substitution is admitted once the INV binds it. An admitted in-scope request says nothing about
+the rest of the authority surface. The verdict columns are VOID as in run 2; the cell is a
+separate evidence class and is never summed with the campaign or with run 2.
+
 
 ## D-019 — Pre-commitment: conjunct-falsifiability enumeration and adaptive validation
 

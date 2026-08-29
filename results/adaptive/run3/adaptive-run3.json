@@ -1,0 +1,132 @@
+{
+  "_what": "D-020: adaptive run 3, one cell (A9, K-holder, in-scope argument substitution with a re-minted valid INV) against all nine arms on the sealed corpus. The sealed oracle cannot score it; the verdict columns are VOID. What stands is the boundary decision and the reason code. A SEPARATE EVIDENCE CLASS: never summed with the 143-cell campaign or with adaptive run 2.",
+  "base_scenario": "cf-benign",
+  "git": {
+    "head": "7ce9c34322dc4d53d2b5b3573301f1e2c7f51758",
+    "dirty": true
+  },
+  "attacks": [
+    {
+      "id": "A9-in-scope-K-holder-T3",
+      "conjunct_targeted": "none -- H4b's in-scope half: no conjunct has grounds to fire",
+      "capability": "K-holder",
+      "tampering_point": "T3 argument substitution, inside C_n",
+      "prediction_PRE_REGISTERED": "ADMITTED by all nine arms: B0 b0_no_boundary_check, B1 b1_admitted, the four B2 arms b2_admitted, B-cap/B3/B3+ b3_admitted. Any refusal by a C_n-enforcing arm falsifies H4b's over-blocking half for that arm.",
+      "seams_used": {
+        "staged_material": [
+          "B0: not applicable: this arm stages no INV under a terminal holder key",
+          "B1: not applicable: this arm stages no INV under a terminal holder key",
+          "B2-broad-noexchange: not applicable: this arm stages no INV under a terminal holder key",
+          "B2-exchange-broad: not applicable: this arm stages no INV under a terminal holder key",
+          "B2-exchange-task: not applicable: this arm stages no INV under a terminal holder key",
+          "B2-exchange-task-DPoP: not applicable: this arm stages no INV under a terminal holder key",
+          "B-cap: not applicable: this arm stages no INV under a terminal holder key",
+          "B3: re-minted a VALID INV under the terminal holder key binding notes.read on notes/project (inside C_n)",
+          "B3+: re-minted a VALID INV under the terminal holder key binding notes.read on notes/project (inside C_n)"
+        ],
+        "tool_substitution": [
+          "notes.read{'resource': 'notes/meeting'} -> notes.read{'resource': 'notes/project'}"
+        ]
+      },
+      "counts": {
+        "arms": 9,
+        "attack_applicable": 9,
+        "not_applicable_ran_unmodified_base": 0,
+        "admitted_of_applicable": 9,
+        "blocked_of_applicable": 0,
+        "unscorable_reported_by_driver": 0
+      },
+      "cells": [
+        {
+          "arm": "B0",
+          "attack_applied": true,
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b0_no_boundary_check",
+          "reference_allow_VOID": true,
+          "admission_breach_VOID": false,
+          "false_block_VOID": false
+        },
+        {
+          "arm": "B1",
+          "attack_applied": true,
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b1_admitted",
+          "reference_allow_VOID": true,
+          "admission_breach_VOID": false,
+          "false_block_VOID": false
+        },
+        {
+          "arm": "B2-broad-noexchange",
+          "attack_applied": true,
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow_VOID": true,
+          "admission_breach_VOID": false,
+          "false_block_VOID": false
+        },
+        {
+          "arm": "B2-exchange-broad",
+          "attack_applied": true,
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow_VOID": true,
+          "admission_breach_VOID": false,
+          "false_block_VOID": false
+        },
+        {
+          "arm": "B2-exchange-task",
+          "attack_applied": true,
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow_VOID": true,
+          "admission_breach_VOID": false,
+          "false_block_VOID": false
+        },
+        {
+          "arm": "B2-exchange-task-DPoP",
+          "attack_applied": true,
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b2_admitted",
+          "reference_allow_VOID": true,
+          "admission_breach_VOID": false,
+          "false_block_VOID": false
+        },
+        {
+          "arm": "B-cap",
+          "attack_applied": true,
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+          "reference_allow_VOID": true,
+          "admission_breach_VOID": false,
+          "false_block_VOID": false
+        },
+        {
+          "arm": "B3",
+          "attack_applied": true,
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+          "reference_allow_VOID": true,
+          "admission_breach_VOID": false,
+          "false_block_VOID": false
+        },
+        {
+          "arm": "B3+",
+          "attack_applied": true,
+          "admitted": true,
+          "reason_code_FOR_DIAGNOSIS_ONLY": "b3_admitted",
+          "reference_allow_VOID": true,
+          "admission_breach_VOID": false,
+          "false_block_VOID": false
+        }
+      ],
+      "campaign_record": "results/adaptive/run3/campaign-A9-in-scope-K-holder-T3.json"
+    }
+  ],
+  "totals": {
+    "cells_instantiated": 1,
+    "arm_runs": 9,
+    "attack_applicable_runs": 9,
+    "admitted_of_applicable": 9
+  },
+  "not_established": "An admitted in-scope request is evidence that these arms do not over-block a compromised holder on THIS instance; it is not evidence about the rest of the authority surface, and it does not touch H4b's out-of-scope half (A8)."
+}
