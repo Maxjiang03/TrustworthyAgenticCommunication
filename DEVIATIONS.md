@@ -27,6 +27,128 @@ should expect from the sealed record.
 
 ---
 
+## D-022 — Pre-commitment: the RQ4 latency pass repeated ONCE with CPU affinity pinned (run 3)
+
+**Status:** OPEN — written BEFORE the pass runs.
+**Date:** 2026-08-30 (instruction received 2026-08-29; record committed before the run)
+**Authority:** Commander instruction 2026-08-29 ("继续上述任务"), executing item E3a of
+`drafts/review/SUPPLEMENTARY_EXPERIMENTS_PLAN.md`, the plan the same day's review recommended.
+
+**Why.** D-009 disclosed that neither the campaign nor the RQ4 latency pass pinned CPU affinity and
+that bimodality from core migration cannot be excluded. Run 2's warm benign boundary-verification
+IQRs for the capability arms are B-cap 3.1533 ms, B3 3.1854 ms, B3+ 3.0661 ms
+(`results/tables/results-latency-pilot-rq4-run2.json`), against medians of 5.39–6.21 ms. This pass
+is the single-variable check of that disclosure.
+
+**What varies: pinning, and nothing else.** The collector process is pinned to the detected
+performance cores by `measurement_platform.pin_to_performance_cores` — the same call gate G-3
+makes — before the sealed `latency_collector.collect` starts; the AS child inherits the mask.
+Everything else is the sealed collector exactly as D-006 ran it: the pilot corpus (the corpus the
+sealed specification names for latency), the same plan block (3 batches × 75 repetitions, warm-up
+5 per batch, arm order shuffled from the same order seed), the same five spans, ledger off. The
+plan block's equality with run 2's is checked and recorded. Apparatus:
+`validation/latency/collect_pinned.py` (collection, writing a sidecar with the pinned CPU list and
+the platform as read) and `validation/latency/analyse_pinned.py` (the sealed `lightweight_claim`,
+`span_descriptives` and `arm_pair_delta`, called with the same inputs from the same places as run
+2's two composition roots). Nothing sealed is edited. Output goes to `results/validation/`, never
+to `results/raw/`.
+
+**Committed prediction.** (i) The row-1 verdict on the pinned series is `stands` — the 95%
+bootstrap CI upper bound on median(B3) − median(B0), measured segment, warm, is below 20 ms.
+(ii) If the split in the capability arms' boundary-verification distributions is core migration,
+their warm IQRs narrow under pinning; if they do not narrow, the split has another cause. No
+threshold for "narrow" is fixed in advance; both IQR sets are reported side by side and the reader
+judges.
+
+**Committed reporting.** Run 2 remains the pre-registered reported value (D-009 clause 2); run 3
+is a validation series and never replaces it or is pooled with it. The verdict and every
+descriptive are reported as returned; no sample is excluded; the seed and resample count are
+those of the plan block. Per-mechanism attribution stays under ADR 0041. Run once; refuses to
+overwrite. If the pass cannot be completed (power, platform refusal, collector error), that is
+reported as a negative result about the apparatus and run 2 stands alone.
+
+**On exit.** This entry is updated in the same commit as the committed output with the run commit
+hash, the artefact paths, the verdict, and the side-by-side IQRs. The text above is not edited.
+
+## D-021 — Pre-commitment: in-process replication of the sealed campaign, five times, to detect nondeterminism
+
+**Status:** OPEN — written BEFORE any replication run.
+**Date:** 2026-08-30 (instruction received 2026-08-29; record committed before the run)
+**Authority:** Commander instruction 2026-08-29 ("继续上述任务"), executing item E9 of
+`drafts/review/SUPPLEMENTARY_EXPERIMENTS_PLAN.md`.
+
+**Why.** The descriptive-statistics rule (PRE_REGISTRATION §5, D26) permits repetition of a
+security verdict for one purpose only: to detect nondeterminism. The campaign evaluated each
+sealed scenario once. Determinism so far rests on the pre-seal flake hunt, on the real-transport
+sweep (D-018, 143/143 boundary decisions agree) and on adaptive run 2 (72/72 identical across
+runs). This entry repeats the sealed campaign, unchanged, in process, five times, and compares
+each run cell by cell with the sealed record.
+
+**This is NOT a re-run of Part H step 7.** The sealed result `results/raw/campaign-confirmatory.json`
+is read for comparison only. The sealed driver's own `refuse_if_written` guard is pointed at
+`results/replication/run-<k>.json`, so the sealed artefact is not a candidate for overwriting even
+by accident. The one difference from the campaign is `ledger_backed=False` (the sealed ledger
+directory is tracked evidence, D-016/D-018), so every effect-derived field is None here and is
+excluded from comparison **by construction**. Compared, per cell keyed
+(scenario_id, arm, monitor_attached): `observed_forwarded`, the reason code, `reference_allow`,
+`admission_breach`, `false_block`; plus the set of unscorable cells with their causes.
+Apparatus: `validation/replication/run_replication.py`. Nothing sealed is edited.
+
+**Committed prediction.** All five runs agree with the sealed record on every compared field for
+all 143 scored cells, and each routes the same 10 NA cells to `unscorable`.
+
+**Committed reporting.** Any disagreement is the finding: listed per cell with both values, with
+equal prominence and before any diagnosis. Nothing is averaged, no majority is taken, and no
+sealed number changes whatever the outcome — a disagreement would be reported as nondeterminism
+of the apparatus, not as a correction of the campaign. Each replication index runs once. D-012's
+mitigation applies at write time: every record is nested verbatim in an evidence envelope carrying
+`evidence_class: "replication"`, so its inherited `run_mode: "confirmatory"` can never be read
+alone.
+
+**On exit.** This entry is updated in the same commit as the committed output with the run commit
+hash, the artefact paths, per-run elapsed time, and every disagreement. The text above is not
+edited.
+
+## D-020 — Pre-commitment: adaptive run 3, one cell (A9), the in-scope half of H4b
+
+**Status:** OPEN — written BEFORE the cell is instantiated.
+**Date:** 2026-08-30 (instruction received 2026-08-29; record committed before the run)
+**Authority:** Commander instruction 2026-08-29 ("继续上述任务"), executing item E4 of
+`drafts/review/SUPPLEMENTARY_EXPERIMENTS_PLAN.md`.
+
+**Why.** H4b predicts two things: that every C_n-enforcing mechanism blocks a compromised holder
+from exceeding C_n, and that **no** mechanism blocks a compromised holder acting **within** C_n.
+Adaptive run 2's A8 staged the first (refused at scope containment in every C_n-enforcing arm). No
+cell anywhere stages the second. D-019 §1 also recorded a limit on A4: its substituted resource
+lies inside C_n, so B3's refusal there cannot be told, on authorization semantics alone, from the
+refusal of an authorized request. A9 is the control that separates the two: the same in-scope
+substitution as A4, but with the INV re-minted under the genuine terminal holder identity key.
+
+**What varies.** One cell, `A9-in-scope-K-holder-T3`, on the base scenario `cf-benign`: K-holder
+re-mints a valid INV binding `notes.read` on `notes/project` (inside C_n) — every binding field
+correct, signed under `holder-specialist`'s key — and the substituting tool caller presents that
+same request. The three rebinds of run 2 are reused unchanged (`_scenarios`, `credential_faults`,
+`_LateBoundToolCaller`); the `Armed` shim and the caller are imported from
+`validation/adaptive/run_adaptive.py`. Apparatus: `validation/adaptive/attacks_run3.py`,
+`validation/adaptive/run_a9.py`. Nothing sealed is edited.
+
+**Committed prediction.** ADMITTED by all nine arms: B0 `b0_no_boundary_check`, B1 `b1_admitted`,
+the four B2 arms `b2_admitted`, B-cap, B3 and B3+ `b3_admitted`. The staged-material corruption
+applies to B3 and B3+ only (no other arm stages an INV under a holder key); the tool substitution
+applies to all nine, so the applicable count is 9.
+
+**Committed reporting.** The outcome is reported as returned. If any C_n-enforcing arm REFUSES the
+in-scope request, that falsifies H4b's over-blocking half for that arm and is reported with equal
+prominence, before any diagnosis. The sealed oracle cannot score the cell (it judges against the
+sealed record of the base scenario while the attack substitutes the request); the verdict columns
+are emitted with a `_VOID` suffix exactly as in run 2, and what stands is `observed_forwarded` and
+the reason code. Separate evidence class: output goes to `results/adaptive/run3/`, never to
+`results/raw/`, and is never summed with the 143-cell campaign or with run 2. Run once; refuses to
+overwrite.
+
+**On exit.** This entry is updated in the same commit as the committed output with the run commit
+hash, the artefact path and every arm's outcome. The text above is not edited.
+
 ## D-019 — Pre-commitment: conjunct-falsifiability enumeration and adaptive validation
 
 **Status:** PHASE A AND PHASE B COMPLETE, each run once; Phase B's closure REVISED TWICE under Commander ruling 2026-08-21, after four adversarial audits (three refuted the first draft) and a completeness audit that found what none of the four had checked. Eight cells run, of which **three were masked** in breach of D-019 scope item 4, so on B3/B3+ they exercise **four distinct conjuncts of ten**. **54 of 72 arm runs had an attack applied; 13 admitted it** -- the other 18 admissions are NA runs, not attack successes. B3/B3+ admitted none: eight attacks failing, not evidence the gate is sound. RED STATE stands, and FOUR verdict columns are void, not two. Provenance defects disclosed: the run was made on a DIRTY tree, and D-012's pre-committed `evidence_class` stamping was never applied, so the artefacts self-describe as confirmatory benign F1 cells. The enumeration is committed BEFORE any

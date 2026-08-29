@@ -89,3 +89,9 @@ smoke/g10/_ledger_tmp/
 # changed by this entry; remove these two lines to track them.
 PROJECT_BRIEFING.md
 _tmp_*.py
+
+# Post-seal validation series recorded 2026-08-30 (DEVIATIONS D-020..D-022): the
+# adaptive run-3 cell is covered by the adaptive rule above; these admit the
+# replication runs and the pinned latency series, deliberately, as the rule requires.
+!results/replication/**/*.json
+!results/validation/latency-*.json
