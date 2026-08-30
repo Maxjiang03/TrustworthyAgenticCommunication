@@ -27,6 +27,72 @@ should expect from the sealed record.
 
 ---
 
+## D-023 — Pre-commitment: the §E.6 matched leave-one-out ablations, run once as a post-seal campaign
+
+**Status:** OPEN — written BEFORE any ablation cell runs.
+**Date:** 2026-08-30 (record committed before the run)
+**Authority:** Commander instruction 2026-08-30 ("继续 E1 消融 campaign-2"), executing item E1 of
+`drafts/review/SUPPLEMENTARY_EXPERIMENTS_PLAN.md`, the item the 2026-08-29 review rated the single
+largest gap (W1: "matched ablations" were designed, frozen and never run).
+
+**Why.** §E.6 defines six matched leave-one-out variants of B3, each with an orthogonal fixture only
+its conjunct refuses; the design document promised them (D36), Appendix B of the dissertation lists
+them, and no cell of any of them has ever been run. Attribution of an outcome to a single conjunct
+has so far rested on reason codes and on the adaptive probe. This entry runs the variants against
+the sealed corpus and the nine adaptive attacks, and measures their cost against B3.
+
+**What is built, and on which seams.** `validation/ablation/arms.py`. Six variants use the two
+seams the sealed code provides for exactly this purpose: `ArmIdentity(is_ablation=True,
+ablates=<conjunct>)` and `CapabilityDecisionPath(disabled={<conjunct>})`, guarded by the sealed
+identity rule (exactly one conjunct; refused on a confirmatory run). §E.6's `-holder` removes two
+conjuncts; the identity rule permits one, so it is run as its two limbs, `-holder-proof` and
+`-htc-chain`, and reported as such. The seventh, `-attenuation`, is §E.6's unsafe control: the
+frozen `gamma_ablations.minus_attenuation` override (`evaluation.prefix = P_0`) is consumed by the
+harness verifier and not by the SUT decision path, which evaluates `P_n` unconditionally; the
+variant therefore realises the override as §E.6 says — "an unsafe reference monitor that bypasses
+Biscuit attenuation" — by evaluating containment with the sealed `authority.allowed_set` on the
+authority prefix `P_0` instead of `P_n`, and nothing else differs. Three names are rebound in
+sealed namespaces (`campaign_driver.CORPORA["pilot"]` → the sealed confirmatory corpus, because the
+identity rule refuses a variant on a `confirmatory` run; `campaign_driver._factories` → the sealed
+factories plus the seven variants on B3's own setup; `matrix_grouping.ARMS` → the ladder plus the
+variant names, so the sealed per-cell `Cell` guard accepts them). Nothing in `src/` or `analysis/`
+is edited. The nine ladder arms run in the same campaign, so every comparison is within one run.
+
+**Three parts, each run once.** (a) `run_ablation.py`: the sealed campaign driver over all 13
+sealed scenarios, both monitor configurations, ledger off, sixteen arms. (b)
+`run_ablation_adaptive.py`: the nine adaptive attacks A1–A9 (D-019, D-020 apparatus, unchanged)
+against the sixteen arms. (c) `collect_latency.py`: the sealed latency collector, pinned to the
+performance cores as D-022, over the sixteen arms; `median(variant) − median(B3)` per span and
+phase with the sealed percentile bootstrap (same seed and resample count). Each variant differs
+from B3 by one conjunct, which is the one case ADR 0041 permits a per-mechanism latency statement
+for. Outputs under `results/ablation/`, never `results/raw/`.
+
+**Committed predictions (`validation/ablation/predictions.py`, derived from B3's sealed reason
+codes, `CONJUNCT_ORDER` and §E.6's orthogonality claims).** Every variant is IDENTICAL to B3 on
+every cell except: `-contain` admits F1-root, F1-terminal and F1-chain-tamper, and admits adaptive
+A8; `-attenuation` admits F1-terminal only (R ∈ C_0 ∖ C_n); `-holder-proof` admits F2
+wrong-holder-proof, F3 stolen-key substitution and adaptive A2; `-htc-chain` differs on nothing in
+the campaign and refuses A1 at holder proof instead of the chain; `-invoke` differs on nothing in
+the campaign, admits A4 (its orthogonal fixture), and moves A3/A5 to containment and A6/A7 to
+resource authorization; `-context` admits monitor-on F4 sensitive-egress and moves the four
+monitor-off F4/F5 refusals from context policy to approval (both policy conjuncts fail closed
+without a monitor, G-15(ii)); `-approval` admits monitor-on F5 unapproved-high-risk only. No
+latency prediction is made beyond the sign: removing a conjunct cannot add cost.
+
+**Committed reporting.** Every cell as returned; every difference from B3 listed per variant; the
+predictions scored as held / predicted-but-identical / unpredicted / predicted-differently, before
+any diagnosis. A variant that admits where B3 refuses is the ablation working, not a defect; a
+variant that admits something no prediction names is the finding of this entry and is reported
+first. The oracle's verdict columns are void for the adaptive part (as D-019) and ledger-derived
+fields are None throughout (ledger off); neither is compared. Nothing here changes a sealed number
+or the campaign's 143 cells; an ablation is a matched control, and the results are reported as a
+separate evidence class. If part (c) cannot be completed (power, platform refusal), parts (a) and
+(b) stand alone.
+
+**On exit.** This entry is updated in the same commit as the committed output with the run commit
+hash, the artefact paths, and every difference and prediction outcome. The text above is not
+edited.
+
 ## D-022 — Pre-commitment: the RQ4 latency pass repeated ONCE with CPU affinity pinned (run 3)
 
 **Status:** CLOSED — run once (run 3, pinned). Verdict `stands` at 3.1478 ms (3.1229–3.1767); pinning collapses the capability arms' boundary IQR from about 3.1 ms to about 0.3 ms and halves or better every span of every arm, the exchange arms' delegation cost included (about 16 ms → 3.0–3.7 ms). Run 2 remains the reported value.

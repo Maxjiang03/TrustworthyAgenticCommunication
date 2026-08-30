@@ -95,3 +95,5 @@ _tmp_*.py
 # replication runs and the pinned latency series, deliberately, as the rule requires.
 !results/replication/**/*.json
 !results/validation/latency-*.json
+# The §E.6 ablation series, 2026-08-30 (DEVIATIONS D-023), admitted deliberately.
+!results/ablation/**/*.json
