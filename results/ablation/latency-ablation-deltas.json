@@ -1,0 +1,1570 @@
+{
+  "_what": "D-023 part (c): median(variant) - median(B3) per span and phase on the pilot corpus, pinned to the performance cores, with the sealed percentile bootstrap; each variant is B3 with one E.6 conjunct removed, so each delta is the cost of that conjunct on this platform (ADR 0041's one permitted per-mechanism case).",
+  "cpu_pinning": {
+    "applied": true,
+    "pinned_logical_cpus": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "seed": 4815162342,
+  "resamples": 10000,
+  "warmup_per_batch": 5,
+  "elapsed_seconds": 288.705,
+  "git": {
+    "head": "1e0faa7f1c24ebf8bb75508e05279f1e7ee054ef",
+    "dirty": true
+  },
+  "deltas": [
+    {
+      "treatment_arm": "B3 -contain",
+      "control_arm": "B3",
+      "bit_removed": "containment (R subset-of C_n)",
+      "phase": "cold",
+      "span": "setup",
+      "point_estimate_ms": 0.0003499999999999892,
+      "ci_low_ms": -0.0030999999999999917,
+      "ci_high_ms": 0.005849999999999994,
+      "treatment": {
+        "n": 210,
+        "median": 0.1185,
+        "p95": 0.165555,
+        "iqr": 0.0257
+      },
+      "control": {
+        "n": 210,
+        "median": 0.11815,
+        "p95": 0.15637499999999996,
+        "iqr": 0.026099999999999984
+      }
+    },
+    {
+      "treatment_arm": "B3 -contain",
+      "control_arm": "B3",
+      "bit_removed": "containment (R subset-of C_n)",
+      "phase": "cold",
+      "span": "delegation",
+      "point_estimate_ms": 0.01585000000000003,
+      "ci_low_ms": -0.0052512500000000744,
+      "ci_high_ms": 0.03405000000000003,
+      "treatment": {
+        "n": 210,
+        "median": 0.8325,
+        "p95": 1.0093249999999998,
+        "iqr": 0.1019500000000001
+      },
+      "control": {
+        "n": 210,
+        "median": 0.81665,
+        "p95": 0.9779799999999998,
+        "iqr": 0.08997499999999992
+      }
+    },
+    {
+      "treatment_arm": "B3 -contain",
+      "control_arm": "B3",
+      "bit_removed": "containment (R subset-of C_n)",
+      "phase": "cold",
+      "span": "presentation",
+      "point_estimate_ms": 0.002250000000000002,
+      "ci_low_ms": -0.00035000000000001696,
+      "ci_high_ms": 0.0049000000000000155,
+      "treatment": {
+        "n": 210,
+        "median": 0.14995,
+        "p95": 0.200365,
+        "iqr": 0.019449999999999995
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1477,
+        "p95": 0.18772499999999984,
+        "iqr": 0.013724999999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -contain",
+      "control_arm": "B3",
+      "bit_removed": "containment (R subset-of C_n)",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "point_estimate_ms": -1.2252500000000004,
+      "ci_low_ms": -1.2576,
+      "ci_high_ms": -1.1893987499999998,
+      "treatment": {
+        "n": 210,
+        "median": 1.8112,
+        "p95": 2.1663699999999992,
+        "iqr": 0.20504999999999995
+      },
+      "control": {
+        "n": 210,
+        "median": 3.0364500000000003,
+        "p95": 3.5210799999999995,
+        "iqr": 0.23539999999999983
+      }
+    },
+    {
+      "treatment_arm": "B3 -contain",
+      "control_arm": "B3",
+      "bit_removed": "containment (R subset-of C_n)",
+      "phase": "cold",
+      "span": "end_to_end",
+      "point_estimate_ms": -0.4852500000000006,
+      "ci_low_ms": -0.8412087499999971,
+      "ci_high_ms": 0.014060000000000836,
+      "treatment": {
+        "n": 210,
+        "median": 16.2254,
+        "p95": 37.41452999999998,
+        "iqr": 15.29425
+      },
+      "control": {
+        "n": 210,
+        "median": 16.71065,
+        "p95": 35.193114999999956,
+        "iqr": 2.6884249999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -contain",
+      "control_arm": "B3",
+      "bit_removed": "containment (R subset-of C_n)",
+      "phase": "warm",
+      "span": "setup",
+      "point_estimate_ms": 0.0011500000000000121,
+      "ci_low_ms": -0.0038000000000000117,
+      "ci_high_ms": 0.005151249999999997,
+      "treatment": {
+        "n": 210,
+        "median": 0.126,
+        "p95": 0.17082,
+        "iqr": 0.024224999999999997
+      },
+      "control": {
+        "n": 210,
+        "median": 0.12484999999999999,
+        "p95": 0.158955,
+        "iqr": 0.02310000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3 -contain",
+      "control_arm": "B3",
+      "bit_removed": "containment (R subset-of C_n)",
+      "phase": "warm",
+      "span": "delegation",
+      "point_estimate_ms": 0.0050000000000001155,
+      "ci_low_ms": -0.010851250000000014,
+      "ci_high_ms": 0.029150000000000013,
+      "treatment": {
+        "n": 210,
+        "median": 0.8318000000000001,
+        "p95": 1.017075,
+        "iqr": 0.10770000000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 0.8268,
+        "p95": 1.0087699999999997,
+        "iqr": 0.11642500000000011
+      }
+    },
+    {
+      "treatment_arm": "B3 -contain",
+      "control_arm": "B3",
+      "bit_removed": "containment (R subset-of C_n)",
+      "phase": "warm",
+      "span": "presentation",
+      "point_estimate_ms": -0.0010499999999999954,
+      "ci_low_ms": -0.004049999999999998,
+      "ci_high_ms": 0.001799999999999996,
+      "treatment": {
+        "n": 210,
+        "median": 0.15025,
+        "p95": 0.1994899999999999,
+        "iqr": 0.017174999999999996
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1513,
+        "p95": 0.19381499999999996,
+        "iqr": 0.0194
+      }
+    },
+    {
+      "treatment_arm": "B3 -contain",
+      "control_arm": "B3",
+      "bit_removed": "containment (R subset-of C_n)",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "point_estimate_ms": -1.2906,
+      "ci_low_ms": -1.3889537499999998,
+      "ci_high_ms": -1.23169625,
+      "treatment": {
+        "n": 210,
+        "median": 1.81425,
+        "p95": 2.168815,
+        "iqr": 0.19547500000000007
+      },
+      "control": {
+        "n": 210,
+        "median": 3.10485,
+        "p95": 3.58354,
+        "iqr": 0.36837500000000034
+      }
+    },
+    {
+      "treatment_arm": "B3 -contain",
+      "control_arm": "B3",
+      "bit_removed": "containment (R subset-of C_n)",
+      "phase": "warm",
+      "span": "end_to_end",
+      "point_estimate_ms": -1.2383500000000005,
+      "ci_low_ms": -1.785703750000002,
+      "ci_high_ms": -0.9038987499999984,
+      "treatment": {
+        "n": 210,
+        "median": 15.380849999999999,
+        "p95": 31.785734999999995,
+        "iqr": 2.4838500000000003
+      },
+      "control": {
+        "n": 210,
+        "median": 16.6192,
+        "p95": 29.850559999999998,
+        "iqr": 2.1748999999999974
+      }
+    },
+    {
+      "treatment_arm": "B3 -invoke",
+      "control_arm": "B3",
+      "bit_removed": "invocation binding",
+      "phase": "cold",
+      "span": "setup",
+      "point_estimate_ms": -0.0017500000000000016,
+      "ci_low_ms": -0.005351249999999996,
+      "ci_high_ms": 0.0039000000000000146,
+      "treatment": {
+        "n": 210,
+        "median": 0.1164,
+        "p95": 0.165595,
+        "iqr": 0.020624999999999977
+      },
+      "control": {
+        "n": 210,
+        "median": 0.11815,
+        "p95": 0.15637499999999996,
+        "iqr": 0.026099999999999984
+      }
+    },
+    {
+      "treatment_arm": "B3 -invoke",
+      "control_arm": "B3",
+      "bit_removed": "invocation binding",
+      "phase": "cold",
+      "span": "delegation",
+      "point_estimate_ms": -0.0010000000000000009,
+      "ci_low_ms": -0.01795000000000002,
+      "ci_high_ms": 0.018000000000000016,
+      "treatment": {
+        "n": 210,
+        "median": 0.81565,
+        "p95": 0.9909699999999999,
+        "iqr": 0.08347499999999997
+      },
+      "control": {
+        "n": 210,
+        "median": 0.81665,
+        "p95": 0.9779799999999998,
+        "iqr": 0.08997499999999992
+      }
+    },
+    {
+      "treatment_arm": "B3 -invoke",
+      "control_arm": "B3",
+      "bit_removed": "invocation binding",
+      "phase": "cold",
+      "span": "presentation",
+      "point_estimate_ms": 0.0013500000000000179,
+      "ci_low_ms": -0.0009000000000000119,
+      "ci_high_ms": 0.0028000000000000247,
+      "treatment": {
+        "n": 210,
+        "median": 0.14905000000000002,
+        "p95": 0.185795,
+        "iqr": 0.014225000000000015
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1477,
+        "p95": 0.18772499999999984,
+        "iqr": 0.013724999999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -invoke",
+      "control_arm": "B3",
+      "bit_removed": "invocation binding",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "point_estimate_ms": -0.005450000000000177,
+      "ci_low_ms": -0.05514999999999981,
+      "ci_high_ms": 0.04929999999999969,
+      "treatment": {
+        "n": 210,
+        "median": 3.031,
+        "p95": 3.6903799999999998,
+        "iqr": 0.40912499999999996
+      },
+      "control": {
+        "n": 210,
+        "median": 3.0364500000000003,
+        "p95": 3.5210799999999995,
+        "iqr": 0.23539999999999983
+      }
+    },
+    {
+      "treatment_arm": "B3 -invoke",
+      "control_arm": "B3",
+      "bit_removed": "invocation binding",
+      "phase": "cold",
+      "span": "end_to_end",
+      "point_estimate_ms": 0.29329999999999856,
+      "ci_low_ms": -0.26044999999999874,
+      "ci_high_ms": 0.743325000000001,
+      "treatment": {
+        "n": 210,
+        "median": 17.00395,
+        "p95": 34.841674999999945,
+        "iqr": 3.480924999999999
+      },
+      "control": {
+        "n": 210,
+        "median": 16.71065,
+        "p95": 35.193114999999956,
+        "iqr": 2.6884249999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -invoke",
+      "control_arm": "B3",
+      "bit_removed": "invocation binding",
+      "phase": "warm",
+      "span": "setup",
+      "point_estimate_ms": -0.0017499999999999877,
+      "ci_low_ms": -0.006750000000000006,
+      "ci_high_ms": 0.0016012499999999992,
+      "treatment": {
+        "n": 210,
+        "median": 0.1231,
+        "p95": 0.16877999999999999,
+        "iqr": 0.022049999999999986
+      },
+      "control": {
+        "n": 210,
+        "median": 0.12484999999999999,
+        "p95": 0.158955,
+        "iqr": 0.02310000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3 -invoke",
+      "control_arm": "B3",
+      "bit_removed": "invocation binding",
+      "phase": "warm",
+      "span": "delegation",
+      "point_estimate_ms": -0.01705000000000001,
+      "ci_low_ms": -0.031451249999999965,
+      "ci_high_ms": 0.0006499999999998202,
+      "treatment": {
+        "n": 210,
+        "median": 0.80975,
+        "p95": 1.005755,
+        "iqr": 0.08912500000000001
+      },
+      "control": {
+        "n": 210,
+        "median": 0.8268,
+        "p95": 1.0087699999999997,
+        "iqr": 0.11642500000000011
+      }
+    },
+    {
+      "treatment_arm": "B3 -invoke",
+      "control_arm": "B3",
+      "bit_removed": "invocation binding",
+      "phase": "warm",
+      "span": "presentation",
+      "point_estimate_ms": -0.002599999999999991,
+      "ci_low_ms": -0.005300000000000027,
+      "ci_high_ms": -9.999999999998899e-05,
+      "treatment": {
+        "n": 210,
+        "median": 0.1487,
+        "p95": 0.18882999999999991,
+        "iqr": 0.015149999999999997
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1513,
+        "p95": 0.19381499999999996,
+        "iqr": 0.0194
+      }
+    },
+    {
+      "treatment_arm": "B3 -invoke",
+      "control_arm": "B3",
+      "bit_removed": "invocation binding",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "point_estimate_ms": -0.09269999999999978,
+      "ci_low_ms": -0.1944512499999998,
+      "ci_high_ms": -0.0394000000000001,
+      "treatment": {
+        "n": 210,
+        "median": 3.01215,
+        "p95": 3.6670849999999993,
+        "iqr": 0.3704749999999999
+      },
+      "control": {
+        "n": 210,
+        "median": 3.10485,
+        "p95": 3.58354,
+        "iqr": 0.36837500000000034
+      }
+    },
+    {
+      "treatment_arm": "B3 -invoke",
+      "control_arm": "B3",
+      "bit_removed": "invocation binding",
+      "phase": "warm",
+      "span": "end_to_end",
+      "point_estimate_ms": 0.549199999999999,
+      "ci_low_ms": -0.0310725000000003,
+      "ci_high_ms": 0.9405000000000001,
+      "treatment": {
+        "n": 210,
+        "median": 17.1684,
+        "p95": 37.47102499999999,
+        "iqr": 4.471300000000001
+      },
+      "control": {
+        "n": 210,
+        "median": 16.6192,
+        "p95": 29.850559999999998,
+        "iqr": 2.1748999999999974
+      }
+    },
+    {
+      "treatment_arm": "B3 -holder-proof",
+      "control_arm": "B3",
+      "bit_removed": "holder proof (one limb of the htc_holder bit)",
+      "phase": "cold",
+      "span": "setup",
+      "point_estimate_ms": 0.012649999999999995,
+      "ci_low_ms": 0.008650000000000005,
+      "ci_high_ms": 0.017650000000000013,
+      "treatment": {
+        "n": 210,
+        "median": 0.1308,
+        "p95": 0.16736499999999999,
+        "iqr": 0.031250000000000014
+      },
+      "control": {
+        "n": 210,
+        "median": 0.11815,
+        "p95": 0.15637499999999996,
+        "iqr": 0.026099999999999984
+      }
+    },
+    {
+      "treatment_arm": "B3 -holder-proof",
+      "control_arm": "B3",
+      "bit_removed": "holder proof (one limb of the htc_holder bit)",
+      "phase": "cold",
+      "span": "delegation",
+      "point_estimate_ms": 0.04535,
+      "ci_low_ms": 0.02664874999999996,
+      "ci_high_ms": 0.06269999999999998,
+      "treatment": {
+        "n": 210,
+        "median": 0.862,
+        "p95": 1.0632599999999994,
+        "iqr": 0.12125000000000008
+      },
+      "control": {
+        "n": 210,
+        "median": 0.81665,
+        "p95": 0.9779799999999998,
+        "iqr": 0.08997499999999992
+      }
+    },
+    {
+      "treatment_arm": "B3 -holder-proof",
+      "control_arm": "B3",
+      "bit_removed": "holder proof (one limb of the htc_holder bit)",
+      "phase": "cold",
+      "span": "presentation",
+      "point_estimate_ms": 0.005599999999999994,
+      "ci_low_ms": 0.003250000000000003,
+      "ci_high_ms": 0.008099999999999996,
+      "treatment": {
+        "n": 210,
+        "median": 0.1533,
+        "p95": 0.19369999999999998,
+        "iqr": 0.016225000000000017
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1477,
+        "p95": 0.18772499999999984,
+        "iqr": 0.013724999999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -holder-proof",
+      "control_arm": "B3",
+      "bit_removed": "holder proof (one limb of the htc_holder bit)",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "point_estimate_ms": 0.07359999999999989,
+      "ci_low_ms": 0.03254874999999966,
+      "ci_high_ms": 0.11055000000000037,
+      "treatment": {
+        "n": 210,
+        "median": 3.11005,
+        "p95": 3.67159,
+        "iqr": 0.45562499999999995
+      },
+      "control": {
+        "n": 210,
+        "median": 3.0364500000000003,
+        "p95": 3.5210799999999995,
+        "iqr": 0.23539999999999983
+      }
+    },
+    {
+      "treatment_arm": "B3 -holder-proof",
+      "control_arm": "B3",
+      "bit_removed": "holder proof (one limb of the htc_holder bit)",
+      "phase": "cold",
+      "span": "end_to_end",
+      "point_estimate_ms": 0.8054500000000004,
+      "ci_low_ms": 0.4316449999999978,
+      "ci_high_ms": 1.2106125000000028,
+      "treatment": {
+        "n": 210,
+        "median": 17.5161,
+        "p95": 36.453894999999996,
+        "iqr": 2.2146750000000033
+      },
+      "control": {
+        "n": 210,
+        "median": 16.71065,
+        "p95": 35.193114999999956,
+        "iqr": 2.6884249999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -holder-proof",
+      "control_arm": "B3",
+      "bit_removed": "holder proof (one limb of the htc_holder bit)",
+      "phase": "warm",
+      "span": "setup",
+      "point_estimate_ms": 0.010000000000000009,
+      "ci_low_ms": 0.00495000000000001,
+      "ci_high_ms": 0.014299999999999993,
+      "treatment": {
+        "n": 210,
+        "median": 0.13485,
+        "p95": 0.17634999999999995,
+        "iqr": 0.03134999999999999
+      },
+      "control": {
+        "n": 210,
+        "median": 0.12484999999999999,
+        "p95": 0.158955,
+        "iqr": 0.02310000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3 -holder-proof",
+      "control_arm": "B3",
+      "bit_removed": "holder proof (one limb of the htc_holder bit)",
+      "phase": "warm",
+      "span": "delegation",
+      "point_estimate_ms": 0.032399999999999984,
+      "ci_low_ms": 0.016398749999999983,
+      "ci_high_ms": 0.05590125000000004,
+      "treatment": {
+        "n": 210,
+        "median": 0.8592,
+        "p95": 1.037195,
+        "iqr": 0.10689999999999988
+      },
+      "control": {
+        "n": 210,
+        "median": 0.8268,
+        "p95": 1.0087699999999997,
+        "iqr": 0.11642500000000011
+      }
+    },
+    {
+      "treatment_arm": "B3 -holder-proof",
+      "control_arm": "B3",
+      "bit_removed": "holder proof (one limb of the htc_holder bit)",
+      "phase": "warm",
+      "span": "presentation",
+      "point_estimate_ms": 0.004400000000000015,
+      "ci_low_ms": 0.0005987500000000014,
+      "ci_high_ms": 0.007550000000000001,
+      "treatment": {
+        "n": 210,
+        "median": 0.1557,
+        "p95": 0.1977,
+        "iqr": 0.017999999999999988
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1513,
+        "p95": 0.19381499999999996,
+        "iqr": 0.0194
+      }
+    },
+    {
+      "treatment_arm": "B3 -holder-proof",
+      "control_arm": "B3",
+      "bit_removed": "holder proof (one limb of the htc_holder bit)",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "point_estimate_ms": 0.005850000000000133,
+      "ci_low_ms": -0.09709999999999974,
+      "ci_high_ms": 0.07130124999999991,
+      "treatment": {
+        "n": 210,
+        "median": 3.1107,
+        "p95": 3.51408,
+        "iqr": 0.3604250000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 3.10485,
+        "p95": 3.58354,
+        "iqr": 0.36837500000000034
+      }
+    },
+    {
+      "treatment_arm": "B3 -holder-proof",
+      "control_arm": "B3",
+      "bit_removed": "holder proof (one limb of the htc_holder bit)",
+      "phase": "warm",
+      "span": "end_to_end",
+      "point_estimate_ms": 0.7242999999999995,
+      "ci_low_ms": 0.2577437500000015,
+      "ci_high_ms": 1.0702649999999978,
+      "treatment": {
+        "n": 210,
+        "median": 17.3435,
+        "p95": 28.314719999999973,
+        "iqr": 2.0736750000000015
+      },
+      "control": {
+        "n": 210,
+        "median": 16.6192,
+        "p95": 29.850559999999998,
+        "iqr": 2.1748999999999974
+      }
+    },
+    {
+      "treatment_arm": "B3 -htc-chain",
+      "control_arm": "B3",
+      "bit_removed": "HTC chain (one limb of the htc_holder bit)",
+      "phase": "cold",
+      "span": "setup",
+      "point_estimate_ms": -0.0010499999999999954,
+      "ci_low_ms": -0.004500000000000004,
+      "ci_high_ms": 0.0015999999999999903,
+      "treatment": {
+        "n": 210,
+        "median": 0.11710000000000001,
+        "p95": 0.15409999999999996,
+        "iqr": 0.01342500000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 0.11815,
+        "p95": 0.15637499999999996,
+        "iqr": 0.026099999999999984
+      }
+    },
+    {
+      "treatment_arm": "B3 -htc-chain",
+      "control_arm": "B3",
+      "bit_removed": "HTC chain (one limb of the htc_holder bit)",
+      "phase": "cold",
+      "span": "delegation",
+      "point_estimate_ms": -0.01629999999999998,
+      "ci_low_ms": -0.03090125000000003,
+      "ci_high_ms": 0.0010999999999999925,
+      "treatment": {
+        "n": 210,
+        "median": 0.80035,
+        "p95": 0.9685849999999998,
+        "iqr": 0.07540000000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 0.81665,
+        "p95": 0.9779799999999998,
+        "iqr": 0.08997499999999992
+      }
+    },
+    {
+      "treatment_arm": "B3 -htc-chain",
+      "control_arm": "B3",
+      "bit_removed": "HTC chain (one limb of the htc_holder bit)",
+      "phase": "cold",
+      "span": "presentation",
+      "point_estimate_ms": -0.00045000000000000595,
+      "ci_low_ms": -0.0025499999999999967,
+      "ci_high_ms": 0.0012000000000000344,
+      "treatment": {
+        "n": 210,
+        "median": 0.14725,
+        "p95": 0.23353999999999975,
+        "iqr": 0.0126
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1477,
+        "p95": 0.18772499999999984,
+        "iqr": 0.013724999999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -htc-chain",
+      "control_arm": "B3",
+      "bit_removed": "HTC chain (one limb of the htc_holder bit)",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "point_estimate_ms": -1.8816000000000002,
+      "ci_low_ms": -1.9076499999999998,
+      "ci_high_ms": -1.85,
+      "treatment": {
+        "n": 210,
+        "median": 1.1548500000000002,
+        "p95": 1.3958999999999997,
+        "iqr": 0.11680000000000001
+      },
+      "control": {
+        "n": 210,
+        "median": 3.0364500000000003,
+        "p95": 3.5210799999999995,
+        "iqr": 0.23539999999999983
+      }
+    },
+    {
+      "treatment_arm": "B3 -htc-chain",
+      "control_arm": "B3",
+      "bit_removed": "HTC chain (one limb of the htc_holder bit)",
+      "phase": "cold",
+      "span": "end_to_end",
+      "point_estimate_ms": -3.7866,
+      "ci_low_ms": -4.131399999999999,
+      "ci_high_ms": -3.2395500000000013,
+      "treatment": {
+        "n": 210,
+        "median": 12.924050000000001,
+        "p95": 34.520185,
+        "iqr": 17.684225
+      },
+      "control": {
+        "n": 210,
+        "median": 16.71065,
+        "p95": 35.193114999999956,
+        "iqr": 2.6884249999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -htc-chain",
+      "control_arm": "B3",
+      "bit_removed": "HTC chain (one limb of the htc_holder bit)",
+      "phase": "warm",
+      "span": "setup",
+      "point_estimate_ms": -0.005649999999999988,
+      "ci_low_ms": -0.010201250000000002,
+      "ci_high_ms": -0.002999999999999989,
+      "treatment": {
+        "n": 210,
+        "median": 0.1192,
+        "p95": 0.15296999999999997,
+        "iqr": 0.014100000000000001
+      },
+      "control": {
+        "n": 210,
+        "median": 0.12484999999999999,
+        "p95": 0.158955,
+        "iqr": 0.02310000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3 -htc-chain",
+      "control_arm": "B3",
+      "bit_removed": "HTC chain (one limb of the htc_holder bit)",
+      "phase": "warm",
+      "span": "delegation",
+      "point_estimate_ms": -0.024150000000000005,
+      "ci_low_ms": -0.03869999999999996,
+      "ci_high_ms": -0.008148750000000012,
+      "treatment": {
+        "n": 210,
+        "median": 0.80265,
+        "p95": 0.9690299999999998,
+        "iqr": 0.08767499999999995
+      },
+      "control": {
+        "n": 210,
+        "median": 0.8268,
+        "p95": 1.0087699999999997,
+        "iqr": 0.11642500000000011
+      }
+    },
+    {
+      "treatment_arm": "B3 -htc-chain",
+      "control_arm": "B3",
+      "bit_removed": "HTC chain (one limb of the htc_holder bit)",
+      "phase": "warm",
+      "span": "presentation",
+      "point_estimate_ms": -0.002899999999999986,
+      "ci_low_ms": -0.006199999999999983,
+      "ci_high_ms": -0.0006499999999999839,
+      "treatment": {
+        "n": 210,
+        "median": 0.1484,
+        "p95": 0.199465,
+        "iqr": 0.015625
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1513,
+        "p95": 0.19381499999999996,
+        "iqr": 0.0194
+      }
+    },
+    {
+      "treatment_arm": "B3 -htc-chain",
+      "control_arm": "B3",
+      "bit_removed": "HTC chain (one limb of the htc_holder bit)",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "point_estimate_ms": -1.9693,
+      "ci_low_ms": -2.0664012499999997,
+      "ci_high_ms": -1.92189875,
+      "treatment": {
+        "n": 210,
+        "median": 1.1355499999999998,
+        "p95": 1.332655,
+        "iqr": 0.12697500000000006
+      },
+      "control": {
+        "n": 210,
+        "median": 3.10485,
+        "p95": 3.58354,
+        "iqr": 0.36837500000000034
+      }
+    },
+    {
+      "treatment_arm": "B3 -htc-chain",
+      "control_arm": "B3",
+      "bit_removed": "HTC chain (one limb of the htc_holder bit)",
+      "phase": "warm",
+      "span": "end_to_end",
+      "point_estimate_ms": -3.9558,
+      "ci_low_ms": -4.360106250000003,
+      "ci_high_ms": -3.681023750000001,
+      "treatment": {
+        "n": 210,
+        "median": 12.6634,
+        "p95": 32.22853,
+        "iqr": 1.7346500000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 16.6192,
+        "p95": 29.850559999999998,
+        "iqr": 2.1748999999999974
+      }
+    },
+    {
+      "treatment_arm": "B3 -context",
+      "control_arm": "B3",
+      "bit_removed": "context policy",
+      "phase": "cold",
+      "span": "setup",
+      "point_estimate_ms": -0.0020499999999999963,
+      "ci_low_ms": -0.005299999999999999,
+      "ci_high_ms": 0.0011000000000000038,
+      "treatment": {
+        "n": 210,
+        "median": 0.11610000000000001,
+        "p95": 0.154955,
+        "iqr": 0.0184
+      },
+      "control": {
+        "n": 210,
+        "median": 0.11815,
+        "p95": 0.15637499999999996,
+        "iqr": 0.026099999999999984
+      }
+    },
+    {
+      "treatment_arm": "B3 -context",
+      "control_arm": "B3",
+      "bit_removed": "context policy",
+      "phase": "cold",
+      "span": "delegation",
+      "point_estimate_ms": -0.008749999999999925,
+      "ci_low_ms": -0.02545125000000007,
+      "ci_high_ms": 0.006750000000000034,
+      "treatment": {
+        "n": 210,
+        "median": 0.8079000000000001,
+        "p95": 0.922275,
+        "iqr": 0.06679999999999997
+      },
+      "control": {
+        "n": 210,
+        "median": 0.81665,
+        "p95": 0.9779799999999998,
+        "iqr": 0.08997499999999992
+      }
+    },
+    {
+      "treatment_arm": "B3 -context",
+      "control_arm": "B3",
+      "bit_removed": "context policy",
+      "phase": "cold",
+      "span": "presentation",
+      "point_estimate_ms": -0.0007999999999999952,
+      "ci_low_ms": -0.002799999999999997,
+      "ci_high_ms": 0.0008999999999999841,
+      "treatment": {
+        "n": 210,
+        "median": 0.1469,
+        "p95": 0.18445,
+        "iqr": 0.008175000000000016
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1477,
+        "p95": 0.18772499999999984,
+        "iqr": 0.013724999999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -context",
+      "control_arm": "B3",
+      "bit_removed": "context policy",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "point_estimate_ms": -0.038300000000000445,
+      "ci_low_ms": -0.06835000000000013,
+      "ci_high_ms": 0.0010012499999998688,
+      "treatment": {
+        "n": 210,
+        "median": 2.99815,
+        "p95": 3.4849199999999994,
+        "iqr": 0.22412500000000035
+      },
+      "control": {
+        "n": 210,
+        "median": 3.0364500000000003,
+        "p95": 3.5210799999999995,
+        "iqr": 0.23539999999999983
+      }
+    },
+    {
+      "treatment_arm": "B3 -context",
+      "control_arm": "B3",
+      "bit_removed": "context policy",
+      "phase": "cold",
+      "span": "end_to_end",
+      "point_estimate_ms": -0.28359999999999985,
+      "ci_low_ms": -0.6426525000000032,
+      "ci_high_ms": 0.21292750000000082,
+      "treatment": {
+        "n": 210,
+        "median": 16.42705,
+        "p95": 30.98104,
+        "iqr": 2.391574999999998
+      },
+      "control": {
+        "n": 210,
+        "median": 16.71065,
+        "p95": 35.193114999999956,
+        "iqr": 2.6884249999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -context",
+      "control_arm": "B3",
+      "bit_removed": "context policy",
+      "phase": "warm",
+      "span": "setup",
+      "point_estimate_ms": -0.00449999999999999,
+      "ci_low_ms": -0.009449999999999986,
+      "ci_high_ms": -0.0005499999999999949,
+      "treatment": {
+        "n": 210,
+        "median": 0.12035,
+        "p95": 0.1728,
+        "iqr": 0.0267
+      },
+      "control": {
+        "n": 210,
+        "median": 0.12484999999999999,
+        "p95": 0.158955,
+        "iqr": 0.02310000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3 -context",
+      "control_arm": "B3",
+      "bit_removed": "context policy",
+      "phase": "warm",
+      "span": "delegation",
+      "point_estimate_ms": -0.010000000000000009,
+      "ci_low_ms": -0.023249999999999993,
+      "ci_high_ms": 0.01160249999999991,
+      "treatment": {
+        "n": 210,
+        "median": 0.8168,
+        "p95": 0.9479199999999999,
+        "iqr": 0.08892499999999992
+      },
+      "control": {
+        "n": 210,
+        "median": 0.8268,
+        "p95": 1.0087699999999997,
+        "iqr": 0.11642500000000011
+      }
+    },
+    {
+      "treatment_arm": "B3 -context",
+      "control_arm": "B3",
+      "bit_removed": "context policy",
+      "phase": "warm",
+      "span": "presentation",
+      "point_estimate_ms": -0.0029000000000000137,
+      "ci_low_ms": -0.006100000000000022,
+      "ci_high_ms": -0.0007499999999999729,
+      "treatment": {
+        "n": 210,
+        "median": 0.14839999999999998,
+        "p95": 0.17845999999999998,
+        "iqr": 0.009049999999999975
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1513,
+        "p95": 0.19381499999999996,
+        "iqr": 0.0194
+      }
+    },
+    {
+      "treatment_arm": "B3 -context",
+      "control_arm": "B3",
+      "bit_removed": "context policy",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "point_estimate_ms": -0.09224999999999994,
+      "ci_low_ms": -0.1890012499999996,
+      "ci_high_ms": -0.041300000000000545,
+      "treatment": {
+        "n": 210,
+        "median": 3.0126,
+        "p95": 3.4482149999999994,
+        "iqr": 0.2542749999999998
+      },
+      "control": {
+        "n": 210,
+        "median": 3.10485,
+        "p95": 3.58354,
+        "iqr": 0.36837500000000034
+      }
+    },
+    {
+      "treatment_arm": "B3 -context",
+      "control_arm": "B3",
+      "bit_removed": "context policy",
+      "phase": "warm",
+      "span": "end_to_end",
+      "point_estimate_ms": 0.07979999999999876,
+      "ci_low_ms": -0.42826124999999843,
+      "ci_high_ms": 0.5365099999999999,
+      "treatment": {
+        "n": 210,
+        "median": 16.698999999999998,
+        "p95": 33.260765,
+        "iqr": 3.097950000000001
+      },
+      "control": {
+        "n": 210,
+        "median": 16.6192,
+        "p95": 29.850559999999998,
+        "iqr": 2.1748999999999974
+      }
+    },
+    {
+      "treatment_arm": "B3 -approval",
+      "control_arm": "B3",
+      "bit_removed": "approval artifact",
+      "phase": "cold",
+      "span": "setup",
+      "point_estimate_ms": 0.0002999999999999947,
+      "ci_low_ms": -0.003950000000000009,
+      "ci_high_ms": 0.005499999999999991,
+      "treatment": {
+        "n": 210,
+        "median": 0.11845,
+        "p95": 0.16081499999999999,
+        "iqr": 0.025550000000000017
+      },
+      "control": {
+        "n": 210,
+        "median": 0.11815,
+        "p95": 0.15637499999999996,
+        "iqr": 0.026099999999999984
+      }
+    },
+    {
+      "treatment_arm": "B3 -approval",
+      "control_arm": "B3",
+      "bit_removed": "approval artifact",
+      "phase": "cold",
+      "span": "delegation",
+      "point_estimate_ms": 0.003349999999999964,
+      "ci_low_ms": -0.01475000000000004,
+      "ci_high_ms": 0.027700000000000058,
+      "treatment": {
+        "n": 210,
+        "median": 0.82,
+        "p95": 0.9526099999999998,
+        "iqr": 0.10360000000000003
+      },
+      "control": {
+        "n": 210,
+        "median": 0.81665,
+        "p95": 0.9779799999999998,
+        "iqr": 0.08997499999999992
+      }
+    },
+    {
+      "treatment_arm": "B3 -approval",
+      "control_arm": "B3",
+      "bit_removed": "approval artifact",
+      "phase": "cold",
+      "span": "presentation",
+      "point_estimate_ms": 0.0014000000000000123,
+      "ci_low_ms": -0.0015000000000000013,
+      "ci_high_ms": 0.005700000000000011,
+      "treatment": {
+        "n": 210,
+        "median": 0.1491,
+        "p95": 0.1898349999999999,
+        "iqr": 0.019174999999999998
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1477,
+        "p95": 0.18772499999999984,
+        "iqr": 0.013724999999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -approval",
+      "control_arm": "B3",
+      "bit_removed": "approval artifact",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "point_estimate_ms": -0.006650000000000489,
+      "ci_low_ms": -0.04320000000000013,
+      "ci_high_ms": 0.04345,
+      "treatment": {
+        "n": 210,
+        "median": 3.0298,
+        "p95": 3.56799,
+        "iqr": 0.3653000000000004
+      },
+      "control": {
+        "n": 210,
+        "median": 3.0364500000000003,
+        "p95": 3.5210799999999995,
+        "iqr": 0.23539999999999983
+      }
+    },
+    {
+      "treatment_arm": "B3 -approval",
+      "control_arm": "B3",
+      "bit_removed": "approval artifact",
+      "phase": "cold",
+      "span": "end_to_end",
+      "point_estimate_ms": 0.8412999999999968,
+      "ci_low_ms": 0.4263874999999977,
+      "ci_high_ms": 1.2368525000000004,
+      "treatment": {
+        "n": 210,
+        "median": 17.551949999999998,
+        "p95": 33.47237999999997,
+        "iqr": 4.007925000000002
+      },
+      "control": {
+        "n": 210,
+        "median": 16.71065,
+        "p95": 35.193114999999956,
+        "iqr": 2.6884249999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -approval",
+      "control_arm": "B3",
+      "bit_removed": "approval artifact",
+      "phase": "warm",
+      "span": "setup",
+      "point_estimate_ms": -0.005849999999999994,
+      "ci_low_ms": -0.010899999999999993,
+      "ci_high_ms": -0.0030000000000000022,
+      "treatment": {
+        "n": 210,
+        "median": 0.119,
+        "p95": 0.1554,
+        "iqr": 0.023525000000000004
+      },
+      "control": {
+        "n": 210,
+        "median": 0.12484999999999999,
+        "p95": 0.158955,
+        "iqr": 0.02310000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3 -approval",
+      "control_arm": "B3",
+      "bit_removed": "approval artifact",
+      "phase": "warm",
+      "span": "delegation",
+      "point_estimate_ms": -0.0301499999999999,
+      "ci_low_ms": -0.04340124999999998,
+      "ci_high_ms": -0.015149999999999997,
+      "treatment": {
+        "n": 210,
+        "median": 0.7966500000000001,
+        "p95": 0.9737849999999995,
+        "iqr": 0.09794999999999987
+      },
+      "control": {
+        "n": 210,
+        "median": 0.8268,
+        "p95": 1.0087699999999997,
+        "iqr": 0.11642500000000011
+      }
+    },
+    {
+      "treatment_arm": "B3 -approval",
+      "control_arm": "B3",
+      "bit_removed": "approval artifact",
+      "phase": "warm",
+      "span": "presentation",
+      "point_estimate_ms": -0.003950000000000009,
+      "ci_low_ms": -0.007099999999999995,
+      "ci_high_ms": -0.0014000000000000123,
+      "treatment": {
+        "n": 210,
+        "median": 0.14734999999999998,
+        "p95": 0.18181,
+        "iqr": 0.013550000000000006
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1513,
+        "p95": 0.19381499999999996,
+        "iqr": 0.0194
+      }
+    },
+    {
+      "treatment_arm": "B3 -approval",
+      "control_arm": "B3",
+      "bit_removed": "approval artifact",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "point_estimate_ms": -0.11824999999999974,
+      "ci_low_ms": -0.2145525,
+      "ci_high_ms": -0.05975000000000018,
+      "treatment": {
+        "n": 210,
+        "median": 2.9866,
+        "p95": 3.42422,
+        "iqr": 0.2768999999999999
+      },
+      "control": {
+        "n": 210,
+        "median": 3.10485,
+        "p95": 3.58354,
+        "iqr": 0.36837500000000034
+      }
+    },
+    {
+      "treatment_arm": "B3 -approval",
+      "control_arm": "B3",
+      "bit_removed": "approval artifact",
+      "phase": "warm",
+      "span": "end_to_end",
+      "point_estimate_ms": -0.40390000000000015,
+      "ci_low_ms": -0.8105299999999974,
+      "ci_high_ms": -0.06699750000000013,
+      "treatment": {
+        "n": 210,
+        "median": 16.2153,
+        "p95": 29.84868999999999,
+        "iqr": 2.3223749999999974
+      },
+      "control": {
+        "n": 210,
+        "median": 16.6192,
+        "p95": 29.850559999999998,
+        "iqr": 2.1748999999999974
+      }
+    },
+    {
+      "treatment_arm": "B3 -attenuation",
+      "control_arm": "B3",
+      "bit_removed": "attenuation (containment at P_0 instead of P_n)",
+      "phase": "cold",
+      "span": "setup",
+      "point_estimate_ms": 0.0007500000000000007,
+      "ci_low_ms": -0.002699999999999994,
+      "ci_high_ms": 0.005299999999999999,
+      "treatment": {
+        "n": 210,
+        "median": 0.1189,
+        "p95": 0.16849499999999995,
+        "iqr": 0.025075
+      },
+      "control": {
+        "n": 210,
+        "median": 0.11815,
+        "p95": 0.15637499999999996,
+        "iqr": 0.026099999999999984
+      }
+    },
+    {
+      "treatment_arm": "B3 -attenuation",
+      "control_arm": "B3",
+      "bit_removed": "attenuation (containment at P_0 instead of P_n)",
+      "phase": "cold",
+      "span": "delegation",
+      "point_estimate_ms": 0.023299999999999987,
+      "ci_low_ms": 0.002650000000000041,
+      "ci_high_ms": 0.04525000000000001,
+      "treatment": {
+        "n": 210,
+        "median": 0.83995,
+        "p95": 1.150875,
+        "iqr": 0.11790000000000012
+      },
+      "control": {
+        "n": 210,
+        "median": 0.81665,
+        "p95": 0.9779799999999998,
+        "iqr": 0.08997499999999992
+      }
+    },
+    {
+      "treatment_arm": "B3 -attenuation",
+      "control_arm": "B3",
+      "bit_removed": "attenuation (containment at P_0 instead of P_n)",
+      "phase": "cold",
+      "span": "presentation",
+      "point_estimate_ms": 0.006599999999999995,
+      "ci_low_ms": 0.0014000000000000123,
+      "ci_high_ms": 0.011200000000000015,
+      "treatment": {
+        "n": 210,
+        "median": 0.1543,
+        "p95": 0.19806499999999996,
+        "iqr": 0.021125000000000005
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1477,
+        "p95": 0.18772499999999984,
+        "iqr": 0.013724999999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -attenuation",
+      "control_arm": "B3",
+      "bit_removed": "attenuation (containment at P_0 instead of P_n)",
+      "phase": "cold",
+      "span": "boundary_verification",
+      "point_estimate_ms": -0.30450000000000044,
+      "ci_low_ms": -0.3638512499999998,
+      "ci_high_ms": -0.2351000000000001,
+      "treatment": {
+        "n": 210,
+        "median": 2.73195,
+        "p95": 3.256079999999999,
+        "iqr": 0.36919999999999975
+      },
+      "control": {
+        "n": 210,
+        "median": 3.0364500000000003,
+        "p95": 3.5210799999999995,
+        "iqr": 0.23539999999999983
+      }
+    },
+    {
+      "treatment_arm": "B3 -attenuation",
+      "control_arm": "B3",
+      "bit_removed": "attenuation (containment at P_0 instead of P_n)",
+      "phase": "cold",
+      "span": "end_to_end",
+      "point_estimate_ms": 0.31484999999999985,
+      "ci_low_ms": -0.15640250000000142,
+      "ci_high_ms": 0.8163687500000009,
+      "treatment": {
+        "n": 210,
+        "median": 17.0255,
+        "p95": 31.149134999999998,
+        "iqr": 4.2483
+      },
+      "control": {
+        "n": 210,
+        "median": 16.71065,
+        "p95": 35.193114999999956,
+        "iqr": 2.6884249999999987
+      }
+    },
+    {
+      "treatment_arm": "B3 -attenuation",
+      "control_arm": "B3",
+      "bit_removed": "attenuation (containment at P_0 instead of P_n)",
+      "phase": "warm",
+      "span": "setup",
+      "point_estimate_ms": -0.00014999999999998348,
+      "ci_low_ms": -0.0058,
+      "ci_high_ms": 0.005250000000000005,
+      "treatment": {
+        "n": 210,
+        "median": 0.1247,
+        "p95": 0.17223499999999997,
+        "iqr": 0.024525000000000005
+      },
+      "control": {
+        "n": 210,
+        "median": 0.12484999999999999,
+        "p95": 0.158955,
+        "iqr": 0.02310000000000001
+      }
+    },
+    {
+      "treatment_arm": "B3 -attenuation",
+      "control_arm": "B3",
+      "bit_removed": "attenuation (containment at P_0 instead of P_n)",
+      "phase": "warm",
+      "span": "delegation",
+      "point_estimate_ms": -0.007800000000000029,
+      "ci_low_ms": -0.023401249999999964,
+      "ci_high_ms": 0.01570250000000001,
+      "treatment": {
+        "n": 210,
+        "median": 0.819,
+        "p95": 0.9774549999999997,
+        "iqr": 0.10607499999999992
+      },
+      "control": {
+        "n": 210,
+        "median": 0.8268,
+        "p95": 1.0087699999999997,
+        "iqr": 0.11642500000000011
+      }
+    },
+    {
+      "treatment_arm": "B3 -attenuation",
+      "control_arm": "B3",
+      "bit_removed": "attenuation (containment at P_0 instead of P_n)",
+      "phase": "warm",
+      "span": "presentation",
+      "point_estimate_ms": -0.00024999999999997247,
+      "ci_low_ms": -0.004400000000000015,
+      "ci_high_ms": 0.003349999999999992,
+      "treatment": {
+        "n": 210,
+        "median": 0.15105000000000002,
+        "p95": 0.19533499999999981,
+        "iqr": 0.019375000000000003
+      },
+      "control": {
+        "n": 210,
+        "median": 0.1513,
+        "p95": 0.19381499999999996,
+        "iqr": 0.0194
+      }
+    },
+    {
+      "treatment_arm": "B3 -attenuation",
+      "control_arm": "B3",
+      "bit_removed": "attenuation (containment at P_0 instead of P_n)",
+      "phase": "warm",
+      "span": "boundary_verification",
+      "point_estimate_ms": -0.41354999999999986,
+      "ci_low_ms": -0.5149499999999998,
+      "ci_high_ms": -0.33550000000000013,
+      "treatment": {
+        "n": 210,
+        "median": 2.6913,
+        "p95": 3.2275699999999996,
+        "iqr": 0.323175
+      },
+      "control": {
+        "n": 210,
+        "median": 3.10485,
+        "p95": 3.58354,
+        "iqr": 0.36837500000000034
+      }
+    },
+    {
+      "treatment_arm": "B3 -attenuation",
+      "control_arm": "B3",
+      "bit_removed": "attenuation (containment at P_0 instead of P_n)",
+      "phase": "warm",
+      "span": "end_to_end",
+      "point_estimate_ms": -0.020150000000001,
+      "ci_low_ms": -0.5476024999999992,
+      "ci_high_ms": 0.3298137500000056,
+      "treatment": {
+        "n": 210,
+        "median": 16.59905,
+        "p95": 31.712254999999995,
+        "iqr": 2.6524
+      },
+      "control": {
+        "n": 210,
+        "median": 16.6192,
+        "p95": 29.850559999999998,
+        "iqr": 2.1748999999999974
+      }
+    }
+  ]
+}

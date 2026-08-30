@@ -1,0 +1,342 @@
+{
+  "_what": "D-023 part (b): nine adaptive attacks against the ladder and the \u00a7E.6 variants; each variant's outcome compared with B3's in the same run and against the frozen predictions. Oracle verdicts are void here; outcomes are boundary decisions and reason codes. Separate evidence class.",
+  "git": {
+    "head": "1e0faa7f1c24ebf8bb75508e05279f1e7ee054ef",
+    "dirty": true
+  },
+  "matrix": {
+    "A1-htc-chain-K-none-T1": {
+      "B0": "admit",
+      "B1": "admit",
+      "B2-broad-noexchange": "admit",
+      "B2-exchange-broad": "admit",
+      "B2-exchange-task": "admit",
+      "B2-exchange-task-DPoP": "admit",
+      "B-cap": "admit",
+      "B3": "b3_htc_chain",
+      "B3+": "b3_htc_chain",
+      "B3 -contain": "b3_htc_chain",
+      "B3 -invoke": "b3_htc_chain",
+      "B3 -holder-proof": "b3_htc_chain",
+      "B3 -htc-chain": "b3_holder_proof",
+      "B3 -context": "b3_htc_chain",
+      "B3 -approval": "b3_htc_chain",
+      "B3 -attenuation": "b3_htc_chain"
+    },
+    "A2-holder-proof-K-none-T1": {
+      "B0": "admit",
+      "B1": "admit",
+      "B2-broad-noexchange": "admit",
+      "B2-exchange-broad": "admit",
+      "B2-exchange-task": "admit",
+      "B2-exchange-task-DPoP": "admit",
+      "B-cap": "admit",
+      "B3": "b3_holder_proof",
+      "B3+": "b3_holder_proof",
+      "B3 -contain": "b3_holder_proof",
+      "B3 -invoke": "b3_holder_proof",
+      "B3 -holder-proof": "admit",
+      "B3 -htc-chain": "b3_holder_proof",
+      "B3 -context": "b3_holder_proof",
+      "B3 -approval": "b3_holder_proof",
+      "B3 -attenuation": "b3_holder_proof"
+    },
+    "A3-invocation-bound-K-none-T2": {
+      "B0": "admit",
+      "B1": "admit",
+      "B2-broad-noexchange": "b2_token_scope",
+      "B2-exchange-broad": "b2_token_scope",
+      "B2-exchange-task": "b2_token_scope",
+      "B2-exchange-task-DPoP": "b2_token_scope",
+      "B-cap": "b3_containment",
+      "B3": "b3_invocation_binding",
+      "B3+": "b3_invocation_binding",
+      "B3 -contain": "b3_invocation_binding",
+      "B3 -invoke": "b3_containment",
+      "B3 -holder-proof": "b3_invocation_binding",
+      "B3 -htc-chain": "b3_holder_proof",
+      "B3 -context": "b3_invocation_binding",
+      "B3 -approval": "b3_invocation_binding",
+      "B3 -attenuation": "b3_invocation_binding"
+    },
+    "A4-invocation-bound-K-none-T3": {
+      "B0": "admit",
+      "B1": "admit",
+      "B2-broad-noexchange": "admit",
+      "B2-exchange-broad": "admit",
+      "B2-exchange-task": "admit",
+      "B2-exchange-task-DPoP": "admit",
+      "B-cap": "admit",
+      "B3": "b3_invocation_binding",
+      "B3+": "b3_invocation_binding",
+      "B3 -contain": "b3_invocation_binding",
+      "B3 -invoke": "admit",
+      "B3 -holder-proof": "b3_invocation_binding",
+      "B3 -htc-chain": "b3_holder_proof",
+      "B3 -context": "b3_invocation_binding",
+      "B3 -approval": "b3_invocation_binding",
+      "B3 -attenuation": "b3_invocation_binding"
+    },
+    "A5-containment-K-none-T4": {
+      "B0": "admit",
+      "B1": "admit",
+      "B2-broad-noexchange": "b2_token_scope",
+      "B2-exchange-broad": "b2_token_scope",
+      "B2-exchange-task": "b2_token_scope",
+      "B2-exchange-task-DPoP": "b2_token_scope",
+      "B-cap": "b3_containment",
+      "B3": "b3_invocation_binding",
+      "B3+": "b3_invocation_binding",
+      "B3 -contain": "b3_invocation_binding",
+      "B3 -invoke": "b3_containment",
+      "B3 -holder-proof": "b3_invocation_binding",
+      "B3 -htc-chain": "b3_holder_proof",
+      "B3 -context": "b3_invocation_binding",
+      "B3 -approval": "b3_invocation_binding",
+      "B3 -attenuation": "b3_invocation_binding"
+    },
+    "A6-resource-authorized-K-none-T1": {
+      "B0": "admit",
+      "B1": "admit",
+      "B2-broad-noexchange": "b2_oauth_token_rejected",
+      "B2-exchange-broad": "b2_oauth_token_rejected",
+      "B2-exchange-task": "b2_oauth_token_rejected",
+      "B2-exchange-task-DPoP": "b2_oauth_token_rejected",
+      "B-cap": "b3_oauth_resource_authorization",
+      "B3": "b3_invocation_binding",
+      "B3+": "b3_invocation_binding",
+      "B3 -contain": "b3_invocation_binding",
+      "B3 -invoke": "b3_oauth_resource_authorization",
+      "B3 -holder-proof": "b3_invocation_binding",
+      "B3 -htc-chain": "b3_holder_proof",
+      "B3 -context": "b3_invocation_binding",
+      "B3 -approval": "b3_invocation_binding",
+      "B3 -attenuation": "b3_invocation_binding"
+    },
+    "A7-identity-consistent-K-none-T1": {
+      "B0": "admit",
+      "B1": "admit",
+      "B2-broad-noexchange": "b2_oauth_token_rejected",
+      "B2-exchange-broad": "b2_oauth_token_rejected",
+      "B2-exchange-task": "b2_oauth_token_rejected",
+      "B2-exchange-task-DPoP": "b2_oauth_token_rejected",
+      "B-cap": "b3_oauth_resource_authorization",
+      "B3": "b3_invocation_binding",
+      "B3+": "b3_invocation_binding",
+      "B3 -contain": "b3_invocation_binding",
+      "B3 -invoke": "b3_oauth_resource_authorization",
+      "B3 -holder-proof": "b3_invocation_binding",
+      "B3 -htc-chain": "b3_holder_proof",
+      "B3 -context": "b3_invocation_binding",
+      "B3 -approval": "b3_invocation_binding",
+      "B3 -attenuation": "b3_invocation_binding"
+    },
+    "A8-containment-K-holder-T4": {
+      "B0": "admit",
+      "B1": "admit",
+      "B2-broad-noexchange": "b2_token_scope",
+      "B2-exchange-broad": "b2_token_scope",
+      "B2-exchange-task": "b2_token_scope",
+      "B2-exchange-task-DPoP": "b2_token_scope",
+      "B-cap": "b3_containment",
+      "B3": "b3_containment",
+      "B3+": "b3_containment",
+      "B3 -contain": "b3_approval_artifact",
+      "B3 -invoke": "b3_containment",
+      "B3 -holder-proof": "b3_containment",
+      "B3 -htc-chain": "b3_holder_proof",
+      "B3 -context": "b3_containment",
+      "B3 -approval": "b3_containment",
+      "B3 -attenuation": "b3_containment"
+    },
+    "A9-in-scope-K-holder-T3": {
+      "B0": "admit",
+      "B1": "admit",
+      "B2-broad-noexchange": "admit",
+      "B2-exchange-broad": "admit",
+      "B2-exchange-task": "admit",
+      "B2-exchange-task-DPoP": "admit",
+      "B-cap": "admit",
+      "B3": "admit",
+      "B3+": "admit",
+      "B3 -contain": "admit",
+      "B3 -invoke": "admit",
+      "B3 -holder-proof": "admit",
+      "B3 -htc-chain": "b3_holder_proof",
+      "B3 -context": "admit",
+      "B3 -approval": "admit",
+      "B3 -attenuation": "admit"
+    }
+  },
+  "variants": {
+    "B3 -contain": {
+      "differences_from_B3": [
+        {
+          "attack": "A8-containment-K-holder-T4",
+          "B3": "b3_containment",
+          "variant": "b3_approval_artifact"
+        }
+      ],
+      "prediction": {
+        "agree": [],
+        "predicted_but_identical_to_B3": [],
+        "unpredicted_differences": [],
+        "predicted_differently": [
+          "A8-containment-K-holder-T4"
+        ],
+        "held_in_full": false
+      }
+    },
+    "B3 -invoke": {
+      "differences_from_B3": [
+        {
+          "attack": "A3-invocation-bound-K-none-T2",
+          "B3": "b3_invocation_binding",
+          "variant": "b3_containment"
+        },
+        {
+          "attack": "A4-invocation-bound-K-none-T3",
+          "B3": "b3_invocation_binding",
+          "variant": "admit"
+        },
+        {
+          "attack": "A5-containment-K-none-T4",
+          "B3": "b3_invocation_binding",
+          "variant": "b3_containment"
+        },
+        {
+          "attack": "A6-resource-authorized-K-none-T1",
+          "B3": "b3_invocation_binding",
+          "variant": "b3_oauth_resource_authorization"
+        },
+        {
+          "attack": "A7-identity-consistent-K-none-T1",
+          "B3": "b3_invocation_binding",
+          "variant": "b3_oauth_resource_authorization"
+        }
+      ],
+      "prediction": {
+        "agree": [
+          "A3-invocation-bound-K-none-T2",
+          "A4-invocation-bound-K-none-T3",
+          "A5-containment-K-none-T4",
+          "A6-resource-authorized-K-none-T1",
+          "A7-identity-consistent-K-none-T1"
+        ],
+        "predicted_but_identical_to_B3": [],
+        "unpredicted_differences": [],
+        "predicted_differently": [],
+        "held_in_full": true
+      }
+    },
+    "B3 -holder-proof": {
+      "differences_from_B3": [
+        {
+          "attack": "A2-holder-proof-K-none-T1",
+          "B3": "b3_holder_proof",
+          "variant": "admit"
+        }
+      ],
+      "prediction": {
+        "agree": [
+          "A2-holder-proof-K-none-T1"
+        ],
+        "predicted_but_identical_to_B3": [],
+        "unpredicted_differences": [],
+        "predicted_differently": [],
+        "held_in_full": true
+      }
+    },
+    "B3 -htc-chain": {
+      "differences_from_B3": [
+        {
+          "attack": "A1-htc-chain-K-none-T1",
+          "B3": "b3_htc_chain",
+          "variant": "b3_holder_proof"
+        },
+        {
+          "attack": "A3-invocation-bound-K-none-T2",
+          "B3": "b3_invocation_binding",
+          "variant": "b3_holder_proof"
+        },
+        {
+          "attack": "A4-invocation-bound-K-none-T3",
+          "B3": "b3_invocation_binding",
+          "variant": "b3_holder_proof"
+        },
+        {
+          "attack": "A5-containment-K-none-T4",
+          "B3": "b3_invocation_binding",
+          "variant": "b3_holder_proof"
+        },
+        {
+          "attack": "A6-resource-authorized-K-none-T1",
+          "B3": "b3_invocation_binding",
+          "variant": "b3_holder_proof"
+        },
+        {
+          "attack": "A7-identity-consistent-K-none-T1",
+          "B3": "b3_invocation_binding",
+          "variant": "b3_holder_proof"
+        },
+        {
+          "attack": "A8-containment-K-holder-T4",
+          "B3": "b3_containment",
+          "variant": "b3_holder_proof"
+        },
+        {
+          "attack": "A9-in-scope-K-holder-T3",
+          "B3": "admit",
+          "variant": "b3_holder_proof"
+        }
+      ],
+      "prediction": {
+        "agree": [
+          "A1-htc-chain-K-none-T1"
+        ],
+        "predicted_but_identical_to_B3": [],
+        "unpredicted_differences": [
+          "A3-invocation-bound-K-none-T2",
+          "A4-invocation-bound-K-none-T3",
+          "A5-containment-K-none-T4",
+          "A6-resource-authorized-K-none-T1",
+          "A7-identity-consistent-K-none-T1",
+          "A8-containment-K-holder-T4",
+          "A9-in-scope-K-holder-T3"
+        ],
+        "predicted_differently": [],
+        "held_in_full": false
+      }
+    },
+    "B3 -context": {
+      "differences_from_B3": [],
+      "prediction": {
+        "agree": [],
+        "predicted_but_identical_to_B3": [],
+        "unpredicted_differences": [],
+        "predicted_differently": [],
+        "held_in_full": true
+      }
+    },
+    "B3 -approval": {
+      "differences_from_B3": [],
+      "prediction": {
+        "agree": [],
+        "predicted_but_identical_to_B3": [],
+        "unpredicted_differences": [],
+        "predicted_differently": [],
+        "held_in_full": true
+      }
+    },
+    "B3 -attenuation": {
+      "differences_from_B3": [],
+      "prediction": {
+        "agree": [],
+        "predicted_but_identical_to_B3": [],
+        "unpredicted_differences": [],
+        "predicted_differently": [],
+        "held_in_full": true
+      }
+    }
+  }
+}

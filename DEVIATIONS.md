@@ -29,7 +29,7 @@ should expect from the sealed record.
 
 ## D-023 — Pre-commitment: the §E.6 matched leave-one-out ablations, run once as a post-seal campaign
 
-**Status:** OPEN — written BEFORE any ablation cell runs.
+**Status:** CLOSED — parts (a), (b), (c) each run once. Five of seven variants differ from B3 on exactly their predicted cells; `-contain` is masked by the approval conjunct on every high-risk out-of-grant request (only F1-terminal isolates it), and `-htc-chain` is degenerate because holder proof reads the chain's state. Per-conjunct pinned latency recorded.
 **Date:** 2026-08-30 (record committed before the run)
 **Authority:** Commander instruction 2026-08-30 ("继续 E1 消融 campaign-2"), executing item E1 of
 `drafts/review/SUPPLEMENTARY_EXPERIMENTS_PLAN.md`, the item the 2026-08-29 review rated the single
@@ -92,6 +92,46 @@ separate evidence class. If part (c) cannot be completed (power, platform refusa
 **On exit.** This entry is updated in the same commit as the committed output with the run commit
 hash, the artefact paths, and every difference and prediction outcome. The text above is not
 edited.
+
+### CLOSED — three parts, each run once; two of the seven predictions failed, and both failures are findings about the fixtures and the conjunct coupling, not about the seams
+
+**Run commit:** `1e0faa7` (the pre-commitment commit; tree dirty with unrelated untracked drafts, recorded in every artefact's `git.dirty`). **Date:** 2026-08-30. **Artefacts:** `results/ablation/campaign-ablation.json` and `ablation-summary.json` (part a), `adaptive-A1…A9.json` and `adaptive-summary.json` (part b), `latency-ablation-pinned.json` and `latency-ablation-deltas.json` (part c).
+
+**Part (a), as returned [M].** Sixteen arms × the sealed corpus, both monitor configurations, ledger off: 262 scored cells, the same 10 NA cells, 6.4 s. Each variant ran 17 cells against B3's 17 in the same run.
+
+| variant | identical to B3 | differences (cell → B3 / variant) | prediction |
+|---|---|---|---|
+| `-contain` | 14/17 | F1-terminal → containment / **admit**; F1-root → containment / **approval artifact**; F1-chain-tamper → containment / **approval artifact** | FAILED on two of three: predicted admit |
+| `-attenuation` | 16/17 | F1-terminal → containment / **admit** | held in full |
+| `-holder-proof` | 15/17 | F2 wrong-holder-proof → holder proof / **admit**; F3 stolen-key substitution → holder proof / **admit** | held in full |
+| `-htc-chain` | 2/17 | every other cell, benign included → **holder proof** | FAILED: predicted identical to B3 |
+| `-invoke` | 17/17 | none | held in full |
+| `-context` | 12/17 | four monitor-off F4/F5 cells → context policy / **approval artifact**; monitor-on F4 sensitive-egress → context policy / **admit** | held in full |
+| `-approval` | 16/17 | monitor-on F5 unapproved-high-risk → approval artifact / **admit** | held in full |
+
+**Part (b), as returned [M].** Nine attacks × sixteen arms, oracle verdicts void, outcomes as boundary decisions. `-invoke` held in full: A4 (in-scope argument substitution, its orthogonal fixture) **admitted**, A3 and A5 moved to containment, A6 and A7 to resource authorization. `-holder-proof` held: A2 **admitted**. `-context`, `-approval`, `-attenuation`: identical to B3 on all nine. `-contain` FAILED on A8: predicted admit, returned **approval artifact**. `-htc-chain` agreed on A1 (holder proof, as predicted) and differed from B3 on the other eight, all refused at holder proof — the same degeneracy as part (a).
+
+**The two failures, diagnosed after the counts above and recorded as findings.**
+
+1. *Containment is never the only conjunct standing between an out-of-grant request and admission in this corpus, except on F1-terminal.* Every out-of-grant request the corpus and the probe pose — F1-root, F1-chain-tamper, A8 — names `notes.delete`, a frozen high-risk action (row 10), so with containment removed the approval conjunct refuses instead; only F1-terminal's `calendar.read` is a plain read and isolates containment. §E.6's orthogonality claim therefore holds for the F1-terminal fixture and fails for the other two: they are fixtures for containment-or-approval, not for containment alone. `-attenuation` is unaffected, because F1-terminal is exactly its fixture, and it admitted it.
+2. *`-htc-chain` is not an ablation of one conjunct.* `holder_proof_ok` reads the terminal holder that `htc_chain_ok` records in the decision state (`capability_path.py:706, 711`); with the chain conjunct skipped there is no terminal holder and holder proof fails closed on every presentation, benign ones included. That is why §E.6 defined `-holder` as removing both conjuncts together, and why the sealed identity rule's "exactly one conjunct" cannot express it. `-holder-proof` alone is the meaningful limb and it behaved as §E.6's `-holder` fixture predicts. `-htc-chain`'s 15 + 8 refusals are the coupling, not a security result, and are reported as such.
+
+**Part (c), as returned [M]** (`results/ablation/latency-ablation-pinned.json`, `latency-ablation-deltas.json`; pinned to CPUs [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], seed 4815162342, 10000 resamples, warm-up 5 per batch, 288.705 s). Warm `median(variant) − median(B3)` in ms with the 95% bootstrap interval; B3's own warm boundary-verification median in this run was 3.1048 ms (IQR 0.3684).
+
+| variant | delegation | presentation | boundary verification |
+|---|---|---|---|
+| `B3 -contain` | +0.005 (-0.011, +0.029) | -0.001 (-0.004, +0.002) | -1.291 (-1.389, -1.232) |
+| `B3 -invoke` | -0.017 (-0.031, +0.001) | -0.003 (-0.005, -0.000) | -0.093 (-0.194, -0.039) |
+| `B3 -holder-proof` | +0.032 (+0.016, +0.056) | +0.004 (+0.001, +0.008) | +0.006 (-0.097, +0.071) |
+| `B3 -htc-chain` | -0.024 (-0.039, -0.008) | -0.003 (-0.006, -0.001) | -1.969 (-2.066, -1.922) |
+| `B3 -context` | -0.010 (-0.023, +0.012) | -0.003 (-0.006, -0.001) | -0.092 (-0.189, -0.041) |
+| `B3 -approval` | -0.030 (-0.043, -0.015) | -0.004 (-0.007, -0.001) | -0.118 (-0.215, -0.060) |
+| `B3 -attenuation` | -0.008 (-0.023, +0.016) | -0.000 (-0.004, +0.003) | -0.414 (-0.515, -0.336) |
+
+A negative delta is the cost the removed conjunct carried; an interval that spans zero is a conjunct whose cost is below what this pass can resolve. `-htc-chain`'s figures are those of a degenerate arm that refuses at the fourth conjunct on every cell and are not a mechanism cost.
+
+**What this establishes.** For five of the seven variants the leave-one-out difference from B3 is exactly the set of cells the removed conjunct was built to refuse, and nothing else — attribution of those refusals to that conjunct now rests on a matched control rather than on a reason code. Invocation binding's contribution is now measured on its orthogonal fixture (A4 admitted with the conjunct removed, refused with it present); holder proof's on F2/F3 and A2; the two policy conjuncts' on the F4/F5 cells; attenuation's on F1-terminal. Containment's contribution is measured on F1-terminal and is masked by approval on every high-risk out-of-grant request in this corpus. These are matched-control results on the constructed instance set (ADR 0037's qualification travels with them); the campaign's 143 cells are untouched, and nothing here is summed with them.
+
 
 ## D-022 — Pre-commitment: the RQ4 latency pass repeated ONCE with CPU affinity pinned (run 3)
 
