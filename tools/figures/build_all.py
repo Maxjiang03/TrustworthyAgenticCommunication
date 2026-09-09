@@ -41,6 +41,14 @@ AUTHORISED = (
     # D-019 Phase B), drawn from results/adaptive/run2/ and never summed with
     # the 143-cell campaign; the figure carries that on its own face.
     "fig_adaptive_attacks.py",
+    # Commander instruction 2026-08-29 ("按照数据，直接构建新图"), given after
+    # the conflict with FIGURE_PLAN.md (D8 for FIG-BF; §H / §E.7 for FIG-L4)
+    # was reported; each script's docstring records that conflict. FIG-BF reads
+    # the campaign and tables artefacts; FIG-L4 RUNS the sealed latency
+    # functions on the frozen raw record and checks its accounting and medians
+    # against the committed run-2 decision.
+    "fig_breach_by_family.py",
+    "figL4_segment_distribution.py",
 )
 
 

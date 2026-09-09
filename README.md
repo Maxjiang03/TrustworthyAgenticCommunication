@@ -1,71 +1,73 @@
-# TrustworthyAgent
+# Trustworthy Agentic Communication
 
-Trustworthy Agentic Communication: a pre-registered, reproducible testbed that measures
-authorization-scope propagation and its cost at the A2A→MCP boundary (the cross-protocol
-confused-deputy problem, TV23). MSc Cybersecurity dissertation, University of Glasgow.
+This archive contains the source code and experiment records for the MSc Cybersecurity dissertation, *Authorization Propagation at the A2A-to-MCP Boundary: A Controlled Evaluation of Online Token Exchange and Offline Capability Attenuation*.
 
-## Current phase
+Public repository: https://github.com/Maxjiang03/TrustworthyAgenticCommunication
 
-**Sealed, awaiting the confirmatory campaign.** As of 2026-08-07: **all fifteen** feasibility
-smoke gates pass on the pilot corpus (`smoke/README.md` is the board), **all nine arms** are
-built, the pre-registration is authored (`docs/PRE_REGISTRATION.md`), the confirmatory corpus is
-generated (ADR 0043), and the repository has been sealed twice — v0.5 (`805425e`) and v0.6
-(`cdf185d`), each with a detached manifest and an OpenTimestamps anchor.
+The submission archive is the self-contained evidence snapshot. It includes the final experiment records used in the dissertation and does not require access to the public repository.
 
-**A v0.7 reseal is owed, and Part H step 7 — the confirmatory campaign — has NOT run.** A pre-run
-audit (ADR 0044) found that the apparatus could not execute step 7 and would, in two places, have
-measured wrongly; the repairs are in place and the reseal follows. Every deviation is recorded in
-`DEVIATIONS.md` rather than in a commit message.
+## Formulation
 
-All eleven `docs/frozen_parameters.md` rows are settled — ten set, one (`task_authorization_policy`)
-deferred by decision (ADR 0028) and never to be filled. **The only timing figures that exist are
-G-3's, and they live in `smoke/g3/REPORT.md` and nowhere else.**
+The study represents authority as subsets of a fixed seven-element ontology, denoted by `Omega`. For a capability chain, the effective authority at hop `i` is `C_i`. The monotonicity requirement is `C_i subseteq C_(i-1)`. At the A2A-to-MCP boundary, a request requiring authority `R` is admitted only if the full ten-condition rule holds, including chain verification, holder proof, invocation binding, policy checks, identity consistency, and `R subseteq C_n`. After execution, the independent oracle checks the exercised authority `A` against `R`, `C_n`, and the initial task grant.
 
-*(Update note, 2026-07-30: this section previously read "Repository skeleton — pre-smoke-test.
-Implementation logic has not begun," which was true when written and stopped being true in the
-pass that built the apparatus.)*
+Nine configurations are evaluated under the same scenarios, initial task authorization, narrowing requests, and execution substrate. They differ in the authority-bearing object and the checks available at the boundary.
 
-## Authoritative design
+## Assumptions and scope
 
-`docs/EXPERIMENT_ARCHITECTURE_FINAL.md` is the single source of truth. Working rules for
-contributors (human or AI) are in `PROJECT_RULES.md`; decisions are recorded in `adr/`.
+The benchmark covers one A2A-to-MCP boundary, one MCP server, one resource domain, and a fixed ontology. Agents are deterministic scripted principals, so language-model sampling is outside the experiment. The scenarios are an author-constructed test corpus rather than a random sample of deployed systems. Security outcomes are exact counts for that corpus. They are not population estimates.
+
+The task-scoped exchange result depends on the tested deployment profile: OAuth 2.1 authentication, RFC 8693 token exchange, RFC 9396 authorization details, and a local authorization-server policy that issues only a monotonic subset. It is not a property of OAuth or token exchange alone. Latency results are in-process measurements from the sealed Windows platform and should not be treated as network or production benchmarks.
+
+The sealed measurement platform was Windows 11 25H2, build 26200.8875, Python 3.13.5, an Intel Core i7-12700H, and 15.75 GiB RAM. The effect-ledger independence check is Windows-specific. Other tests can run on supported non-Windows systems, where the Windows-only cases are skipped.
+
+## Dissertation hypothesis labels
+
+The dissertation uses the reader-facing labels **Hypothesis A** and **Hypothesis B**. They correspond, respectively, to `H4a` and `H4b` in the sealed pre-registration, analysis code, and result records. Only the presentation labels differ; the hypothesis statements, predictions, and evidence status are unchanged.
 
 ## Setup
 
-Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/). The locked environment (`uv.lock`)
-is committed.
+Install Python 3.13 and `uv` 0.10.6 or a compatible recent `uv` release. From the archive root, run:
 
-| Command | Action |
-|---|---|
-| `make setup` | `uv sync` — create the pinned environment |
-| `make lint` | `pre-commit run --all-files` (ruff + ruff-format) |
-| `make test` | `pytest -q` |
-| `make gate GATE=g1` | run one gate's spike (`smoke/g{1,2,4,5,6,7,8,11}/`). POSIX-flavoured — on Windows run `uv run python smoke/g11/spike.py` directly |
-| `make campaign` | Part H step 7 — runs the frozen campaign ONCE, refuses to overwrite a result (ADR 0045) |
-| `make reproduce` | regenerates every table from `results/raw/` (`analysis/report.py`) |
+```powershell
+uv venv --python 3.13 .venv
+uv pip install --python .venv\Scripts\python.exe -r requirements.txt
+```
 
-Without `make` (e.g. plain Windows), run the underlying commands directly:
-`uv sync`, `uvx pre-commit run --all-files`, `uv run pytest -q`.
+`requirements.txt` pins the complete tested Python environment, including the packages used to regenerate the figures. `pyproject.toml` and `uv.lock` preserve the original sealed application environment.
 
-**Platform note (ADR 0014):** the effect-ledger suite (`tests/test_effect_ledger.py`) and the
-G-7 spike are **Windows-only** — the ledger's independence enforcement is Win32 share-mode
-locking, so on other platforms those tests are *skipped* (and the spike refuses to run). A
-green CI run on `ubuntu-latest` therefore does **not** verify the ledger; every other suite is
-cross-platform. Windows is the sealed measurement platform; the POSIX variant is deferred.
+## Exact reproduction command
 
-## Layout
+The following command runs the portable test suite, rebuilds the confirmatory tables from the archived raw record, regenerates the four data figures used in the dissertation, checks their placement, and writes console logs to `_reproduced`:
 
-- `src/sut/` — the measured system (must never import from the harness)
-- `src/sut/oauth_as/` — the pinned experiment OAuth 2.1 AS (ADR 0015; built at G-4 Phase 2). Runs
-  out-of-process on loopback with its signing key never in an agent process. No other `src/sut/`
-  module may import it (agents reach it over the wire), and **`src/harness/` may never import it**
-  — the oracle and the G-13 verifier reimplement token verification independently (D13/D21)
-- `src/harness/` — the instrument (imports `sut`, never the reverse; except `src/sut/oauth_as/`,
-  which it may never import). All three import rules are enforced by an AST suite
-  (`tests/test_import_redlines.py`), not by convention alone
-- `docs/` — architecture, threat model, frozen parameters, pre-registration
-- `adr/` — one file per decision
-- `fixtures/pilot/` vs `fixtures/confirmatory/` — strictly disjoint; confirmatory stays **empty** until post-seal
-- `results/raw|tables|figures/` — write-once raw traces and derived outputs (later phases)
+```powershell
+powershell -ExecutionPolicy Bypass -File .\reproduce.ps1
+```
 
-License: MIT (© 2026 Yixian Jiang).
+The submission archive omits `.git`, which would add about 103 MB of version-control data. When `.git` is absent, the script deselects three tests that inspect historical Git objects. It still runs every executable, corpus, policy, oracle, analysis, and current-file integrity test. A clone of the public repository retains `.git`, so the same script runs all tests there.
+
+The stored confirmatory campaign is write-once. To execute an independent campaign without overwriting it, use a new output path:
+
+```powershell
+New-Item -ItemType Directory -Force _reproduced | Out-Null
+.\.venv\Scripts\python.exe -m src.harness.campaign_driver --run-mode confirmatory --out _reproduced\campaign-confirmatory.json
+```
+
+Raw and derived records are under `results`. The primary records are `results/raw/campaign-confirmatory.json`, `results/raw/latency-pilot.json`, and the console logs stored with the validation, replication, adaptive, and ablation results. The detached seal is under `seal`. The reproduction script replaces the generated `results/figures` directory; it does not alter the archived raw records.
+
+## Compact results
+
+The confirmatory campaign contains 13 scenarios, 143 scored cells, and 10 unscorable cells. All 80 comparable pre-registered predictions matched the observations. The two pre-registered hypotheses were not determined by the confirmatory corpus because their full premises were not instantiated.
+
+In the fixed corpus, the four broad-authority configurations admitted three of the seven ontology elements that the task did not use. The configured task-scoped exchange admitted no excess element, subject to the local subset-issuance policy. The adaptive campaign admitted 13 of 54 applicable attacks overall; B3 and B3+ admitted none of their eight applicable attacks. These adaptive observations are separate from the confirmatory counts.
+
+The pre-specified in-process latency series places about 16 ms of additional work at delegation for the exchange configurations and about 6 ms at the boundary for the capability configurations. CPU pinning reduced both measurements without changing where the cost occurred.
+
+## Approximate active time spent
+
+The repository records work on 22 distinct dates between 14 July and 30 August 2026. This corresponds to about 176 hours at an eight-hour working-day equivalent. No time tracker was used, so this is an approximate effort measure rather than logged active time.
+
+## Archive contents
+
+`src` contains the measured system and harness. `analysis` rebuilds the reported tables. `fixtures` contains the pilot and confirmatory corpora. `tests` contains the automated checks. `validation` contains the post-confirmatory analyses. `results` contains the frozen raw records and experiment logs. `tools/figures` regenerates the dissertation figures. `docs`, `adr`, `DEVIATIONS.md`, and `seal` record the design, assumptions, decisions, deviations, and integrity metadata.
+
+Virtual environments, package caches, Git history, temporary files, dissertation editing copies, and generated figure binaries are intentionally excluded.

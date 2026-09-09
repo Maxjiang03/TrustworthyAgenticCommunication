@@ -20,6 +20,9 @@ venv/
 .uv-cache/
 .uv_cache/
 
+# Local outputs written by reproduce.ps1
+_reproduced/
+
 # OS noise
 .DS_Store
 Thumbs.db
@@ -97,3 +100,8 @@ _tmp_*.py
 !results/validation/latency-*.json
 # The §E.6 ablation series, 2026-08-30 (DEVIATIONS D-023), admitted deliberately.
 !results/ablation/**/*.json
+# Console transcripts retained with the post-seal validation, replication, and
+# ablation records used in the dissertation submission.
+!results/ablation/*.console.log
+!results/replication/*.console.log
+!results/validation/latency-pilot-run3-pinned.console.log
