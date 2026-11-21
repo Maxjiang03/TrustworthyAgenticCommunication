@@ -25,7 +25,7 @@ from typing import Any
 
 AS_MODULE = "src.sut.oauth_as"  # spawned, never imported (ADR 0015 rule 4)
 SEED_ENV = "AASC_G4_AS_SEED"  # the AS process's documented seed variable
-RAR_TYPE = "https://aasc.gla.ac.uk/rar/tool-authority"  # ADR 0017, the project RAR type URI
+RAR_TYPE = "https://aasc.example.test/rar/tool-authority"  # ADR 0017, the project RAR type URI
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 

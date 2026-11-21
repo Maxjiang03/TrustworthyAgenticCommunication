@@ -30,7 +30,7 @@ authored and received its number from the author before the seal, so nothing sea
 number that does not exist.
 
 Authored 2026-08-06 at repository HEAD `5264f1b`
-(github.com/Maxjiang03/TrustworthyAgenticCommunication). Amended the same day at `ca360ae`,
+(github.com/Anonymous/TrustworthyAgenticCommunication). Amended the same day at `ca360ae`,
 on the author's decisions: the five gaps this document reported are closed (ADR 0042 and the
 0041 assignment), and each closure is recorded in place below — nothing else changed.
 
@@ -478,7 +478,7 @@ is the reason this paragraph exists.
 **What step 3 seals (Part H).** The v0.5 candidate: the design document, the implementation
 commit, the oracle code, the analysis code, all configuration — `Ω`/`Γ` with
 `H(Γ) = f63320c9da3731a6ea04dc51d9f6852f3a3e130182ce3a7fe251158751333deb`, the identity-plane
-registry with `H(R) = d1bfc5ffcb22e2ded736f5248b99b9f019ba314b93ddd808e50ea522b3fb4cbe`, the
+registry with `H(R) = d8654268bb9f4dc29963d3a5acf10cbd81bc37207c292ad2a2a18b4af37af639`, the
 label/sink/classification policy with
 `H(Λ) = ce4e1e75c782e7bf83cdb7407ace64a91f86683c23ee58c6d9846728814183a7`, and the deferred
 row 5 recorded as deferred — the pinned dependency environment **including the sealed

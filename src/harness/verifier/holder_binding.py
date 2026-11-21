@@ -33,8 +33,8 @@ module's count check.
 fixed construction (ADR 0030, `AASC-LABELSET-DIGEST` over the sorted join keys),
 but this verifier still does not recompute it, and that is deliberate rather than
 residual: this module implements SS F.2's **validity** MUST list, which G-11
-adjudicated, and the label set is verified against the presented assertions by the
-boundary-owned monitor -- a different question, in a different place. The
+adjudicated, and the boundary invocation-binding check compares it with the presented
+references (ADR 0049). The policy monitor verifies the assertions themselves. The
 signature covers the field, so it is tamper-evident here. The `ApprovalArtifact`
 of SS F.2 is likewise out of scope: no condition in SS F.2's verification
 paragraph refers to it (`approval_artifact_ok` is a separate SS A.5 conjunct,

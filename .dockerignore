@@ -16,9 +16,13 @@ __pycache__/
 .uv-cache/
 .uv_cache/
 
-# Campaign output and evidence trees: large, regenerated, and never an input
-# to a build.
-results/
+# Archived results/ are inputs to offline reproduction. Exclude only local
+# reconstructions, restored large JSON copies, and temporary ledgers.
+_reproduced/
+results/_ledger/
+results/ablation/campaign-ablation.json
+results/revision/mentor-2026-11-11/raw.json
+results/revision/label-binding-fix-2026-11-09/deterministic/effects.json
 smoke/g10/_ledger_tmp/
 
 # Repository metadata the image has no use for.

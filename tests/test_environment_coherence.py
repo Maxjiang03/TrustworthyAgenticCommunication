@@ -47,7 +47,7 @@ class TestTheInterpreterIsTheSealedOne:
         """CI is never adjudicative (row 2), but it should protect the version
         the campaign runs on rather than a different one."""
         workflow = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
-        pinned = re.search(r'python-version:\s*"(\d+\.\d+)"', workflow)
+        pinned = re.search(r'python-version:\s*"(\d+\.\d+)(?:\.\d+)?"', workflow)
         assert pinned is not None
         assert pinned.group(1) == _sealed_python()
 
@@ -106,8 +106,9 @@ class TestTheDockerContextExcludesTheHostVirtualenv:
             "environment `uv sync` just built, and ENV PATH points at nothing"
         )
         ignored = path.read_text(encoding="utf-8")
-        for entry in (".venv/", "results/", ".git/"):
+        for entry in (".venv/", "_reproduced/", ".git/"):
             assert entry in ignored, entry
+        assert "results/" not in ignored.splitlines(), "Archived observations are required by reproduce.py"
 
     def test_the_dockerfile_still_copies_after_sync(self):
         """The ordering is deliberate (layer caching); the .dockerignore is

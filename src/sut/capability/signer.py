@@ -269,8 +269,8 @@ def issue_inv(
     """The per-invocation assertion, signed by the TERMINAL holder (SS F.2).
 
     `invocation_id` is the harness-minted correlation id (SS F.1) -- received,
-    never minted here. `label_assertions_digest` is bound by the signature but
-    has no fixed construction yet (rows 4/6 UNSET; G-15's to verify).
+    never minted here. The caller supplies the ADR 0030 label-reference digest,
+    which is covered by the INV signature.
     """
     payload = {
         "schema_version": SCHEMA_VERSION,

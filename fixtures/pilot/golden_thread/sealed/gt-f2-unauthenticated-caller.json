@@ -65,7 +65,7 @@
   "requires_approval": false,
   "resource_owner": [
     "https://as.aasc.local",
-    "user-yixian"
+    "user-owner"
   ],
   "scenario_id": "gt-f2-unauthenticated-caller",
   "tau_gt": [

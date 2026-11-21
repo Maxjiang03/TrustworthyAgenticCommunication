@@ -121,7 +121,7 @@ ISSUER = "https://as.aasc.local"
 AUDIENCE = "https://mcp.aasc.local/tools"  # the one MCP resource server
 METHOD = "tools/call"
 CONTEXT_LABEL = "internal(pilot)"  # consumed by no conjunct: rows 4/6 are UNSET
-RESOURCE_OWNER = [ISSUER, "user-yixian"]
+RESOURCE_OWNER = [ISSUER, "user-owner"]
 OAUTH_ACTOR = [ISSUER, "agent-specialist"]
 HTC_HOLDER_KID = "kid-holder-specialist"
 

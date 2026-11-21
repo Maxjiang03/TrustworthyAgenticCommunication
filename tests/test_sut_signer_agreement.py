@@ -49,9 +49,9 @@ TOOL = "notes.write"
 ARGUMENTS = {"resource": "notes/project", "content": "Meeting summary: agreed the Q3 review plan."}
 # ADR 0018's worked example, pinned on BOTH implementations.
 ADR_0018_TOKEN = (
-    "eyJhbGciOiJFZDI1NTE5IiwidHlwIjoiYXQrand0In0.eyJzdWIiOiJ1c2VyLXlpeGlhbiJ9.c2lnbmF0dXJl"
+    "eyJhbGciOiJFZDI1NTE5IiwidHlwIjoiYXQrand0In0.eyJzdWIiOiJ1c2VyLW93bmVyIn0.c2lnbmF0dXJl"
 )
-ADR_0018_ANSWER = "600b4e6e581a15b4b3e847e093120ba87c6126851fd347f18994020c40010e13"
+ADR_0018_ANSWER = "a4de2f215033e13795cb5d1cd053cd808055c9d26d26e80bdd5b168c26d63d21"
 LABELS_DIGEST = "00" * 32  # bound by the INV signature; construction G-15's (rows 4/6 UNSET)
 
 

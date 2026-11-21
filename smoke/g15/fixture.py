@@ -128,7 +128,7 @@ def forged_artifact_is_refused() -> bool:
         audience=AUDIENCE,
         tool="notes.delete",
         arguments={"resource": "notes/project"},
-        resource_owner=(ISSUER, "user-yixian"),
+        resource_owner=(ISSUER, "user-owner"),
         oauth_actor=(ISSUER, "agent-specialist"),
     )
     genuine = label_artifacts.issue_approval(

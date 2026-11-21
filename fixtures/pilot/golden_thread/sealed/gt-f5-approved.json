@@ -84,7 +84,7 @@
   "requires_approval": true,
   "resource_owner": [
     "https://as.aasc.local",
-    "user-yixian"
+    "user-owner"
   ],
   "scenario_id": "gt-f5-approved",
   "tau_gt": [

@@ -80,7 +80,7 @@
   "requires_approval": true,
   "resource_owner": [
     "https://as.aasc.local",
-    "user-yixian"
+    "user-owner"
   ],
   "scenario_id": "cf-f1-root",
   "tau_gt": [

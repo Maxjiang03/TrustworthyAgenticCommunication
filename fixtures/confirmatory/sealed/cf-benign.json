@@ -79,7 +79,7 @@
   "requires_approval": false,
   "resource_owner": [
     "https://as.aasc.local",
-    "user-yixian"
+    "user-owner"
   ],
   "scenario_id": "cf-benign",
   "tau_gt": [

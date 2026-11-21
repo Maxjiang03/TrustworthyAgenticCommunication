@@ -138,6 +138,7 @@ from src.sut.authz.boundary_policy import (  # re-exported: canonical home is bo
     PolicyConfigurationError,
 )
 from src.sut.authz.jti_cache import Consumption, JtiCache
+from src.sut.authz.label_context import label_assertions_digest
 from src.sut.authz.reference_monitor import ContextApprovalMonitor, RequestContext
 from src.sut.authz.registry_view import RegistryView, RegistryViewError
 from src.sut.baselines.base import ArmIdentity
@@ -754,6 +755,18 @@ class CapabilityDecisionPath:
             raise ConjunctFailed("invocation_binding_ok", "INV.method does not bind this method")
         if inv["tool"] != tool:
             raise ConjunctFailed("invocation_binding_ok", "INV.tool does not bind the invoked tool")
+        try:
+            expected_labels = label_assertions_digest(
+                [entry["payload_digest"] for entry in p.payload_labels]
+            )
+        except (KeyError, TypeError) as exc:
+            raise ConjunctFailed(
+                "invocation_binding_ok", "label assertions carry malformed payload references"
+            ) from exc
+        if inv["label_assertions_digest"] != expected_labels:
+            raise ConjunctFailed(
+                "invocation_binding_ok", "INV label digest does not match the presented references"
+            )
         if not inv["invocation_id"]:
             raise ConjunctFailed("invocation_binding_ok", "INV carries no invocation id")
         if not inv["nbf"] <= p.now_epoch <= inv["exp"]:

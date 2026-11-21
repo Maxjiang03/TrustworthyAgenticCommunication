@@ -39,6 +39,7 @@ from src.harness.authorizer import frozen_config
 from src.harness.runner import GoldenThreadRunner
 from src.harness.verifier import registry as reg
 from src.sut.authz.capability_path import CONJUNCT_ORDER, REASON_CODES
+from src.sut.authz.label_context import label_assertions_digest
 from src.sut.baselines.b3 import B3Arm
 from src.sut.capability import signer
 
@@ -106,7 +107,7 @@ def _forge_inv(credentials, setup, visible, *, tool, arguments) -> bytes:
         audience=visible["audience"],
         method=visible["method"],
         tool=tool,
-        label_assertions_digest="00" * 32,
+        label_assertions_digest=label_assertions_digest([]),
         invocation_id="cid-counterfactual",
         iat=now,
         nbf=now,
@@ -259,7 +260,9 @@ def staged(running_as):
 class TestWouldHaveFailedWorlds:
     """Construct the wrong-outcome world and confirm it is observable."""
 
-    def _arm_with_presentation(self, setup, visible, *, tool, arguments, ablates=None):
+    def _arm_with_presentation(
+        self, setup, visible, *, tool, arguments, ablates=None, payload_labels=()
+    ):
         from src.sut.baselines.base import ArmIdentity, HopContext, InvocationContext
 
         run_epoch = int(time.time())  # one clock for the whole construction
@@ -293,6 +296,7 @@ class TestWouldHaveFailedWorlds:
                 audience=visible["audience"],
                 invocation_id="cid-counterfactual",
                 now_epoch=run_epoch,
+                payload_labels=payload_labels,
             ),
         )
         return arm, credentials
@@ -701,26 +705,21 @@ class TestFrozenPolicyIsLoadBearing:
         setup, visible = staged
         worlds = TestWouldHaveFailedWorlds()
         arguments = {"to": "partner@example.test", "subject": "s", "body": "b"}
-        arm, _ = worlds._arm_with_presentation(
-            setup, visible, tool="mail.send", arguments=arguments, ablates="containment_ok"
-        )
         # What makes the refusal load-bearing rather than decorative: the
         # claimed cell really is a permit under the frozen policy.
         policy = BoundaryPolicy.load(frozen_policy.load_document())
         assert policy.egress_decision("public", "partner@example.test") == "permit"
 
-        arm._staged = dataclasses.replace(
-            arm._staged,
-            payload_labels=(
-                {
-                    "payload_digest": "00" * 32,
-                    "label": "public",
-                    "issuer_kid": "kid-holder-specialist",
-                    "iat": 0,
-                    "exp": 1 << 31,
-                    "signature": "",
-                },
-            ),
+        arm, _ = worlds._arm_with_presentation(
+            setup, visible, tool="mail.send", arguments=arguments, ablates="containment_ok",
+            payload_labels=({
+                "payload_digest": "00" * 32,
+                "label": "public",
+                "issuer_kid": "kid-holder-specialist",
+                "iat": 0,
+                "exp": 1 << 31,
+                "signature": "",
+            },),
         )
         admitted, reason = arm.decide("mail.send", arguments)
         assert admitted is False

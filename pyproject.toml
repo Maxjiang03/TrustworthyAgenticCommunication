@@ -2,7 +2,6 @@
 name = "trustworthy-agent"
 version = "0.0.1"
 description = "Pre-registered testbed measuring authorization-scope propagation and its cost at the A2A→MCP boundary (cross-protocol confused deputy, TV23)"
-authors = [{ name = "Yixian Jiang" }]
 license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.11"

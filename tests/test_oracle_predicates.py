@@ -43,7 +43,7 @@ ISSUER = "https://as.aasc.local"
 AUDIENCE = "https://mcp.aasc.local/tools"
 TASK_ID = "task-oracle-suite"
 ACTOR = (ISSUER, "agent-specialist")
-OWNER = (ISSUER, "user-yixian")
+OWNER = (ISSUER, "user-owner")
 
 # The sealed record a non-credential scenario carries: no `credential_fault`,
 # so ADR 0036's gate is satisfied and every pre-existing case is unmoved.

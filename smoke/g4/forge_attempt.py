@@ -32,7 +32,7 @@ from src.sut.authz import boundary  # noqa: E402
 SEED_ENV = "AASC_G4_AS_SEED"
 ISSUER = "https://as.aasc.local"
 RESOURCE_SERVER = "https://mcp.aasc.local/tools"
-RAR_TYPE = "https://aasc.gla.ac.uk/rar/tool-authority"
+RAR_TYPE = "https://aasc.example.test/rar/tool-authority"
 
 
 def main() -> int:
@@ -51,7 +51,7 @@ def main() -> int:
         {"alg": "Ed25519", "typ": "at+jwt"},
         {
             "iss": ISSUER,
-            "sub": "user-yixian",
+            "sub": "user-owner",
             "aud": RESOURCE_SERVER,
             "client_id": "agent-supervisor",
             "iat": now,

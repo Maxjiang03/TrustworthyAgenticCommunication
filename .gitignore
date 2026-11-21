@@ -1,107 +1,15 @@
-# Python
+.venv/
 __pycache__/
 *.py[cod]
-*$py.class
-*.egg-info/
 .pytest_cache/
 .ruff_cache/
-build/
-dist/
-
-# Virtual environments
-.venv/
-venv/
-
-# Secrets / local environment — never commit credentials (PROJECT_RULES.md red line 8)
+_reproduced/
+results/_ledger/
 .env
 .env.*
-
-# uv cache (if redirected into the project)
-.uv-cache/
-.uv_cache/
-
-# Local outputs written by reproduce.ps1
-_reproduced/
-
-# OS noise
-.DS_Store
-Thumbs.db
-
-# Generated experiment outputs: ignore contents, keep the tree placeholders
-# tracked. Raw traces are added deliberately at campaign time (write-once,
-# design Part J.4) via an explicit .gitignore change, never by accident.
-results/**
-!results/**/
-!results/**/.gitkeep
-# THE CONFIRMATORY CAMPAIGN RAN 2026-08-07, and Part H step 7's "once" is spent.
-# §J.4 item 14: raw traces are immutable and archived. These three paths are
-# admitted DELIBERATELY, which is what the rule above exists to require -- a
-# raw trace must never be committed by accident, and must never be absent by
-# accident either. Committing them puts them in history, where they cannot be
-# edited without rewriting it.
-!results/raw/campaign-confirmatory.json
-!results/tables/results-confirmatory.json
-!results/tables/results-latency-pilot.json
-!results/tables/results-latency-pilot-run2.json
-!results/tables/results-latency-pilot-rq4.json
-!results/tables/results-latency-pilot-rq4-run2.json
-!results/validation/oracle-audit.json
-!results/validation/oracle-audit-extended.json
-!results/validation/real-transport.json
-!results/validation/real-transport-sweep.json
-!results/validation/real-transport-campaign.json
-!results/adaptive/**/*.json
-# The effect ledger, admitted 2026-08-20 by Commander ruling (DEVIATIONS D-016).
-# It is the evidence the oracle's realized_harm predicates read, and without it no
-# post-hoc audit can re-derive them. 286 files, 728 KB, scanned for credential
-# material and carrying none. Tracking it adds no measurement and changes no
-# number; `results/` stays manifest-EXCLUDED on the same apparatus-in/results-out
-# rule, so the seal is untouched.
-!results/_ledger/**/*.jsonl
-!results/tables/results-confirmatory.md
-# RQ4's latency pass, 2026-08-07 (ADR 0047). Raw per-repetition values, so a
-# Sighting C stall is locatable rather than absorbed into a summary; admitted
-# deliberately for the same reason as the campaign trace above.
-!results/raw/latency-pilot.json
-smoke/g10/_ledger_tmp/
-
-# Task specifications the Commander issues, collected in task_briefs/ (see its
-# README). Ignored for ONE reason, which is unchanged: src/harness/campaign.py
-# stamps `git_dirty: true` on every run record from `git status --porcelain`,
-# so an untracked leftover would mark a run's provenance dirty for a reason
-# unrelated to the experiment. Ignored, so the tree is clean and the files stay.
-#
-# CORRECTED 2026-08-18. This rule previously also claimed every such file was
-# "already archived byte-for-byte under docs/tasks/archive/ or
-# docs/workplan/archive/, so these are redundant copies, NOT the record".
-# Measured before moving them: docs/tasks/archive/ does not exist; 13 of the 17
-# have no archived counterpart anywhere; the other 4 differ from their archived
-# namesakes (the working copies carry a STEP 0 self-check the archive drops, and
-# cite CLAUDE.md where the archive says PROJECT_RULES.md). They are the briefs
-# AS ISSUED and they are not redundant -- ignoring them is a provenance
-# decision, never a statement that they may be deleted.
-/task_briefs/
-/*_TASK.md
-/TASK_*.md
-/HANDOFF.md
-
-# Local-only working files. Kept OUT of the repository deliberately, and listed
-# here so `git status --porcelain` is empty and a campaign or extension run can
-# record `git_dirty: false` (src/harness/campaign.py computes it from that
-# command, which counts untracked files). Nothing about their contents is
-# changed by this entry; remove these two lines to track them.
-PROJECT_BRIEFING.md
-_tmp_*.py
-
-# Post-seal validation series recorded 2026-08-30 (DEVIATIONS D-020..D-022): the
-# adaptive run-3 cell is covered by the adaptive rule above; these admit the
-# replication runs and the pinned latency series, deliberately, as the rule requires.
-!results/replication/**/*.json
-!results/validation/latency-*.json
-# The §E.6 ablation series, 2026-08-30 (DEVIATIONS D-023), admitted deliberately.
-!results/ablation/**/*.json
-# Console transcripts retained with the post-seal validation, replication, and
-# ablation records used in the dissertation submission.
-!results/ablation/*.console.log
-!results/replication/*.console.log
-!results/validation/latency-pilot-run3-pinned.console.log
+!.env.example
+*.log
+# Extracted large records are regenerated from tracked gzip files.
+/results/ablation/campaign-ablation.json
+/results/revision/mentor-2026-11-11/raw.json
+/results/revision/label-binding-fix-2026-11-09/deterministic/effects.json

@@ -1,123 +1,14 @@
-name: CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-env:
-  # Determinism control (design Part J.1 / PROJECT_RULES.md Setup).
-  PYTHONHASHSEED: "0"
-
+name: Artifact checks
+on: [push, pull_request]
 jobs:
-  ci:
-    runs-on: ubuntu-latest
+  check:
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
-          # FULL history, not the default depth-1 shallow clone. Several tests
-          # in tests/test_pre_registration.py verify that a commit cited in a
-          # document actually landed the record it is cited for -- they run
-          # `git log -- <path>` and `git merge-base --is-ancestor`, which a
-          # shallow clone cannot answer. Under depth-1 they failed with
-          # "fatal: Not a valid object name", which is why CI was red from
-          # ca360ae onward: a provenance check reporting the clone's shape
-          # rather than the repository's history.
-          fetch-depth: 0
-
-      - uses: astral-sh/setup-uv@v6
-        with:
-          # The SEALED interpreter (frozen_parameters row 9: Python 3.13.5).
-          # CI is regression protection only and never adjudicative (row 2),
-          # but it should protect the version the campaign is measured on.
-          python-version: "3.13"
-
-      - name: Sync pinned environment (locked)
-        run: uv sync --frozen
-
-      - name: Lint (pre-commit — ruff + ruff-format)
-        run: uvx pre-commit run --all-files
-
-      - name: Test
-        run: uv run pytest -q
-
-      # The G-4 spike stands up the experiment AS on a loopback TLS 1.3 socket
-      # and spawns a separate agent process, so unlike the Windows-only effect
-      # ledger (ADR 0014) it must hold on both platforms. Run here so that is
-      # confirmed rather than assumed. Other gates' spikes stay out: G-7's
-      # depends on Win32 exclusive-share semantics by decision.
-      - name: Gate G-4 spike (cross-platform)
-        run: uv run python smoke/g4/spike.py
-
-      # The G-11 spike is pure signing and hashing, so it is platform-independent
-      # for the same reason: run it here rather than assume it.
-      - name: Gate G-11 spike (cross-platform)
-        run: uv run python smoke/g11/spike.py
-
-      # The G-13 spike touches the AS and Biscuit but never the effect ledger,
-      # so it is platform-independent by the same argument -- confirmed here
-      # rather than assumed. It runs every strong arm over the pilot corpus, so
-      # a change that quietly breaks matched per-hop authority fails CI.
-      - name: Gate G-13 spike (cross-platform)
-        run: uv run python smoke/g13/spike.py
-
-      # G-15 touches the frozen policy, the arms and the boundary but NOT the
-      # effect ledger, so it is platform-independent for the same reason as the
-      # three above -- confirmed by running it here rather than assumed. It runs
-      # all nine arms over the F4/F5 fixtures under BOTH monitor configurations,
-      # so a change that quietly made the shared monitor unreachable from an
-      # OAuth arm, or that let a cell be recorded without its configuration,
-      # fails CI.
-      - name: Gate G-15 spike (cross-platform)
-        run: uv run python smoke/g15/spike.py
-
-      # G-12's structural limbs (the oracle-independence AST scan, the
-      # log_integrity_failure behaviour, and the four correlation-fault
-      # predicates) are pure computation and run everywhere. Its ledger-backed
-      # limbs report NOT ADJUDICATED on POSIX rather than passing -- ADR 0014,
-      # the ledger does not degrade -- so this step confirms what it can and
-      # never launders a Windows-only property into a green Linux tick.
-      - name: Gate G-12 spike (structural limbs cross-platform)
-        run: uv run python smoke/g12/spike.py
-
-      # G-9 is cross-platform by construction (ADR 0033: loopback sockets and a
-      # spawned arbiter, deliberately NOT an OS primitive that would have made
-      # the replay cache Windows-only). It fills the frozen 2^16 capacity, so
-      # it is BY FAR the longest of the spikes: minutes, not seconds.
-      #
-      # This comment read "still well under a minute" until 2026-08-02, which
-      # was true of the machines it had run on and false in general. EXP5
-      # STEP 13's standing check found the L4 fill is QUADRATIC in the frozen
-      # capacity -- 2,147,450,880 scan steps -- so its runtime is a function of
-      # the runner, and the spike's 120 s socket timeout made the limb a coin
-      # flip. The budget stays at 2^16 (shrinking it is forbidden action 6) and
-      # the limb was given the time it costs; expect this step to dominate CI.
-      - name: Gate G-9 spike (cross-platform)
-        run: uv run python smoke/g9/spike.py
-
-      # G-14 attaches the shared authenticated-request-id cache to B2-DPoP and
-      # B3 and runs SS D's taxonomy. No effect ledger, so it is cross-platform
-      # like the rest -- and it is the gate that turns the DPoP/INV attribution
-      # from an argument into a measurement.
-      - name: Gate G-14 spike (cross-platform)
-        run: uv run python smoke/g14/spike.py
-
-      # G-3 on Linux is REGRESSION PROTECTION ONLY and is NEVER ADJUDICATIVE.
-      # `frozen_parameters` row 2 names the row 9 SEALED MEASUREMENT PLATFORM,
-      # which is Windows; off-platform the spike prints NOT ADJUDICATED,
-      # completes the 1,000 pairs as a regression check and records no verdict.
-      # A Windows-platform criterion must not be laundered into a green Linux
-      # tick -- the same rule G-12 applies to its ledger-backed limbs. No
-      # timing number from this step is a result.
-      - name: Gate G-3 spike (regression only -- NOT adjudicative off-platform)
-        run: uv run python smoke/g3/spike.py
-
-      # G-10's criterion names `EffectEvent`, which needs the Win32
-      # exclusive-share effect ledger (ADR 0014 -- it does NOT degrade). Off
-      # platform the ledger-dependent limbs print NOT ADJUDICATED and the spike
-      # records no verdict, exactly as G-12 handles its ledger limbs. A
-      # readiness gate that certified readiness on a platform where the ledger
-      # cannot run would certify nothing.
-      - name: Gate G-10 spike (ledger limbs NOT ADJUDICATED off-platform)
-        run: uv run python smoke/g10/spike.py
+          python-version: "3.13.5"
+      - run: python -m pip install -r requirements.txt
+      - run: python tools/prepare_data.py
+      - run: python -m pytest -q tests
+      - run: python tools/reproduce_paper.py

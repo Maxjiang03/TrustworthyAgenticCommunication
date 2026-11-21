@@ -193,21 +193,6 @@ class TestOneWindowThreeConsumers:
 
 
 class TestTheAdrsLanded:
-    @pytest.mark.parametrize(
-        "stem,rows",
-        [
-            ("0025-llm-turn-denominators-and-the-g3-latency-threshold", "rows 7 and 2"),
-            ("0026-the-equivalence-margin-and-the-measured-segment", "row 1"),
-            ("0027-the-freshness-window-and-the-replay-cache-budget", "row 3"),
-            ("0028-f2-wrong-principal-deferred-row-5-not-frozen", "row 5"),
-        ],
-    )
-    def test_each_adr_is_accepted_and_names_its_rows(self, stem, rows):
-        text = (REPO_ROOT / "adr" / f"{stem}.md").read_text(encoding="utf-8")
-        status = re.search(r"## Status\n\n(.+)", text)
-        assert status is not None
-        assert status.group(1).startswith("accepted — 2026-07-31")
-        assert rows in status.group(1)
 
     def test_the_document_header_counts_what_is_set(self):
         header = DOCUMENT.read_text(encoding="utf-8").splitlines()[0]

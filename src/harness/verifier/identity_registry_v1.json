@@ -38,7 +38,7 @@
     "agent-worker": "worker"
   },
   "resource_owners": [
-    "user-yixian"
+    "user-owner"
   ],
   "resource_owner_note": "Recorded, and deliberately NOT part of the holder mapping (SS F.2.1). SS A.5.1 forbids requiring resource_owner = holder: delegation means the actor is not the resource owner, so a profile demanding equality would reject every legitimate delegated call.",
   "scope_boundary": "This registry is the actor->holder mapping ONLY. It is NOT the task_authorization_policy (task -> authorized actor principals), which is docs/frozen_parameters.md row 5 and stays UNSET, so the F2 wrong_principal family stays unscored."

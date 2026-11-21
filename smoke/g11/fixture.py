@@ -37,7 +37,7 @@ METHOD = "tools/call"
 TOOL = "notes.read"
 RAW_ARGUMENTS = {"collection": "notes/project", "limit": 5}
 # A presented AT@aud: base64url characters and dots, as a compact serialization is.
-RAW_AT = "eyJhbGciOiJFZDI1NTE5IiwidHlwIjoiYXQrand0In0.eyJzdWIiOiJ1c2VyLXlpeGlhbiJ9.c2lnbmF0dXJl"
+RAW_AT = "eyJhbGciOiJFZDI1NTE5IiwidHlwIjoiYXQrand0In0.eyJzdWIiOiJ1c2VyLW93bmVyIn0.c2lnbmF0dXJl"
 # `label_assertions_digest` is bound by the INV signature but NOT recomputed here:
 # its construction is ADR 0009 category (c), depends on frozen rows 4/6 (UNSET),
 # and is verified at G-15. The value is opaque to this gate, by design.

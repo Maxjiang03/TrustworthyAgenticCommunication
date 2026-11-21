@@ -127,7 +127,7 @@ class TestSameDerivedRequestBinding:
             audience="https://mcp.aasc.local/tools",
             tool="mail.send",
             arguments=arguments,
-            resource_owner=(ISSUER, "user-yixian"),
+            resource_owner=(ISSUER, "user-owner"),
             oauth_actor=(ISSUER, "agent-specialist"),
         )
         assert (
@@ -170,7 +170,7 @@ class TestSameDerivedRequestBinding:
             task_id="task-gt-pilot",
             audience="https://mcp.aasc.local/tools",
             tool="mail.send",
-            resource_owner=(ISSUER, "user-yixian"),
+            resource_owner=(ISSUER, "user-owner"),
             oauth_actor=(ISSUER, "agent-specialist"),
         )
         one = RequestContext.for_request(**base, arguments={"body": "a"}).authz_context_hash()

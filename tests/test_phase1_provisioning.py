@@ -52,7 +52,7 @@ class TestStartupLine:
             issuer="https://as.aasc.local",
             resource_server="https://mcp.aasc.local/tools",
             as_public_jwk=running_as.public_jwk,
-            rar_type="https://aasc.gla.ac.uk/rar/tool-authority",
+            rar_type="https://aasc.example.test/rar/tool-authority",
         )
         now = int(time.time())
         token = running_as.phase1_tokens["agent-specialist"]
@@ -70,7 +70,7 @@ class TestStartupLine:
         assert decision.admitted is True
         # SS E.2: no delegation authority in the base token -- the actor is the
         # client itself (no act chain), and the subject is the resource owner.
-        assert claims["sub"] == "user-yixian"
+        assert claims["sub"] == "user-owner"
         assert claims["client_id"] == "agent-specialist"
         assert "act" not in claims
 
@@ -80,7 +80,7 @@ class TestStartupLine:
             issuer="https://as.aasc.local",
             resource_server="https://other.aasc.local/tools",
             as_public_jwk=running_as.public_jwk,
-            rar_type="https://aasc.gla.ac.uk/rar/tool-authority",
+            rar_type="https://aasc.example.test/rar/tool-authority",
         )
         with pytest.raises(boundary.TokenRejected):
             boundary.verify_access_token(

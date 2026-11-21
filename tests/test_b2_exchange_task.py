@@ -190,7 +190,7 @@ class TestTheExchangeNarrows:
         credentials = provisioned.delegate(_hop(_visible("gt-benign")))
         payload = credentials["access_token"].split(".")[1]
         claims = json.loads(base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4)))
-        assert claims["sub"] == "user-yixian"
+        assert claims["sub"] == "user-owner"
         assert claims["act"] == {"sub": "agent-specialist"}
         assert claims["client_id"] == "agent-supervisor"
 

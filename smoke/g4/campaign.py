@@ -62,7 +62,7 @@ SEED = bytes.fromhex("a1" * 32)  # SPIKE-LOCAL campaign seed
 ISSUER = "https://as.aasc.local"
 RESOURCE_SERVER = "https://mcp.aasc.local/tools"
 OTHER_RESOURCE_SERVER = "https://other.aasc.local/tools"
-RAR_TYPE = "https://aasc.gla.ac.uk/rar/tool-authority"  # SS 2.1 collision-resistant namespace
+RAR_TYPE = "https://aasc.example.test/rar/tool-authority"  # SS 2.1 collision-resistant namespace
 RESOURCE_URL = "https://mcp.aasc.local/tools/invoke"  # a protected-resource URL, for DPoP
 
 SUPERVISOR = "agent-supervisor"
@@ -70,7 +70,7 @@ SPECIALIST = "agent-specialist"
 WORKER = "agent-worker"  # a third hop, so a nested `act` chain exists to inspect
 UNMAPPED = "agent-unmapped"  # deliberately absent from the registry (C3 requires it)
 
-USER = "user-yixian"
+USER = "user-owner"
 SCOPE_FULL = "mcp.invoke mcp.read"
 SCOPE_NARROW = "mcp.invoke"
 
