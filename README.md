@@ -14,7 +14,7 @@ python -m venv .venv
 
 On Linux/macOS, use `.venv/bin/python` instead. The offline command rebuilds the primary analysis, Tables IV/V, both archived model evaluations, the four bootstrap intervals, and data plots for Figures 2/3, then runs the included implementation tests. It makes no model API requests. Outputs go to `_reproduced/` and leave the archived records unchanged.
 
-Release validation: 1531 tests pass and 16 report skips in the tested environment. New executions match all 143 primary combinations, 2703 supplementary security checks, and 300 AIP comparison calls. The nine observation-fault checks and four adapter-fault cases also reproduce their recorded outcomes.
+Release validation: 1532 tests pass and 16 report skips in the tested environment. New executions match all 143 primary combinations, 2703 supplementary security checks, and 300 AIP comparison calls. The nine observation-fault checks and four adapter-fault cases also reproduce their recorded outcomes.
 
 For statistics and plots without the test suite:
 

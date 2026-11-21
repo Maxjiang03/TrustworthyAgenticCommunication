@@ -151,16 +151,25 @@ class TestTheConsoleDecodingOfPlatformQueries:
         assert _decode_console(raw) == "高性能"
         assert "\ufffd" not in _decode_console(raw)
 
-    def test_undecodable_bytes_are_REFUSED_rather_than_replaced(self):
+    def test_undecodable_bytes_are_REFUSED_rather_than_replaced(self, monkeypatch):
         """Fail closed. `errors="replace"` here would write mojibake into a
         sealed platform fact, which no later reader could distinguish from a
         machine that really is named that."""
+        import locale
         import pytest
 
         from src.harness.measurement_platform import PlatformError, _decode_console
 
+        monkeypatch.setattr(locale, "getencoding", lambda: "ascii")
         with pytest.raises(PlatformError, match="guessed decoding"):
             _decode_console(b"\xff\xfe\xff\xfe scheme")
+
+    def test_valid_single_byte_locale_bytes_decode(self, monkeypatch):
+        import locale
+        from src.harness.measurement_platform import _decode_console
+
+        monkeypatch.setattr(locale, "getencoding", lambda: "cp1252")
+        assert _decode_console(b"\xff") == "\u00ff"
 
     def test_the_literal_fixed_encoding_would_have_corrupted_the_bash_parent(self):
         """The rejected alternative, pinned so nobody re-applies it. This is why
