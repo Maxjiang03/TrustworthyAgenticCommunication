@@ -109,6 +109,8 @@ class TestTheDockerContextExcludesTheHostVirtualenv:
         for entry in (".venv/", "_reproduced/", ".git/"):
             assert entry in ignored, entry
         assert "results/" not in ignored.splitlines(), "Archived observations are required by reproduce.py"
+        for entry in (".github/", ".gitignore", ".dockerignore"):
+            assert entry not in ignored.splitlines(), "Container tests require the artifact configuration files"
 
     def test_the_dockerfile_still_copies_after_sync(self):
         """The ordering is deliberate (layer caching); the .dockerignore is

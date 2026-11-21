@@ -27,6 +27,3 @@ smoke/g10/_ledger_tmp/
 
 # Repository metadata the image has no use for.
 .git/
-.github/
-.gitignore
-.dockerignore
